@@ -53,16 +53,11 @@ We will have following pages:
 *Display sitemap here*
 
 ## Non-Functional requirements
-**Usability:**
- - The site should be user-friendly and understandable.
-**Security:**
- - Only a user with the "site admin" role can assign roles to other users to avoid any data security issues.
-**Data integrity:**
- - The system must keep backup copies of data so that it can be restored.
-**Environmental:**
- - The auction must run from Monday to Friday from 9 to 6 pm.
-**Compatibility:**
- - The website must support Windows 10.
+ - **Usability:** The site should be user-friendly and understandable.
+ - **Security:** Only a user with the "site admin" role can assign roles to other users to avoid any data security issues.
+ - **Data integrity:** The system must keep backup copies of data so that it can be restored.
+ - **Environmental:** The auction must run from Monday to Friday from 9 to 6 pm.
+ - **Compatibility:** The website must support Windows 10.
 
 ## Risks
 *What are the risks?*
