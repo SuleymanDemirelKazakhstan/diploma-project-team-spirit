@@ -1,18 +1,31 @@
 # CSS 410 Research tools and methods
 ## Team members
 + **Namazbayev Almas** (*180107192*)- Backend Developer (GitHub account: *[Almas016](https://github.com/Almas016)*)
-+ **Jacky Chan** (*180100013*) - Frontend Developer (GitHub account: *jackychan*)
++ **Dana Aldabergenova** (*180107100*) - Project Manager (Github account: *180107100*)
++ **Gaukhar Bolatbek** (*180107067*) - Frontend Developer (Github account: *180107067*)
++ **Zhanel Oralova** (*180107266*) - UI/UX designer (GitHub account: *180107266*)
++ **Baimolda Aray** (*180107128*) - Backend Developer (GitHub account:)
 
 ## Project
-This project is yet-another clone of Instagram
+Our project is a trading platform for a used goods store with the possibility of selling vintage goods and organizing auctions.
 
 ## Alternatives / Market research
 | Research alternatives
 
 ## Goals
+Our goal is to make life easier for both buyers and sellers of vintage items. We are going to achieve this goal with our project.
+
+What alternatives do the residents of Kazakhstan have at the moment? It's either *Instagram* or *olx.kz*.
+
+Here are a few advantages that we have in comparison with them:
+1) We will not have irrelevant products like in Instagram
+2) We provide convenience; All the goods will be in one place.
+3) Saving time
+4) Auction
+5) Attracting new customers; For buyers who had a small audience.
 
 ## Technologies
-In our project we use **Laravel**, **VueJS**
+In our project we use **Golang or Java**, **ReactJS**
 
 ## Pages / Activities 
 We will have following pages:
