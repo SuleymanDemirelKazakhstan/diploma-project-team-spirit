@@ -1,6 +1,6 @@
 # CSS 410 Research tools and methods
 ## Team members
-+ **Jet Lee** (*180100012*)- Backend Developer (GitHub account: *jetlee*)
++ **Namazbayev Almas** (*180107192*)- Backend Developer (GitHub account: *[Almas016](https://github.com/Almas016)*)
 + **Jacky Chan** (*180100013*) - Frontend Developer (GitHub account: *jackychan*)
 
 ## Project
