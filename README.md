@@ -117,7 +117,7 @@ How it works:
  
 1.You can find rare things
 2.The site itself has tips for antique buyers
- 3.A large selection of assortment
+3.A large selection of assortment
 4.There is a search for products  
 
 **Disadvantages**
@@ -130,6 +130,7 @@ How it works:
 6.All ads are placed only as auction
 
 </details>
+
 ## Goals
 Our goal is to make life easier for both buyers and sellers of vintage items. We are going to achieve this goal with our project.
 
