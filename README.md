@@ -158,8 +158,8 @@ We will have following pages:
 
 ## User Personas
  ![user persona 1](https://user-images.githubusercontent.com/55758989/154830524-265d3938-95c6-4b4d-b991-4c787934ae02.png)
- 
-![user persona 2](https://user-images.githubusercontent.com/55758989/154844292-d454a75e-41b1-4709-ba04-55102bb60864.png)
+ ![user persona 2](https://user-images.githubusercontent.com/55758989/154844338-19dd35ab-de5f-4346-92c6-948d1290604e.png)
+
 
 
 ## User stories
