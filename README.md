@@ -66,10 +66,7 @@ Here’s how it works:
 1. Currently, they do not have the opportunity to resell old clothes
 2. Delivery only in the UK
 
-</details>
-
 -----
-<details open>
  
 <summary>Alternatives on  websites that has auction-system.</summary>
  
