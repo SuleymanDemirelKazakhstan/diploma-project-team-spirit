@@ -163,8 +163,8 @@ We will have following pages:
 
 
 ## User stories
-
-*Write your user stories here*
+As a Website User, it's vital to see all actual products that are not selled to anyone yet. I want to see all products with necessary information and be able to buy 
+As a Admin, I want to be able to see new products and products categories as they are ordered so I can write content for the website.
 
 ## Sitemap, Page descriptions
 
