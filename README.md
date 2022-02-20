@@ -185,7 +185,7 @@ As a Website User, it's vital to see all actual products that are not selled to 
 As an Admin, I want to be able to update my shop's catalogue, push products for auction and inform customers.
 
 ## Sitemap, Page descriptions
-[Mind Map.pdf](https://github.com/SuleymanDemirelKazakhstan/diploma-project-team-spirit/files/8104358/Mind.Map.pdf)
+![SiteMap](https://user-images.githubusercontent.com/55758989/154851960-72b3fae1-d513-4038-ba31-f1a9df9870e2.jpg)
 
 
 
