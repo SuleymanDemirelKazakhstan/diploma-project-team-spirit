@@ -175,9 +175,8 @@ For Admin:
 - Auctions (all active and closed auctions)
 
 ## User Personas
- ![user persona 1](https://user-images.githubusercontent.com/55758989/154830524-265d3938-95c6-4b4d-b991-4c787934ae02.png)
- ![user persona 2](https://user-images.githubusercontent.com/55758989/154844338-19dd35ab-de5f-4346-92c6-948d1290604e.png)
-
+![user persona 1](https://user-images.githubusercontent.com/55758989/154852547-7f7ea38c-d063-4964-9088-b97fc5c4fdbc.png)
+![user persona 2](https://user-images.githubusercontent.com/55758989/154852557-d1756a64-975a-40b3-b924-60852a387118.png)
 
 
 ## User stories
