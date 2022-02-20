@@ -174,8 +174,6 @@ As a Admin, I want to be able to see new products and products categories as the
  - **Usability:** The site should be user-friendly and understandable.
  - **Security:** Only a user with the "site admin" role can assign roles to other users to avoid any data security issues.
  - **Data integrity:** The system must keep backup copies of data so that it can be restored.
- - **Environmental:** The auction must run from Monday to Friday from 9am to 6pm.
- - **Compatibility:** The website must support Windows 10.
 
 ## Risks
  - To create our website, there may not be enough specialists, since it takes a lot of effort to build an auction.
