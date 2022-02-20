@@ -67,21 +67,20 @@ Here’s how it works:
 2. Delivery only in the UK
  
 -----
- 
+
+
+<summary>Alternatives on  websites that has auction-system.</summary>
 [Ebay](https://www.ebay.com/) is an American company providing services in the areas of online auctions and online stores.
  
 How it works:
- 
-1.The seller sets the minimum price and sets the time during which the auction will last
-2.bidders place bids
-3.you can bet absolutely any amount - accordingly, whoever bet more, he won
+
+ 1.The seller sets the minimum price and sets the time during which the auction will last
+ 2.bidders place bids
+ 3.you can bet absolutely any amount - accordingly, whoever bet more, he won
 
 **Advantages**:
  
- 1.There is a worldwide delivery
- 2.You can return funds and there are no problems with this
- 3.The purchase can be made immediately on the site itself
- 4.Convenient to use
+ 1.РАПРАПР
 
 **Disadvantages**:
  
