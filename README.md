@@ -67,10 +67,12 @@ Here’s how it works:
 2. Delivery only in the UK
 
 </details>
+
 <details open>
  
 <summary>Alternatives on  websites that has auction-system.</summary>
-[Ebay](https://www.ebay.com) is an American company providing services in the areas of online auctions and online stores.
+ 
+[Ebay](https://www.ebay.com/) is an American company providing services in the areas of online auctions and online stores.
  
 How it works:
  
@@ -124,7 +126,6 @@ How it works:
 4.There is an ad where there is no photo of the product
 5.You can purchase the product only by contacting the seller
 6.All ads are placed only as auction
-
 
 </details>
 ## Goals
