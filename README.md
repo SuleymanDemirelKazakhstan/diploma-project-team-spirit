@@ -148,13 +148,31 @@ Here are a few advantages that we have in comparison with them:
 ## Technologies
 In our project we use **Golang or Java**, **ReactJS**, **Figma**, **Miro**, **Photoshop**
 
-## Pages / Activities 
-We will have following pages:
-- Latest posts of friends
-- Posts from location of user
-- Take a photo page
-- Personal page
-- Settings page
+## Pages / Activities
+There are 3 roles: Customer, Shop, Admin
+We will have following pages for customer:
+- Main page - (Links to List op shops, catalogue, and auctions of the day)
+- Catalogue (all products are here)
+- Lists of shops (list of shops which sell products)
+- Basket (products added to basket)
+- My orders (Active and closed orders of user)
+- My profile (Personal information of user)
+- About platform (Information about platform)
+
+And for Shop:
+- Dashboard 
+- Catalogue (All products of shop with access to edit and delete)
+- Product page (Page with product description and characteristics with access to edit and delete)
+- Orders (all orders from customers)
+- Auction page (all products in action and history for it)
+- Shop settings (Shop information with access to edit)
+
+For Admin:
+- Dashboard
+- List of shops (all shops working with the website)
+- Catalogue (All products)
+- Orders (all active and closed orders)
+- Auctions (all active and closed auctions)
 
 ## User Personas
  ![user persona 1](https://user-images.githubusercontent.com/55758989/154830524-265d3938-95c6-4b4d-b991-4c787934ae02.png)
@@ -163,8 +181,8 @@ We will have following pages:
 
 
 ## User stories
-As a Website User, it's vital to see all actual products that are not selled to anyone yet. I want to see all products with necessary information and be able to buy 
-As a Admin, I want to be able to see new products and products categories as they are ordered so I can write content for the website.
+As a Website User, it's vital to see all actual products that are not selled to anyone yet. I want to see all products with necessary information and be able to buy them.
+As an Admin, I want to be able to update my shop's catalogue, push products for auction and inform customers.
 
 ## Sitemap, Page descriptions
 
@@ -174,12 +192,11 @@ As a Admin, I want to be able to see new products and products categories as the
  - **Usability:** The site should be user-friendly and understandable.
  - **Security:** Only a user with the "site admin" role can assign roles to other users to avoid any data security issues.
  - **Data integrity:** The system must keep backup copies of data so that it can be restored.
+ - **Environmental:** The auction must run from Monday to Friday from 9am to 6pm.
+ - **Compatibility:** The website must support Windows 10.
 
 ## Risks
- - To create our website, there may not be enough specialists, since it takes a lot of effort to build an auction.
- - Due to the large number of users using the auction, the site may collapse a bit.
- - When creating this site, we may lack the skills to integrate the creation of a payment system.
- - Due to the large number of people using Olx.kz and Instagram, our project may not gain momentum.
+*What are the risks?*
 
 ## Mockups, Wireframes
 *Put here images of your wireframes*
