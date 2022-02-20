@@ -193,11 +193,12 @@ As an Admin, I want to be able to update my shop's catalogue, push products for 
  - **Usability:** The site should be user-friendly and understandable.
  - **Security:** Only a user with the "site admin" role can assign roles to other users to avoid any data security issues.
  - **Data integrity:** The system must keep backup copies of data so that it can be restored.
- - **Environmental:** The auction must run from Monday to Friday from 9am to 6pm.
- - **Compatibility:** The website must support Windows 10.
 
 ## Risks
-*What are the risks?*
+ - To create a site, there may not be enough specialists, since it takes a lot of effort to build an auction.
+ - Due to the large number of users using the auction, the site may collapse a bit.
+ - When creating this site, we may lack the skills to integrate the creation of a payment system.
+ - Due to the large number of people using Olx.kz and Instagram, our project may not gain momentum.
 
 ## Mockups, Wireframes
 ![ecommerce-wireframe-1](https://user-images.githubusercontent.com/55758989/154852756-35822375-e5b4-4c34-ab2e-540166b078f9.png)
