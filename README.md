@@ -146,7 +146,7 @@ Here are a few advantages that we have in comparison with them:
 5) Attracting new customers; For buyers who had a small audience.
 
 ## Technologies
-In our project we use **Golang or Java**, **ReactJS**
+In our project we use **Golang or Java**, **ReactJS**, **Figma**, **Miro**, **Photoshop**
 
 ## Pages / Activities 
 We will have following pages:
