@@ -178,7 +178,10 @@ As a Admin, I want to be able to see new products and products categories as the
  - **Compatibility:** The website must support Windows 10.
 
 ## Risks
-*What are the risks?*
+ - To create our website, there may not be enough specialists, since it takes a lot of effort to build an auction.
+ - Due to the large number of users using the auction, the site may collapse a bit.
+ - When creating this site, we may lack the skills to integrate the creation of a payment system.
+ - Due to the large number of people using Olx.kz and Instagram, our project may not gain momentum.
 
 ## Mockups, Wireframes
 *Put here images of your wireframes*
