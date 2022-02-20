@@ -200,7 +200,7 @@ As an Admin, I want to be able to update my shop's catalogue, push products for 
 *What are the risks?*
 
 ## Mockups, Wireframes
-*Put here images of your wireframes*
+![ecommerce-wireframe-1](https://user-images.githubusercontent.com/55758989/154852756-35822375-e5b4-4c34-ab2e-540166b078f9.png)
 
 
 ## Future iterations
