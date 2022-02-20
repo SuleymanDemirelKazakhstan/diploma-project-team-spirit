@@ -11,7 +11,8 @@ Our project is a trading platform for a used goods store with the possibility of
 
 ## Alternatives / Market research
 
-### **Alternatives on a similar topic. Online used clothing store.**
+<details open>
+<summary>Alternatives on a similar topic. Online used clothing store.</summary>
 
 San Francisco-based [Flyp](https://www.joinflyp.com/) is on a mission to help people achieve “Less clutter. More empowerment.”
 
@@ -64,6 +65,8 @@ Here’s how it works:
 
 1. Currently, they do not have the opportunity to resell old clothes
 2. Delivery only in the UK
+ 
+</details>
 
 ## Goals
 Our goal is to make life easier for both buyers and sellers of vintage items. We are going to achieve this goal with our project.
@@ -87,12 +90,6 @@ We will have following pages:
 - Take a photo page
 - Personal page
 - Settings page
-
-## Goals
-* What is the purpose of this project?
-* What are the problems it will solve?
-* How will it streamline or improve the current process or facilitate a new process?
-* What is the product vision?
 
 ## User Personas
  ![user persona 1](https://user-images.githubusercontent.com/55758989/154830524-265d3938-95c6-4b4d-b991-4c787934ae02.png)
