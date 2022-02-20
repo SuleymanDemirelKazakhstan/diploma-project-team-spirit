@@ -10,7 +10,60 @@
 Our project is a trading platform for a used goods store with the possibility of selling vintage goods and organizing auctions.
 
 ## Alternatives / Market research
-| Research alternatives
+
+### **Alternatives on a similar topic. Online used clothing store.**
+
+San Francisco-based [Flyp](https://www.joinflyp.com/) is on a mission to help people achieve “Less clutter. More empowerment.”
+
+The platform connects people with independent professional resellers.
+
+Here’s how it works:
+
+1. Take a picture of each item you want to sell.
+2. Pro sellers apply to sell your clothes and you choose your preferred seller based on their price estimates.
+3. Flyp gives you a shipping label to send your items to the pro seller.
+4. The pro seller posts your items on multiple thrift platforms and after they sell, boom – he/she will send you the profits.
+
+**Advantages**:
+
+1. They accept good-condition (meaning rip, smell, and stain-free) clothes, shoes, and handbags from all kinds of known fashion labels and designer brands.
+2. Free Reseller Tools
+3. They don’t accept non-branded or fast fashion labels like Forever 21 and H&M.
+
+**Disadvantages**:
+
+1. On par with in-store consignment rates, their **30%-50%** fees are a little steeper than the average **10%-20%** range of other self-selling thrift resale sites. In exchange for those higher fees, they take care of everything for you, including shipping fees, photography, item research, price negotiation, packing and shipping to the buyer.
+
+------
+
+[Depop](https://news.depop.com/) may not be for everyone, but for those who want to go bold and really express themselves, they’re one of the best unique clothing thrift stores.
+
+**Advantages**:
+
+1. Looks like an Instagram feed
+2. 30 million+ registered users in more than 150 countries
+3. 32 million+ items available for sale on Depop
+4. This online op shop is a “global conduit of connection” not just for clothing, but for creativity.
+
+**Disadvantages**:
+
+1. Lots of people buy clothing online from China or eBay and claim they have to order it in they charge you triple maybe sometimes more and it takes up to 30 days for it to be delivered does that sound like hong kong to you?
+2. Scammers are around so be careful.
+
+------
+
+[Beyond Retro Vintage](https://www.beyondretro.com/?utm_source=Rakuten&utm_medium=affiliates&utm_content=yggSFW0pgtk:Sustainable+Jungle&utm_campaign=10&ranMID=46862&ranEAID=yggSFW0pgtk&ranSiteID=yggSFW0pgtk-3S7BuFfgy2HlQXPKn3vZ7g) - it is the home of vintage men's and women's clothing. Mostly clothes from the 60s and 90s. **Popular Online Thrift Stores From Around The World**
+
+**Advantages**:
+
+1. STUDENT DISCOUNT
+2. FREE 14 DAY RETURNS
+3. Thousands of items are added every week
+
+**Disadvantages**:
+
+1. Currently, they do not have the opportunity to resell old clothes
+2. Delivery only in the UK
 
 ## Goals
 Our goal is to make life easier for both buyers and sellers of vintage items. We are going to achieve this goal with our project.
