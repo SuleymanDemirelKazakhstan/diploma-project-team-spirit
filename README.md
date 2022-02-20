@@ -68,6 +68,7 @@ Here’s how it works:
 
 </details>
 
+-----
 <details open>
  
 <summary>Alternatives on  websites that has auction-system.</summary>
@@ -81,19 +82,22 @@ How it works:
 3.you can bet absolutely any amount - accordingly, whoever bet more, he won
 
 **Advantages**
+ 
 1.There is a worldwide delivery
 2.You can return funds and there are no problems with this
 3.The purchase can be made immediately on the site itself
 4.Convenient to use
 
 **Disadvantages**
+ 
 1.Since most sellers are from abroad, the shipping price may be high
 2.There is not always a good product description 
 
 ------
 
 [Agora.KZ](https://agora.kz/) - auction and trading platform of Kazakhstan. Antiques, collectibles, electronics, clothing, household goods.
-**Advantages**
+
+ **Advantages**
  
 1.Everyone can put up an ad
 2.A large selection of assortment
@@ -111,6 +115,7 @@ How it works:
 ------
 
 [Antikwariat.ru](https://antikwariat.ru) - Antiques marketplace, buy antiques, sell antiques, buy coins, sell coins
+ 
 **Advantages**
  
 1.You can find rare things
