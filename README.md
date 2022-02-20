@@ -42,7 +42,8 @@ We will have following pages:
 * What is the product vision?
 
 ## User Personas
-*Write description of user personas here*  
+ ![user persona 1](https://user-images.githubusercontent.com/55758989/154830524-265d3938-95c6-4b4d-b991-4c787934ae02.png)
+
 
 ## User stories
 
@@ -64,6 +65,7 @@ We will have following pages:
 
 ## Mockups, Wireframes
 *Put here images of your wireframes*
+
 
 ## Future iterations
 *Write your future iterations*
