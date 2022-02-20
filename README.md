@@ -67,8 +67,6 @@ Here’s how it works:
 2. Delivery only in the UK
  
 -----
-
-<summary>Alternatives on  websites that has auction-system.</summary>
  
 [Ebay](https://www.ebay.com/) is an American company providing services in the areas of online auctions and online stores.
  
