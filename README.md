@@ -65,9 +65,10 @@ Here’s how it works:
 
 1. Currently, they do not have the opportunity to resell old clothes
 2. Delivery only in the UK
-
------
  
+</details>
+-----
+<details open>
 <summary>Alternatives on  websites that has auction-system.</summary>
  
 [Ebay](https://www.ebay.com/) is an American company providing services in the areas of online auctions and online stores.
@@ -78,14 +79,14 @@ How it works:
 2.bidders place bids
 3.you can bet absolutely any amount - accordingly, whoever bet more, he won
 
-**Advantages**
+**Advantages**:
  
 1.There is a worldwide delivery
 2.You can return funds and there are no problems with this
 3.The purchase can be made immediately on the site itself
 4.Convenient to use
 
-**Disadvantages**
+**Disadvantages**:
  
 1.Since most sellers are from abroad, the shipping price may be high
 2.There is not always a good product description 
@@ -94,7 +95,7 @@ How it works:
 
 [Agora.KZ](https://agora.kz/) - auction and trading platform of Kazakhstan. Antiques, collectibles, electronics, clothing, household goods.
 
- **Advantages**
+ **Advantages**:
  
 1.Everyone can put up an ad
 2.A large selection of assortment
@@ -103,7 +104,7 @@ How it works:
 5.You can see the seller's rating
 6.There is an opportunity to ask questions to the seller about the product
 
-**Disadvantages**
+**Disadvantages**:
  
 1.There is not always a product description
 2.Payment and delivery is carried out only through KazPost
@@ -113,14 +114,14 @@ How it works:
 
 [Antikwariat.ru](https://antikwariat.ru) - Antiques marketplace, buy antiques, sell antiques, buy coins, sell coins
  
-**Advantages**
+**Advantages**:
  
 1.You can find rare things
 2.The site itself has tips for antique buyers
 3.A large selection of assortment
 4.There is a search for products  
 
-**Disadvantages**
+**Disadvantages**:
 
 1.The registration page does not work correctly
 2.Outdated website design
