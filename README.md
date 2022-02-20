@@ -176,7 +176,8 @@ For Admin:
 
 ## User Personas
 ![user persona 1](https://user-images.githubusercontent.com/55758989/154852547-7f7ea38c-d063-4964-9088-b97fc5c4fdbc.png)
-![user persona 2](https://user-images.githubusercontent.com/55758989/154852557-d1756a64-975a-40b3-b924-60852a387118.png)
+![user persona 2](https://user-images.githubusercontent.com/55758989/154852623-ac68f7ff-3cc2-49e4-8d07-6bb87eb04c01.png)
+
 
 
 ## User stories
