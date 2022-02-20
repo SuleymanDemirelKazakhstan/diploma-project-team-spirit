@@ -204,4 +204,4 @@ As an Admin, I want to be able to update my shop's catalogue, push products for 
 
 
 ## Future iterations
-*Write your future iterations*
+During the project, we will use Agile, we will make plans and analyze the project. In the implementation of the project, if there are some points that we have not taken into account, we will return to tasks in order to make the project better. And every time we will test.
