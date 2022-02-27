@@ -1,10 +1,14 @@
-> This folders will contain your reports
 ## Week by week plan
-|...|Jet Lee|Jacky Chan|
-|---|---|---|
-|Week #3|Create home web page|Design home web page|
-|Week #4|Create database models|Analyze customer expectations|
-|Week #5|Create home web page|Design home web page|
-|Week #6|Create database models|Analyze customer expectations|
-|...|...|...|
-|Week #15|...|...|
+||Zhanel|Dana|Gaukhar|Almas|Aray|
+|---|---|---|---|---|---|
+|Week #5|Create detailed Information Architecture for all roles (customer,shop owner, admin), Authorization, basic UI kit and home page for customer role|make a plan|make a plan for 10 week|plan descriptions|created plan of work|
+|Week #6|Design for catalog and shops list pages, product page, profile and buying process (customer)|Terms of reference for visualize and home page,creating schemas.preparing questions for sprint|create a new project, prepare materials and visualize authorizationand home page|Setup & Data structures|creating schemas(Defining relationships between entities)|
+|Week #7|Create wireframes for process of auction for customer|Terms of reference for registration, authorization, password and etc.|connect end point for authorization with frontend and visualization of catalog and shops list pages, product page, profile and buying process (customer)|Implement endpoints for registration, authorization, password recovery, and assign verification.|collection of information(create database)|
+|Week #8|Designing home page, catalog and process of adding products for shop owner.|Terms of reference for implement customer functionality|Vizualize adding products for shop owner|Implement customer functionality;Filtering|Database normalization|
+|Week #9|Wireframes for shop settings, list of orders and working with order pages (for shop owner)|Terms of reference for visualizing shop settings and etc. |visualize shop settings, list of orders and working with order pages (for shop owner)|Auction: record a user’s bid on an item; get the current winning bid for an item;|fixing bugs|
+|Week #10|Designing process of creating and viewing results of auction for shop owner|Terms of reference for database server|connect end point for seller’s functionality with frontend (CRUD functions)(for customers)|Auction: REST API to manage bids;|creating database in server|
+|Week #11|Design wireframes for Admin role (home page, shops list,orders)|Terms of reference for shop owner functionality |visualize process of creating and viewing results of auction for shop owner|Shop Owner functionality;Filtering|creating fake data to check project|
+|Week #12|Pages for viewing all auctions and catalog for admin|Terms of reference for implementation of payment system and etc.|connect end point for seller’s functionality with frontend (CRUD functions)(for shop owner)|implementation of the payment system|deploy:for backend|
+|Week #13|Revising all made wireframes, making design review and backtesting of already working pages|Terms of reference implementation system|implementation of the payment system|testing of the payment system|deploy:forfrontend|
+|Week #14|Process of visual packing the project (logo, banners and etc.)|testing the process (frontend and backend)|visualization for Admin role (home page, shops list,orders)|Docker|finishing deploy|
+|Week #15|Revising all projects, final design review |finishing the documentation |fixing bugs|fixing bugs|last finishing week|
