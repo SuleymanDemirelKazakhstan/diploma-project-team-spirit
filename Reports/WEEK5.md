@@ -1,5 +1,5 @@
 # Zhanel
-* Make a plan
+* Create detailed plan for the project
 # Dana
 * Make a plan
 # Gaukhar
