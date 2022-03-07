@@ -6,4 +6,6 @@
 # Zhanel 
 * Create detailed Information 
 # Dana
-* Terms of reference for visualize and home page,creating schemas. 
+* Terms of reference for visualize and home page,creating schemas.
+* # Aray
+* creating schemas(Defining relationships between entities)
