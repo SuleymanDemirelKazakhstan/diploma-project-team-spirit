@@ -1,6 +1,8 @@
-# Jet Lee
-* Made kung-fu
-* Learned kung-fu
-# Jacky Chan
-* Learn kung-fu
-* Invented kung-fu
+# Almas [link](https://github.com/SuleymanDemirelKazakhstan/diploma-project-team-spirit/tree/backend/backend)
+* Implement Admin functionality
+  * Signup for basic auth
+  * create shop owner
+  * delete shop owner
+  * get shop owner
+  * update shop owner
+  * Implement validation
