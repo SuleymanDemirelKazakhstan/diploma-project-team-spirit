@@ -17,3 +17,4 @@
   * buy a product
 # Aray
 * Database normalization
+* database created ar new place [here](https://dashboard.heroku.com/apps/secondchancedb)
