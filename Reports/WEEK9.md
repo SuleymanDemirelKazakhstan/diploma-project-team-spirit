@@ -18,4 +18,5 @@
 
 # Aray
 * created database (in heroku)
+* filled databse
 * fixing bugs
