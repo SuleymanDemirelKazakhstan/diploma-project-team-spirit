@@ -8,3 +8,10 @@
 # Dana
 * Created tasks and deadline for each member in Trello(https://trello.com/invite/b/DHNt0ZMA/7749cbfcf80968ffe3d072cc9b661a08/diploma)
 * Discussed with members about auction-system
+
+# Almas [link](https://github.com/SuleymanDemirelKazakhstan/diploma-project-team-spirit/tree/backend/backend)
+* Implement customer functionality
+  * Signup
+  * Get product
+  * Get all product
+  * buy a product
