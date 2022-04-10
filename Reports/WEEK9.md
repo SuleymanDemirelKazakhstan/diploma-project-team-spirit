@@ -3,3 +3,11 @@
 
 ![image](https://user-images.githubusercontent.com/55758989/162629622-970e65dd-0dd0-4d39-a9e5-55635db5ec7c.png)
 
+# Almas [link](https://github.com/SuleymanDemirelKazakhstan/diploma-project-team-spirit/tree/backend/backend)
+* Implement Shop Owner functionality
+  * Signup
+  * create product
+  * delete product
+  * get product
+  * update product
+  * Implement validation
