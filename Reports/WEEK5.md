@@ -1,5 +1,6 @@
 # Zhanel
 * Create detailed plan for the project
+* Plan is in Readme file here
 # Dana
 * Make a plan
 # Gaukhar
