@@ -15,3 +15,7 @@
 # Dana
 * Gave each member tasks for the week in trello
 * Watched videos about How to Control Scope in Project Management(https://youtu.be/DuthRT6j6i4), Top 5 Project Tracking & Monitoring Tips For Project Managers(https://youtu.be/CTg_9K5K6hE)
+
+# Aray
+* created database (in heroku)
+* fixing bugs
