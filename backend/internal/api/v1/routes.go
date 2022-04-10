@@ -9,7 +9,8 @@ import (
 
 func Routes(app *fiber.App, h *handlers.Handler) {
 	//public service for health check service
-	app.Get("/", func(c *fiber.Ctx) error { return c.JSON(fiber.Map{"status":  true, "message": "success"})})
+	app.Get("/", func(c *fiber.Ctx) error { return c.JSON(fiber.Map{"status": true, "message": "success"}) })
+	app.Get("/pgversion", h.CheckPostgresVersion)
 
 	// Auth
 	auth := app.Group("/auth")

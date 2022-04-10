@@ -20,8 +20,9 @@ func NewDB() *sql.DB {
 	dbPort := os.Getenv("db-port")
 	dbUser := os.Getenv("db-user")
 	dbPass := os.Getenv("db-password")
+	sslmode := os.Getenv("sslmode")
 
-	dbUri := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s", host, dbPort, dbUser, dbName, dbPass)
+	dbUri := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s sslmode = %s", host, dbPort, dbUser, dbName, dbPass, sslmode)
 	connConfig, err := pgx.ParseConfig(dbUri)
 	if err != nil {
 		fmt.Println(err)
@@ -32,7 +33,7 @@ func NewDB() *sql.DB {
 	if err = conn.Ping(); err != nil {
 		log.Panic(err)
 	} else {
-		fmt.Println("\033[32m","DB connection is established to PostgreSQL!")
+		fmt.Println("\033[32m", "DB connection is established to PostgreSQL!")
 	}
 
 	return conn
