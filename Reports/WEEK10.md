@@ -6,3 +6,6 @@
   * get shop owner
   * update shop owner
   * Implement validation
+# Aray
+* make server using ngrok
+* creating database in server
