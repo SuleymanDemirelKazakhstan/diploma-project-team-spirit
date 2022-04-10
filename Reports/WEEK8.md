@@ -15,3 +15,5 @@
   * Get product
   * Get all product
   * buy a product
+# Aray
+* Database normalization
