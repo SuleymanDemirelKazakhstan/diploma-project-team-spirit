@@ -1,6 +1,3 @@
-# Jet Lee
-* Made kung-fu
-* Learned kung-fu
-# Jacky Chan
-* Learn kung-fu
-* Invented kung-fu
+# Almas [link](https://github.com/SuleymanDemirelKazakhstan/diploma-project-team-spirit/tree/backend/backend)
+* integrated with heroku postgres
+* I also wrote a test to check the version to make sure that the connection was made
