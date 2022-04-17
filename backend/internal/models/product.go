@@ -5,6 +5,8 @@ type Product struct {
 	Price       float64 `json:"price,omitempty" validate:"required"`
 	Name        string  `json:"name,omitempty" validate:"required"`
 	Description string  `json:"description,omitempty"`
+	Discount    int     `json:"discount,omitempty"`
+	IsAuction
 }
 
 type Sold struct {
@@ -20,4 +22,8 @@ type Products struct {
 
 type IdReg struct {
 	Id int `json:"id,omitempty" validate:"required"`
+}
+
+type IsAuction struct {
+	Auction bool `json:"is_auction,omitempty" validate:"required"`
 }

@@ -4,10 +4,10 @@ import "secondChance/internal/models"
 
 func (db *Layer) GetCustomer(param string) (*models.Customer, error) {
 	var user models.Customer
-	sqlStatement := `SELECT name,email,password,phone FROM customer WHERE email=$1`
+	sqlStatement := `SELECT id,name,email,password,phone FROM customer WHERE email=$1`
 
 	row := db.DB.QueryRow(sqlStatement, param)
-	if err := row.Scan(&user.Name, &user.Email, &user.Password, &user.Phone); err != nil {
+	if err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Phone); err != nil {
 		return &models.Customer{}, err
 	}
 	return &user, nil

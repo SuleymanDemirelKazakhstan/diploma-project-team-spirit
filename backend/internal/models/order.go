@@ -1,17 +1,7 @@
 package models
 
-import "time"
-
 type Order struct {
-	Id            int
-	OrderCart     []Product
-	OrderedAt     time.Time
-	Price         float64
-	Discount      *int
-	PaymentMethod Payment
-}
-
-type Payment struct {
-	Digital bool
-	COD     bool
+	Customer_id int `json:"customer_id,omitempty" validate:"required"`
+	Product_id  int `json:"product_id,omitempty" validate:"required"`
+	Shop_id     int `json:"shop_id,omitempty" validate:"required"`
 }

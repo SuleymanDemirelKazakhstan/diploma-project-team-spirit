@@ -11,6 +11,11 @@ func (s *Layer) GetCustomer(param string) (*models.Customer, error) {
 }
 
 func (s *Layer) CreateCustomer(user *models.Customer) error {
+	hash, err := HashPassword(user.Password)
+	if err != nil {
+		return err
+	}
+	user.Password = hash
 	if err := s.DBLayer.CreateCustomer(user); err != nil {
 		return err
 	}

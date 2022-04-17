@@ -1,15 +1,12 @@
 package models
 
 type Owner struct {
+	Id       int    `json:"id"`
 	Name     string `json:"name,omitempty" validate:"required"`
 	Email    string `json:"email,omitempty" validate:"required,email"`
 	Password string `json:"password,omitempty" validate:"required"`
 	Phone    int    `json:"phone,omitempty" validate:"required"`
-}
-
-type GetOwner struct {
-	Id int `json:"id"`
-	Owner
+	Address  string `json:"address,omitempty" validate:"required"`
 }
 
 type OwnerEmailRequest struct {

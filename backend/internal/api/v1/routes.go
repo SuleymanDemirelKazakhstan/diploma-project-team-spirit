@@ -18,29 +18,31 @@ func Routes(app *fiber.App, h *handlers.Handler) {
 	auth.Post("/owner", h.LoginOwner)
 
 	// Admin
-	v1 := app.Group("/admin")
-	v1.Use(basicauth.New(basicauth.Config{Users: map[string]string{"admin": "admin"}}))
-	v1.Post("/create", h.CreateOwner)
-	v1.Delete("/delete", h.DeleteOwner)
-	v1.Get("/get", h.GetOwner)
-	v1.Get("/getall", h.GetAllOwner)
-	v1.Put("/update", h.UpdateOwner)
+	admin := app.Group("/admin")
+	admin.Use(basicauth.New(basicauth.Config{Users: map[string]string{"admin": "admin"}}))
+	admin.Post("/create", h.CreateOwner)
+	admin.Delete("/delete", h.DeleteOwner)
+	admin.Get("/get", h.GetOwner)
+	admin.Get("/getall", h.GetAllOwner)
+	admin.Put("/update", h.UpdateOwner)
 
 	// Unauthorized customer
-	customer := app.Group("/c")
-	customer.Post("/signup", h.SignUp)
-	customer.Get("/get", h.GetProduct)
-	customer.Get("/allproduct", h.GetAllProduct)
+	guest := app.Group("/g")
+	guest.Post("/signup", h.SignUp)
+	guest.Get("/get", h.GetProduct)
+	guest.Get("/allproduct", h.GetAllProduct)
+	guest.Get("/getallauction", h.GetProductAuction)
 
 	// Authorized customer
+	customer := app.Group("/c")
 	customer.Use(middlewares.Protected())
-	customer.Get("/buy", h.SoldProduct)
+	customer.Get("/buy", h.BuyProduct)
 
 	// Owner
 	owner := app.Group("/owner")
 	owner.Use(middlewares.Protected())
 	owner.Post("/create", h.CreateProduct)
-	owner.Get("/delete", h.SoldProduct)
+	owner.Delete("/delete", h.DeleteProduct) // if selled_at is empty
 	owner.Get("/get", h.GetProduct)
 	owner.Get("/getall", h.GetAllProduct)
 	owner.Put("/update", h.UpdateProduct)

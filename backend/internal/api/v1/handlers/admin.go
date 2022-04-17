@@ -3,7 +3,6 @@ package handlers
 import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-	"log"
 	"secondChance/internal/models"
 )
 
@@ -26,15 +25,6 @@ func (h *Handler) CreateOwner(c *fiber.Ctx) (err error) {
 		})
 	}
 
-	hash, err := HashPassword(a.Password)
-	if err!= nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(models.ErrorResp{
-			Status:  false,
-			Message: err.Error(),
-		})
-	}
-
-	a.Password = hash
 	if err := h.ServiceLayer.CreateOwner(a); err != nil {
 		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
 			Status:  false,
@@ -97,7 +87,7 @@ func (h *Handler) GetOwner(c *fiber.Ctx) (err error) {
 
 	user, err := h.ServiceLayer.GetOwner(a)
 	if err != nil {
-		if err.Error() == "sql: no rows in result set"{
+		if err.Error() == "sql: no rows in result set" {
 			return c.Status(fiber.StatusNotFound).JSON(models.ErrorResp{
 				Status:  false,
 				Message: err.Error(),
@@ -143,36 +133,18 @@ func (h *Handler) UpdateOwner(c *fiber.Ctx) (err error) {
 		return c.Status(fiber.StatusForbidden).SendString(err.Error())
 	}
 
-	userDB, err := h.ServiceLayer.GetOwner(email)
-	if err != nil {
-		if err.Error() == "sql: no rows in result set"{
-			return c.Status(fiber.StatusNotFound).JSON(models.ErrorResp{
-				Status:  false,
-				Message: err.Error(),
-			})
-		}
-		return c.Status(fiber.StatusConflict).JSON(models.ErrorResp{
-			Status:  false,
-			Message: err.Error(),
-		})
-	}
-
-	userReq := new(models.Owner)
-	if err := c.BodyParser(userReq); err != nil {
+	user := new(models.Owner)
+	if err := c.BodyParser(user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
+	if err := validate.Struct(user); err != nil {
+		return c.Status(fiber.StatusForbidden).SendString(err.Error())
+	}
 
-	//Todo Status Code
-	user := newUser(userReq, &models.Owner{
-		Email: userDB.Email,
-		Name: userDB.Name,
-		Phone: userDB.Phone,
-		Password: userDB.Password,
-	})
-	if err := h.ServiceLayer.UpdateOwner(email,user); err != nil {
+	if err := h.ServiceLayer.UpdateOwner(email, user); err != nil {
 		return c.JSON(models.ErrorResp{
 			Status:  false,
 			Message: err.Error(),
@@ -184,25 +156,3 @@ func (h *Handler) UpdateOwner(c *fiber.Ctx) (err error) {
 		"message": "success",
 	})
 }
-
-//Todo validate
-func newUser(userReq, user *models.Owner) *models.Owner {
-	if userReq.Email != "" {
-		user.Email = userReq.Email
-	}
-	if userReq.Name != "" {
-		user.Name = userReq.Name
-	}
-	if userReq.Phone != 0 {
-		user.Phone = userReq.Phone
-	}
-	if userReq.Password != ""{
-		var err error
-		user.Password, err = HashPassword(userReq.Password)
-		if err != nil{
-			log.Fatal(err)
-		}
-	}
-	return user
-}
-

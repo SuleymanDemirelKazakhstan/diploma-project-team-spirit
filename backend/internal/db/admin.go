@@ -5,21 +5,21 @@ import (
 )
 
 func (db *Layer) CreateOwner(user *models.Owner) error {
-	sqlStatement := `INSERT INTO owner (phone, email, name, password) VALUES ($1, $2, $3, $4)`
-	if err := db.DB.QueryRow(sqlStatement, user.Phone, user.Email, user.Name, user.Password); err != nil {
+	sqlStatement := `INSERT INTO owner (phone, email, name, password, address) VALUES ($1, $2, $3, $4)`
+	if err := db.DB.QueryRow(sqlStatement, user.Phone, user.Email, user.Name, user.Password, user.Address); err != nil {
 		return err.Err()
 	}
 	return nil
 }
 
-func (db *Layer) GetOwner(param *models.OwnerEmailRequest) (*models.GetOwner, error) {
-	var user models.GetOwner
-	sqlStatement := `SELECT id,name,email,password,phone FROM owner WHERE email=$1`
+func (db *Layer) GetOwner(param *models.OwnerEmailRequest) (*models.Owner, error) {
+	var user models.Owner
+	sqlStatement := `SELECT shop_id,name,email,password,phone,address FROM owner WHERE email=$1`
 
 	row := db.DB.QueryRow(sqlStatement, param.Email)
 	// unmarshal the row object to user
-	if err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Phone); err != nil {
-		return &models.GetOwner{}, err
+	if err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Phone, &user.Address); err != nil {
+		return &models.Owner{}, err
 	}
 	return &user, nil
 }
@@ -34,7 +34,7 @@ func (db *Layer) DeleteOwner(param *models.OwnerEmailRequest) error {
 
 func (db *Layer) GetAllOwner() ([]models.Owner, error) {
 	var users []models.Owner
-	sqlStatement := `SELECT name,email,password,phone FROM owner`
+	sqlStatement := `SELECT name,email,password,phone,address FROM owner`
 
 	rows, err := db.DB.Query(sqlStatement)
 	if err != nil {
@@ -44,7 +44,7 @@ func (db *Layer) GetAllOwner() ([]models.Owner, error) {
 
 	for rows.Next() {
 		var user models.Owner
-		if err := rows.Scan(&user.Name, &user.Email, &user.Password, &user.Phone); err != nil {
+		if err := rows.Scan(&user.Name, &user.Email, &user.Password, &user.Phone, &user.Address); err != nil {
 			return []models.Owner{}, err
 		}
 		users = append(users, user)
@@ -53,8 +53,8 @@ func (db *Layer) GetAllOwner() ([]models.Owner, error) {
 }
 
 func (db *Layer) UpdateOwner(email *models.OwnerEmailRequest, user *models.Owner) error {
-	sqlStatement := `UPDATE owner SET name=$2, password=$3, phone=$4, email=$5 WHERE email=$1`
-	_, err := db.DB.Exec(sqlStatement, email.Email, user.Name, user.Password, user.Phone, user.Email)
+	sqlStatement := `UPDATE owner SET name=$2, password=$3, phone=$4, email=$5, address=$6 WHERE email=$1`
+	_, err := db.DB.Exec(sqlStatement, email.Email, user.Name, user.Password, user.Phone, user.Email, user.Address)
 	if err != nil {
 		return err
 	}
