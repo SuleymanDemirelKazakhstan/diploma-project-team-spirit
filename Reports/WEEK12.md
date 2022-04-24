@@ -10,3 +10,9 @@
  # Dana
  * Made meeting with team members and analyzed the working process, came to realize that we should focus on auction-system itself. 
  * Gave tasks to team members in trello 
+
+ # Zhanel
+ * Final version of catalogue page
+ * Detailed design: All states of the page
+ * ![image](https://user-images.githubusercontent.com/55758989/164986738-af4ddc30-31e8-4bcf-9003-b0caf32a90ee.png)
+
