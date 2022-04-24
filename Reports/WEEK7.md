@@ -10,4 +10,4 @@
 # Dana
 * organized the meeting between members to discuss plans and tasks for the week
 # Gaukhar
-* prepared materials for the project, started authorization visualization
+* prepared materials for the project, started visualization for authorization 
