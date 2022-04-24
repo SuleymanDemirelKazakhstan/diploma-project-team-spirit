@@ -16,5 +16,6 @@
 # Zhanel
 * Completed UI kit for project
 * Homepage and catalogue pages final design
+* Wireframes for all pages
 
 ![Главная](https://user-images.githubusercontent.com/55758989/164986572-4a4fac59-3963-46e1-86ce-aa8267e63bf6.png)
