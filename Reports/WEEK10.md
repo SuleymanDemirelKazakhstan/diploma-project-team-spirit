@@ -9,3 +9,6 @@
 # Aray
 * make server using ngrok
 * creating database in server
+
+# Gaukhar
+* Completed the visualization of the homepage
