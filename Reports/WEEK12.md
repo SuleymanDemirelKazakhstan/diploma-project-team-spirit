@@ -6,3 +6,7 @@
 * Research has been done on the integration with the payment system
   * [paybox](https://paybox.money/docs/)
   * [cloudpayments](https://developers.cloudpayments.ru/#obschaya-informatsiya)
+  
+ # Dana
+ * Made meeting with team members and analyzed the working process, came to realize that we should focus on auction-system itself. 
+ * Gave tasks to team members in trello 
