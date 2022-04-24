@@ -5,3 +5,5 @@
 * creating fake data to check project
 * made java BLOB tester
 * added redis to project (no-sql)
+# Gaukhar
+* We made a back and front connection using one wifi. Created routes for routing in React.
