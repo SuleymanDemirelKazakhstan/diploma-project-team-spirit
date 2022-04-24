@@ -18,3 +18,5 @@
 # Aray
 * Database normalization
 * database created ar new place [here](https://dashboard.heroku.com/apps/secondchancedb)
+# Gaukhar
+* Finished authorization visualization. 
