@@ -198,3 +198,35 @@ func (h *Handler) UpdateProduct(c *fiber.Ctx) (err error) {
 		"message": "success",
 	})
 }
+
+func (h *Handler) OwnerOrder(c *fiber.Ctx) error {
+	id := new(models.IdReg)
+	if err := c.BodyParser(id); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	validate = validator.New()
+	if err := validate.Struct(id); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	products, err := h.ServiceLayer.OwnerOrder(id)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":   true,
+		"message":  "success",
+		"products": products,
+	})
+}

@@ -14,3 +14,19 @@ func (s *Layer) CreateOrder(order *models.Order) (err error) {
 	}
 	return nil
 }
+
+func (s *Layer) CustomerOrder(id *models.IdReg) (*[]models.Product, error) {
+	products, err := s.DBLayer.CustomerOrder(id)
+	if err != nil {
+		return &[]models.Product{}, err
+	}
+	return products, nil
+}
+
+func (s *Layer) OwnerOrder(id *models.IdReg) (*[]models.Product, error) {
+	products, err := s.DBLayer.OwnerOrder(id)
+	if err != nil {
+		return &[]models.Product{}, err
+	}
+	return products, nil
+}

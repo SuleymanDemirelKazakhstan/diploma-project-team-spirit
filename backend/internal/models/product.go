@@ -1,16 +1,16 @@
 package models
 
+import "time"
+
 type Product struct {
+	Id          int     `json:"id,omitempty"`
 	OwnerId     int     `json:"owner_id,omitempty" validate:"required"`
 	Price       float64 `json:"price,omitempty" validate:"required"`
 	Name        string  `json:"name,omitempty" validate:"required"`
 	Description string  `json:"description,omitempty"`
 	Discount    int     `json:"discount,omitempty"`
 	IsAuction
-}
-
-type Sold struct {
-	SelledAt string
+	Selled_at time.Time `json:"time,omitempty"`
 }
 
 type Products struct {
