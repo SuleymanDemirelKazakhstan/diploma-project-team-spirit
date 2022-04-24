@@ -20,3 +20,6 @@
 * created database (in heroku)
 * filled databse
 * fixing bugs
+
+# Gaukhar
+* Started visualizing the homepage and its functions.
