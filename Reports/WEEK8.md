@@ -18,5 +18,5 @@
 # Aray
 * Database normalization
 * database created ar new place [here](https://dashboard.heroku.com/apps/secondchancedb)
-# Gaukhar
+# Gaukhar  [link](https://github.com/SuleymanDemirelKazakhstan/diploma-project-team-spirit/tree/frontend)
 * Finished authorization visualization and sign up page also. 
