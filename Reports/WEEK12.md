@@ -16,3 +16,5 @@
  * Detailed design: All states of the page
  * ![image](https://user-images.githubusercontent.com/55758989/164986738-af4ddc30-31e8-4bcf-9003-b0caf32a90ee.png)
 
+ # Gaukhar
+ * Started visualizing of the catalogue page and its functions.
