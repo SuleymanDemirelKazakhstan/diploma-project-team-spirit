@@ -21,5 +21,5 @@
 * filled databse
 * fixing bugs
 
-# Gaukhar
+# Gaukhar [link](https://github.com/SuleymanDemirelKazakhstan/diploma-project-team-spirit/tree/frontend)
 * Started visualizing the homepage and its functions.
