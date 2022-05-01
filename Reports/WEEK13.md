@@ -17,3 +17,5 @@
 * Discussion final design and fixing comments
  Link to design is here - > https://www.figma.com/file/71cs3CWcb7lVAzv6vdTP6V/SecondChance.kz?node-id=0%3A1
 
+# Gaukhar
+* Completed the visualization of the catalogue page.
