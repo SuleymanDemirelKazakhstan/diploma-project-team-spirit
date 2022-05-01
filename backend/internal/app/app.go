@@ -1,49 +1,62 @@
 package app
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"log"
 	"os"
 	"os/signal"
 	"secondChance/internal/api/v1"
 	"secondChance/internal/api/v1/handlers"
 	"secondChance/internal/db"
-	"secondChance/internal/models"
 	"secondChance/internal/services"
 	"syscall"
 	"time"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/joho/godotenv"
 )
 
 const idleTimeout = 10 * time.Second
 
 // Run initializes whole application
 func Run() {
+	if err := godotenv.Load(); err != nil {
+		log.Println(err)
+	}
+
+	_port := os.Getenv("port")
+
+	log.Println("2Chance Start")
 	_app := fiber.New(fiber.Config{
 		IdleTimeout: idleTimeout,
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
 			//Status code default 500
 			code := fiber.StatusInternalServerError
 
-			return c.Status(code).JSON(models.ErrorResp{
-				Status:  false,
-				Message: err.Error(),
+			return c.Status(code).JSON(fiber.Map{
+				"status":  false,
+				"message": err.Error(),
 			})
 		},
 		DisableStartupMessage: true,
 	})
+	_app.Use(cors.New(), recover.New(), logger.New())
+	_app.Static("/images", "./images")
 
 	_db := db.NewDB()
 	defer _db.Close()
 
 	_dbm := db.NewDataBaseLayers(_db)
-	_service := services.NewServiceLayer(_dbm)
+	_service := services.NewService(_dbm)
 	_handler := handlers.NewHandler(_service)
 
 	api.Routes(_app, _handler)
 
 	// Listen from a different goroutine
 	go func() {
-		if err := _app.Listen(":" + "8080"); err != nil {
+		if err := _app.Listen(":" + _port); err != nil {
 			log.Panic(err)
 		}
 	}()
@@ -57,4 +70,8 @@ func Run() {
 
 	log.Println("Running cleanup tasks...")
 
+	// Here cleanup tasks
+	_db.Close()
+
+	log.Println("Service successful shutdown.")
 }

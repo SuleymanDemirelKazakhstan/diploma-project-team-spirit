@@ -1,13 +1,49 @@
 package handlers
 
-import "secondChance/internal/services"
+import (
+	"secondChance/internal/services"
 
-type Handler struct {
-	ServiceLayer *services.Layer
+	"github.com/gofiber/fiber/v2"
+)
+
+type Admin interface {
+	Create(c *fiber.Ctx) (err error)
+	Delete(c *fiber.Ctx) (err error)
+	Get(c *fiber.Ctx) (err error)
+	GetAll(c *fiber.Ctx) (err error)
+	Update(c *fiber.Ctx) (err error)
+	Login(c *fiber.Ctx) (err error)
+	SaveImage(c *fiber.Ctx) error
+	DeleteImage(c *fiber.Ctx) error
 }
 
-func NewHandler(serviceLayer *services.Layer) *Handler {
+type Customer interface {
+	SignUp(c *fiber.Ctx) error
+	GetOrder(c *fiber.Ctx) error
+	Login(c *fiber.Ctx) (err error)
+	Buy(c *fiber.Ctx) error
+}
+
+type Shop interface {
+	GetAll(c *fiber.Ctx) (err error)
+	Get(c *fiber.Ctx) (err error)
+	Delete(c *fiber.Ctx) (err error)
+	Create(c *fiber.Ctx) (err error)
+	Update(c *fiber.Ctx) (err error)
+	GetOrder(c *fiber.Ctx) error
+	Login(c *fiber.Ctx) (err error)
+}
+
+type Handler struct {
+	Admin
+	Customer
+	Shop
+}
+
+func NewHandler(serviceLayer *services.Service) *Handler {
 	return &Handler{
-		ServiceLayer: serviceLayer,
+		Admin:    NewAdminHandler(serviceLayer.Admin),
+		Customer: NewCustomerHandler(serviceLayer.Customer),
+		Shop:     NewOwnerHandler(serviceLayer.Shop),
 	}
 }

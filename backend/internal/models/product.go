@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"mime/multipart"
+	"time"
+)
 
 type Product struct {
 	Id          int     `json:"id,omitempty"`
@@ -10,7 +13,8 @@ type Product struct {
 	Description string  `json:"description,omitempty"`
 	Discount    int     `json:"discount,omitempty"`
 	IsAuction
-	Selled_at time.Time `json:"time,omitempty"`
+	Selled_at time.Time             `json:"time,omitempty"`
+	Image     *multipart.FileHeader `json:"image"       form:"image"`
 }
 
 type Products struct {

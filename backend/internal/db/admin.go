@@ -1,42 +1,51 @@
 package db
 
 import (
+	"database/sql"
 	"secondChance/internal/models"
 )
 
-func (db *Layer) CreateOwner(user *models.Owner) error {
-	sqlStatement := `INSERT INTO owner (phone, email, name, password, address) VALUES ($1, $2, $3, $4)`
-	if err := db.DB.QueryRow(sqlStatement, user.Phone, user.Email, user.Name, user.Password, user.Address); err != nil {
+type AdminRepo struct {
+	db *sql.DB
+}
+
+func NewAdminRepo(db *sql.DB) *AdminRepo {
+	return &AdminRepo{db: db}
+}
+
+func (a *AdminRepo) Create(user *models.Owner) error {
+	sqlStatement := `INSERT INTO shop (phone, email, name, password, address) VALUES ($1, $2, $3, $4, $5)`
+	if err := a.db.QueryRow(sqlStatement, user.Phone, user.Email, user.Name, user.Password, user.Address); err != nil {
 		return err.Err()
 	}
 	return nil
 }
 
-func (db *Layer) GetOwner(param *models.OwnerEmailRequest) (*models.Owner, error) {
+func (a *AdminRepo) Get(param *models.OwnerEmailRequest) (*models.Owner, error) {
 	var user models.Owner
-	sqlStatement := `SELECT shop_id,name,email,password,phone,address FROM owner WHERE email=$1`
+	sqlStatement := `SELECT shop_id,name,email,password,phone,address,image FROM shop WHERE email=$1 and is_deleted=false`
 
-	row := db.DB.QueryRow(sqlStatement, param.Email)
+	row := a.db.QueryRow(sqlStatement, param.Email)
 	// unmarshal the row object to user
-	if err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Phone, &user.Address); err != nil {
+	if err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Phone, &user.Address, &user.Image); err != nil {
 		return &models.Owner{}, err
 	}
 	return &user, nil
 }
 
-func (db *Layer) DeleteOwner(param *models.OwnerEmailRequest) error {
-	sqlStatement := `DELETE FROM owner WHERE email=$1`
-	if _, err := db.DB.Exec(sqlStatement, param.Email); err != nil {
+func (a *AdminRepo) Delete(param *models.OwnerEmailRequest) error {
+	sqlStatement := `update shop set is_deleted=true WHERE email=$1`
+	if _, err := a.db.Exec(sqlStatement, param.Email); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (db *Layer) GetAllOwner() ([]models.Owner, error) {
+func (a *AdminRepo) GetAll() ([]models.Owner, error) {
 	var users []models.Owner
-	sqlStatement := `SELECT name,email,password,phone,address FROM owner`
+	sqlStatement := `SELECT name,email,password,phone,address FROM owner where is_deleted=false`
 
-	rows, err := db.DB.Query(sqlStatement)
+	rows, err := a.db.Query(sqlStatement)
 	if err != nil {
 		return []models.Owner{}, err
 	}
@@ -52,9 +61,9 @@ func (db *Layer) GetAllOwner() ([]models.Owner, error) {
 	return users, nil
 }
 
-func (db *Layer) UpdateOwner(email *models.OwnerEmailRequest, user *models.Owner) error {
-	sqlStatement := `UPDATE owner SET name=$2, password=$3, phone=$4, email=$5, address=$6 WHERE email=$1`
-	_, err := db.DB.Exec(sqlStatement, email.Email, user.Name, user.Password, user.Phone, user.Email, user.Address)
+func (a *AdminRepo) Update(email *models.OwnerEmailRequest, user *models.Owner) error {
+	sqlStatement := `UPDATE shop SET name=$2, password=$3, phone=$4, email=$5, address=$6 WHERE email=$1`
+	_, err := a.db.Exec(sqlStatement, email.Email, user.Name, user.Password, user.Phone, user.Email, user.Address)
 	if err != nil {
 		return err
 	}

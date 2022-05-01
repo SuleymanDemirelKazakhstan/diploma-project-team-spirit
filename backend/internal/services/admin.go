@@ -1,53 +1,66 @@
 package services
 
 import (
+	"os"
+	"secondChance/internal/db"
 	"secondChance/internal/models"
+	"time"
+
+	"github.com/golang-jwt/jwt/v4"
 )
 
-func (s *Layer) CreateOwner(user *models.Owner) error {
+type AdminService struct {
+	repo db.Admin
+}
+
+func NewAdminService(repo db.Admin) *AdminService {
+	return &AdminService{repo: repo}
+}
+
+func (r *AdminService) Create(user *models.Owner) error {
 	hash, err := HashPassword(user.Password)
 	if err != nil {
 		return err
 	}
 
 	user.Password = hash
-	if err := s.DBLayer.CreateOwner(user); err != nil {
+	if err := r.repo.Create(user); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *Layer) DeleteOwner(param *models.OwnerEmailRequest) error {
-	if err := s.DBLayer.DeleteOwner(param); err != nil {
+func (r *AdminService) Delete(param *models.OwnerEmailRequest) error {
+	if err := r.repo.Delete(param); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *Layer) GetOwner(param *models.OwnerEmailRequest) (*models.Owner, error) {
-	user, err := s.DBLayer.GetOwner(param)
+func (r *AdminService) Get(param *models.OwnerEmailRequest) (*models.Owner, error) {
+	user, err := r.repo.Get(param)
 	if err != nil {
 		return &models.Owner{}, err
 	}
 	return user, nil
 }
 
-func (s *Layer) GetAllOwner() ([]models.Owner, error) {
-	users, err := s.DBLayer.GetAllOwner()
+func (r *AdminService) GetAll() ([]models.Owner, error) {
+	users, err := r.repo.GetAll()
 	if err != nil {
 		return []models.Owner{}, err
 	}
 	return users, nil
 }
 
-func (s *Layer) UpdateOwner(email *models.OwnerEmailRequest, userReq *models.Owner) error {
-	userDB, err := s.DBLayer.GetOwner(email)
+func (r *AdminService) Update(email *models.OwnerEmailRequest, userReq *models.Owner) error {
+	userDB, err := r.repo.Get(email)
 	if err != nil {
 		return err
 	}
 	user, err := newUser(userReq, userDB)
 
-	if err := s.DBLayer.UpdateOwner(email, user); err != nil {
+	if err := r.repo.Update(email, user); err != nil {
 		return err
 	}
 	return nil
@@ -75,4 +88,29 @@ func newUser(userReq, user *models.Owner) (*models.Owner, error) {
 		}
 	}
 	return user, nil
+}
+
+func (r *AdminService) Login(param *models.LoginInput) (string, error) {
+	owner, err := r.repo.Get(&models.OwnerEmailRequest{
+		Email: param.Email,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	if !CheckPasswordHash(param.Password, owner.Password) {
+		return "", err
+	}
+
+	token := jwt.New(jwt.SigningMethodHS256)
+
+	claims := token.Claims.(jwt.MapClaims)
+	claims["id"] = owner.Id
+	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+
+	t, err := token.SignedString([]byte(os.Getenv("secret")))
+	if err != nil {
+		return "", err
+	}
+	return t, nil
 }

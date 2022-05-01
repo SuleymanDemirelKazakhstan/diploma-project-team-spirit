@@ -10,40 +10,40 @@ import (
 func Routes(app *fiber.App, h *handlers.Handler) {
 	//public service for health check service
 	app.Get("/", func(c *fiber.Ctx) error { return c.JSON(fiber.Map{"status": true, "message": "success"}) })
-	app.Get("/pgversion", h.CheckPostgresVersion)
 
 	// Auth
 	auth := app.Group("/auth")
-	auth.Post("/customer", h.LoginCustomer)
-	auth.Post("/owner", h.LoginOwner)
+	auth.Post("/customer", h.Customer.Login)
+	auth.Post("/owner", h.Shop.Login)
 
 	// Admin
 	admin := app.Group("/admin")
 	admin.Use(basicauth.New(basicauth.Config{Users: map[string]string{"admin": "admin"}}))
-	admin.Post("/create", h.CreateOwner)
-	admin.Delete("/delete", h.DeleteOwner)
-	admin.Get("/get", h.GetOwner)
-	admin.Get("/getall", h.GetAllOwner)
-	admin.Put("/update", h.UpdateOwner)
+	admin.Post("/create", h.Admin.Create)
+	admin.Delete("/delete", h.Admin.Delete)
+	admin.Get("/get", h.Admin.Get)
+	admin.Get("/getall", h.Admin.GetAll)
+	admin.Put("/update", h.Admin.Update)
+	admin.Post("/saveimage", h.Admin.SaveImage)
+	admin.Delete("/deleteimage", h.Admin.DeleteImage)
 
 	// Unauthorized customer
 	guest := app.Group("/g")
-	guest.Post("/signup", h.SignUp)
-	guest.Get("/get", h.GetProduct)
-	guest.Get("/allproduct", h.GetAllProduct)
-	guest.Get("/getallauction", h.GetProductAuction)
+	guest.Post("/signup", h.Customer.SignUp)
+	guest.Get("/get", h.Shop.Get)
+	guest.Get("/allproduct", h.Shop.GetAll)
 
 	// Authorized customer
 	customer := app.Group("/c")
 	customer.Use(middlewares.Protected())
-	customer.Get("/buy", h.BuyProduct)
+	customer.Get("/buy", h.Customer.Buy)
 
 	// Owner
 	owner := app.Group("/owner")
 	owner.Use(middlewares.Protected())
-	owner.Post("/create", h.CreateProduct)
-	owner.Delete("/delete", h.DeleteProduct) // if selled_at is empty
-	owner.Get("/get", h.GetProduct)
-	owner.Get("/getall", h.GetAllProduct)
-	owner.Put("/update", h.UpdateProduct)
+	owner.Post("/create", h.Shop.Create)
+	owner.Delete("/delete", h.Shop.Delete) // if selled_at is empty
+	owner.Get("/get", h.Shop.Get)
+	owner.Get("/getall", h.Shop.GetAll)
+	owner.Put("/update", h.Shop.Update)
 }
