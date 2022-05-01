@@ -9,3 +9,4 @@
 # Dana
 * Organized the meeting with team members to discuss pre-defense
 * Writing the documentation
+* Organized another meeting with Zhanel to compile questions for survey 
