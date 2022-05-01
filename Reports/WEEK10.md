@@ -10,7 +10,7 @@
 * make server using ngrok
 * creating database in server
 
-# Gaukhar
+# Gaukhar  [link](https://github.com/SuleymanDemirelKazakhstan/diploma-project-team-spirit/tree/frontend)
 * Completed the visualization of the homepage
 
 # Zhanel
@@ -19,3 +19,7 @@
 * Wireframes for all pages
 
 ![Главная](https://user-images.githubusercontent.com/55758989/164986572-4a4fac59-3963-46e1-86ce-aa8267e63bf6.png)
+
+# Dana
+* Organized meeting as usual to discuss our progress in project
+* Gave some tasks in trello to members
