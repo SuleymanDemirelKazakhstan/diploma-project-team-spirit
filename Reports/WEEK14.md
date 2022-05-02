@@ -10,3 +10,13 @@
 * Organized the meeting with team members to discuss pre-defense
 * Writing the documentation
 * Organized another meeting with Zhanel to compile questions for survey 
+
+# Zhanel
+* Admin part of website
+* Main page of admin panel
+* Catalogue page 
+* Adding product flow pages
+* Orders page
+* Shop settings page
+![image](https://user-images.githubusercontent.com/55758989/166308712-c26af9d8-be4e-4535-9f92-83047886c3df.png)
+* Design review of frontend depelopment
