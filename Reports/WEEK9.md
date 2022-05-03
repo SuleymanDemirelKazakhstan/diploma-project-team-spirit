@@ -23,3 +23,6 @@
 
 # Gaukhar [link](https://github.com/SuleymanDemirelKazakhstan/diploma-project-team-spirit/tree/frontend)
 * Started visualizing the homepage and its functions.
+* Studied the use of figma components in layout
+* Finish visualization of login page
+![image](https://i.imgur.com/NartHZO.png)
