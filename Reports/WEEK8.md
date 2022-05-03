@@ -20,3 +20,5 @@
 * database created ar new place [here](https://dashboard.heroku.com/apps/secondchancedb)
 # Gaukhar  [link](https://github.com/SuleymanDemirelKazakhstan/diploma-project-team-spirit/tree/frontend)
 * Finished authorization visualization and sign up page also. 
+* 
+![image](https://i.imgur.com/Netwn2D.png)
