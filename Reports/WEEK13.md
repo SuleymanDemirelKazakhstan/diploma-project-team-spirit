@@ -18,4 +18,6 @@
  Link to design is here - > https://www.figma.com/file/71cs3CWcb7lVAzv6vdTP6V/SecondChance.kz?node-id=0%3A1
 
 # Gaukhar  [link](https://github.com/SuleymanDemirelKazakhstan/diploma-project-team-spirit/tree/frontend)
+* I met with a backend developer, we tried to connect the backend with the front, we tried different ways to enable
 * Completed the visualization of the catalogue page.
+![image](https://i.imgur.com/2O9SXs4.png)
