@@ -1,6 +1,2 @@
-# Jet Lee
-* Made kung-fu
-* Learned kung-fu
-# Jacky Chan
-* Learn kung-fu
-* Invented kung-fu
+# Almas [link](https://github.com/SuleymanDemirelKazakhstan/diploma-project-team-spirit/tree/backend/backend)
+* Added the function of adding and removing images for all entities
