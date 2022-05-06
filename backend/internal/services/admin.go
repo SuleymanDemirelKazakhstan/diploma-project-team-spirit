@@ -99,7 +99,7 @@ func newUser(userReq, user *models.Owner) (*models.Owner, error) {
 }
 
 func (r *AdminService) Login(param *models.LoginInput) (string, error) {
-	owner, err := r.repo.GetLogin(&models.OwnerEmailRequest{
+	owner, err := r.repo.GetLogin(&models.EmailRequest{
 		Email: param.Email,
 	})
 	if err != nil {

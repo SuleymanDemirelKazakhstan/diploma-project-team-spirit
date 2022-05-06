@@ -76,7 +76,7 @@ func (a *AdminRepo) Update(user *models.Owner) error {
 	return nil
 }
 
-func (a *AdminRepo) GetLogin(param *models.OwnerEmailRequest) (*models.Owner, error) {
+func (a *AdminRepo) GetLogin(param *models.EmailRequest) (*models.Owner, error) {
 	var user models.Owner
 	sqlStatement := `SELECT shop_id,email,password FROM shop WHERE shop_id=$1`
 

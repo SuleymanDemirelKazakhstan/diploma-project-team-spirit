@@ -11,7 +11,3 @@ type Owner struct {
 	Address  string                `json:"address,omitempty" validate:"required"`
 	Image    *multipart.FileHeader `json:"image"       form:"image"`
 }
-
-type OwnerEmailRequest struct {
-	Email string `json:"email,omitempty" validate:"required,email"`
-}

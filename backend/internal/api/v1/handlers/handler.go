@@ -24,6 +24,7 @@ type Customer interface {
 	Buy(c *fiber.Ctx) error
 	SaveImage(c *fiber.Ctx) error
 	DeleteImage(c *fiber.Ctx) error
+	GmailCode(c *fiber.Ctx) error
 }
 
 type Shop interface {

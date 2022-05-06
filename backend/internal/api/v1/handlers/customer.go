@@ -208,3 +208,32 @@ func (h *CustomerHandler) DeleteImage(c *fiber.Ctx) error {
 		"message": "Image deleted successfully",
 	})
 }
+
+func (h *CustomerHandler) GmailCode(c *fiber.Ctx) error {
+	email := new(models.EmailRequest)
+	if err := c.BodyParser(email); err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	validate = validator.New()
+	if err := validate.Struct(email); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	code, err := h.handler.GmailCode(email)
+	if err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":  true,
+		"message": "success",
+		"code":    code,
+	})
+}

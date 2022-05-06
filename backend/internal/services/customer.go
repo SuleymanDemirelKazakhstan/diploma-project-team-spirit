@@ -2,12 +2,15 @@ package services
 
 import (
 	"fmt"
+	"math/rand"
+	"net/smtp"
 	"os"
 	"secondChance/internal/db"
 	"secondChance/internal/models"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/joho/godotenv"
 )
 
 type CustomerService struct {
@@ -89,4 +92,38 @@ func (c *CustomerService) DeleteImage(id *models.IdReg) error {
 		return err
 	}
 	return nil
+}
+
+func (c *CustomerService) GmailCode(email *models.EmailRequest) (int, error) {
+	if err := godotenv.Load(); err != nil {
+		return -1, err
+	}
+
+	// Sender data.
+	from := os.Getenv("sender-email")
+	password := os.Getenv("sender-password")
+
+	// Receiver email address.
+	to := []string{
+		"180107192@stu.sdu.edu.kz",
+	}
+
+	// smtp server configuration.
+	smtpHost := os.Getenv("smtpHost")
+	smtpPort := os.Getenv("smtpPort")
+
+	// Message.
+	code := rand.Intn(899999) + 100000
+	msg := fmt.Sprintf("From: %s\r\n To: %s\r\n Subject: verify code\r\n\r\n Code: %d\r\n", from, to[0], code)
+	message := []byte(msg)
+
+	// Authentication.
+	auth := smtp.PlainAuth("", from, password, smtpHost)
+
+	// Sending email.
+	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
+	if err != nil {
+		return -1, err
+	}
+	return code, nil
 }

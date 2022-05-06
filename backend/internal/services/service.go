@@ -24,6 +24,7 @@ type Customer interface {
 	GetOrder(id *models.IdReg) (*[]models.Product, error)
 	SaveImage(id *models.IdReg, file string) (string, error)
 	DeleteImage(id *models.IdReg) error
+	GmailCode(email *models.EmailRequest) (int, error)
 }
 
 type Shop interface {

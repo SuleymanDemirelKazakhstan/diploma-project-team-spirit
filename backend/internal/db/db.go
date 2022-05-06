@@ -9,7 +9,7 @@ type Admin interface {
 	Create(user *models.Owner) error
 	Get(param *models.IdReg) (*models.Owner, error)
 	GetAll() ([]models.Owner, error)
-	GetLogin(param *models.OwnerEmailRequest) (*models.Owner, error)
+	GetLogin(param *models.EmailRequest) (*models.Owner, error)
 	Update(user *models.Owner) error
 	Delete(param *models.IdReg) error
 	SaveImage(id *models.IdReg, file string) (string, error)
