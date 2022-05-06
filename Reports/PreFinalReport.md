@@ -20,12 +20,11 @@
 # Zhanel 
 * I made an analysis of the ux of existing analogues of stores with the possibility of an auction. Started building detailes information Architechture for client website. 
 * ![image](https://user-images.githubusercontent.com/55758989/162628697-7b6578b9-3c84-47e4-8407-67381b959f19.png)
-
-# *Week 7*
 # Dana
 * Terms of reference for visualize and home page,creating schemas.
-* # Aray
+# Aray
 * creating schemas(Defining relationships between entities)
+# *Week 7*
 # Almas
 * Implement endpoints for registration
 * Verification
