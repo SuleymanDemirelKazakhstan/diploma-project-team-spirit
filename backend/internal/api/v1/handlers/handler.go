@@ -22,6 +22,8 @@ type Customer interface {
 	GetOrder(c *fiber.Ctx) error
 	Login(c *fiber.Ctx) (err error)
 	Buy(c *fiber.Ctx) error
+	SaveImage(c *fiber.Ctx) error
+	DeleteImage(c *fiber.Ctx) error
 }
 
 type Shop interface {
@@ -32,6 +34,8 @@ type Shop interface {
 	Update(c *fiber.Ctx) (err error)
 	GetOrder(c *fiber.Ctx) error
 	Login(c *fiber.Ctx) (err error)
+	SaveImage(c *fiber.Ctx) error
+	DeleteImage(c *fiber.Ctx) error
 }
 
 type Handler struct {

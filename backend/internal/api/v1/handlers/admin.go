@@ -2,15 +2,12 @@ package handlers
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"secondChance/internal/models"
 	"secondChance/internal/services"
-	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 )
 
 var validate *validator.Validate
@@ -54,8 +51,8 @@ func (h *AdminHandler) Create(c *fiber.Ctx) (err error) {
 }
 
 func (h *AdminHandler) Delete(c *fiber.Ctx) (err error) {
-	a := new(models.OwnerEmailRequest)
-	if err := c.QueryParser(a); err != nil {
+	a := new(models.IdReg)
+	if err := c.BodyParser(a); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
 			Status:  false,
 			Message: err.Error(),
@@ -84,8 +81,8 @@ func (h *AdminHandler) Delete(c *fiber.Ctx) (err error) {
 }
 
 func (h *AdminHandler) Get(c *fiber.Ctx) (err error) {
-	a := new(models.OwnerEmailRequest)
-	if err := c.QueryParser(a); err != nil {
+	a := new(models.IdReg)
+	if err := c.BodyParser(a); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
 			Status:  false,
 			Message: err.Error(),
@@ -138,16 +135,6 @@ func (h *AdminHandler) GetAll(c *fiber.Ctx) (err error) {
 }
 
 func (h *AdminHandler) Update(c *fiber.Ctx) (err error) {
-	email := new(models.OwnerEmailRequest)
-	if err := c.QueryParser(email); err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
-	}
-
-	validate = validator.New()
-	if err := validate.Struct(email); err != nil {
-		return c.Status(fiber.StatusForbidden).SendString(err.Error())
-	}
-
 	user := new(models.Owner)
 	if err := c.BodyParser(user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
@@ -156,7 +143,7 @@ func (h *AdminHandler) Update(c *fiber.Ctx) (err error) {
 		})
 	}
 
-	if err := h.handler.Update(email, user); err != nil {
+	if err := h.handler.Update(user); err != nil {
 		return c.JSON(models.ErrorResp{
 			Status:  false,
 			Message: err.Error(),
@@ -193,28 +180,14 @@ func (h *AdminHandler) Login(c *fiber.Ctx) (err error) {
 }
 
 func (h *AdminHandler) SaveImage(c *fiber.Ctx) error {
-	email := new(models.OwnerEmailRequest)
-	if err := c.QueryParser(email); err != nil {
+	id := new(models.IdReg)
+	if err := c.BodyParser(id); err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
 
 	validate = validator.New()
-	if err := validate.Struct(email); err != nil {
+	if err := validate.Struct(id); err != nil {
 		return c.Status(fiber.StatusForbidden).SendString(err.Error())
-	}
-
-	shop, err := h.handler.Get(email)
-	if err != nil {
-		if err.Error() == "sql: no rows in result set" {
-			return c.Status(fiber.StatusNotFound).JSON(models.ErrorResp{
-				Status:  false,
-				Message: err.Error(),
-			})
-		}
-		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
-			Status:  false,
-			Message: err.Error(),
-		})
 	}
 
 	file, err := c.FormFile("image")
@@ -225,21 +198,18 @@ func (h *AdminHandler) SaveImage(c *fiber.Ctx) error {
 		})
 	}
 
-	// generate new uuid for image name
-	uniqueId := uuid.New()
-
-	// remove "- from imageName"
-	filename := strings.Replace(uniqueId.String(), "-", "", -1)
-
-	// extract image extension from original file filename
-	fileExt := strings.Split(file.Filename, ".")[1]
-
-	// generate image from filename and extension
-	image := fmt.Sprintf("%s.%s", filename, fileExt)
-	if err := c.SaveFile(file, fmt.Sprintf("./images/shop/%d/%s", shop.Id, image)); err != nil {
+	path, err := h.handler.SaveImage(id, file.Filename)
+	if err != nil {
 		return c.Status(500).JSON(models.ErrorResp{
 			Status:  false,
 			Message: err.Error(),
+		})
+	}
+
+	if err := c.SaveFile(file, path); err != nil {
+		return c.Status(500).JSON(models.ErrorResp{
+			Status:  false,
+			Message: "Save File handler" + err.Error(),
 		})
 	}
 
@@ -250,7 +220,7 @@ func (h *AdminHandler) SaveImage(c *fiber.Ctx) error {
 
 func (h *AdminHandler) DeleteImage(c *fiber.Ctx) error {
 	image := new(models.Image)
-	if err := c.QueryParser(image); err != nil {
+	if err := c.BodyParser(image); err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
 
@@ -265,9 +235,21 @@ func (h *AdminHandler) DeleteImage(c *fiber.Ctx) error {
 	// delete image from ./images
 	err := os.Remove(fmt.Sprintf("./images/shop/%d/%s", image.Id, image.Name))
 	if err != nil {
-		log.Println(err)
-		return c.JSON(fiber.Map{"status": 500, "message": "Server Error", "data": nil})
+		return c.JSON(fiber.Map{
+			"status":  500,
+			"message": err.Error(),
+		})
 	}
 
-	return c.JSON(fiber.Map{"status": 201, "message": "Image deleted successfully", "data": nil})
+	if err := h.handler.DeleteImage(&models.IdReg{image.Id}); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":  201,
+		"message": "Image deleted successfully",
+	})
 }

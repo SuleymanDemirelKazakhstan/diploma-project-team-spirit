@@ -74,8 +74,8 @@ func newProduct(productReq, productDB *models.Product) *models.Product {
 	if productReq.Discount != 0 {
 		productDB.Discount = productReq.Discount
 	}
-	if productReq.IsAuction.Auction != productDB.IsAuction.Auction {
-		productDB.IsAuction.Auction = productReq.IsAuction.Auction
+	if productReq.Auction != productDB.Auction {
+		productDB.Auction = productReq.Auction
 	}
 	return productDB
 }
@@ -110,4 +110,18 @@ func (o *OwnerService) Login(param *models.LoginInput) (string, error) {
 		return "", err
 	}
 	return t, nil
+}
+
+func (o *OwnerService) SaveImage(id *models.IdReg, file string) (string, error) {
+	path, err := o.repo.SaveImage(id, file)
+	if err != nil {
+		return "", err
+	}
+	return path, nil
+}
+func (o *OwnerService) DeleteImage(id *models.IdReg) error {
+	if err := o.repo.DeleteImage(id); err != nil {
+		return err
+	}
+	return nil
 }

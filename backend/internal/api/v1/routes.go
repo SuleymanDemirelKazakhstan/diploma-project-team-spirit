@@ -42,7 +42,7 @@ func Routes(app *fiber.App, h *handlers.Handler) {
 	owner := app.Group("/owner")
 	owner.Use(middlewares.Protected())
 	owner.Post("/create", h.Shop.Create)
-	owner.Delete("/delete", h.Shop.Delete) // if selled_at is empty
+	owner.Delete("/delete", h.Shop.Delete)
 	owner.Get("/get", h.Shop.Get)
 	owner.Get("/getall", h.Shop.GetAll)
 	owner.Put("/update", h.Shop.Update)

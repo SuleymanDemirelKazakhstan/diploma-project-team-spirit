@@ -2,8 +2,13 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
+	"os"
 	"secondChance/internal/models"
+	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type CustomerRepo struct {
@@ -80,4 +85,36 @@ func (c *CustomerRepo) GetOrder(id *models.IdReg) (*[]models.Product, error) {
 		products = append(products, product)
 	}
 	return &products, nil
+}
+
+func (c *CustomerRepo) SaveImage(id *models.IdReg, file string) (string, error) {
+	// generate new uuid for image name
+	uniqueId := uuid.New()
+	// remove "- from imageName"
+	filename := strings.Replace(uniqueId.String(), "-", "", -1)
+	// extract image extension from original file filename
+	fileExt := strings.Split(file, ".")[1]
+
+	// generate image from filename and extension
+	image := fmt.Sprintf("%s.%s", filename, fileExt)
+	path := fmt.Sprintf("./images/customer/%d/%s", id.Id, image)
+	if err := os.MkdirAll(fmt.Sprintf("./images/customer/%d", id.Id), os.ModePerm); err != nil {
+		return "", err
+	}
+
+	sqlStatement := `UPDATE customer SET image=$2 WHERE customer_id=$1`
+	_, err := c.db.Exec(sqlStatement, id.Id, path)
+	if err != nil {
+		return "", err
+	}
+	return path, nil
+}
+
+func (c *CustomerRepo) DeleteImage(id *models.IdReg) error {
+	sqlStatement := `UPDATE customer SET image=NULL WHERE customer_id=$1`
+	_, err := c.db.Exec(sqlStatement, id.Id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

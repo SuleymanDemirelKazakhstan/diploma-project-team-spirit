@@ -2,7 +2,12 @@ package db
 
 import (
 	"database/sql"
+	"fmt"
+	"os"
 	"secondChance/internal/models"
+	"strings"
+
+	"github.com/google/uuid"
 )
 
 type OwnerRepo struct {
@@ -14,8 +19,8 @@ func NewOwnerRepo(db *sql.DB) *OwnerRepo {
 }
 
 func (o *OwnerRepo) Create(product *models.Product) error {
-	sqlStatement := `INSERT INTO product (shop_id, price, name, description, is_auction) VALUES ($1, $2, $3, $4)`
-	if err := o.db.QueryRow(sqlStatement, product.OwnerId, product.Price, product.Name, product.Description); err != nil {
+	sqlStatement := `INSERT INTO product (shop_id, price, name, description, is_auction) VALUES ($1, $2, $3, $4, $5)`
+	if err := o.db.QueryRow(sqlStatement, product.OwnerId, product.Price, product.Name, product.Description, product.Auction); err != nil {
 		return err.Err()
 	}
 	return nil
@@ -56,7 +61,7 @@ func (o *OwnerRepo) GetAll() ([]models.Products, error) {
 func (o *OwnerRepo) Update(id *models.IdReg, product *models.Product) error {
 	sqlStatement := `UPDATE product SET price=$2, name=$3, description=$4, discount=$5, is_auction=$6 WHERE id=$1`
 	_, err := o.db.Exec(sqlStatement, id.Id, product.Price, product.Name,
-		product.Description, product.Discount, product.IsAuction.Auction)
+		product.Description, product.Discount, product.Auction)
 	if err != nil {
 		return err
 	}
@@ -93,11 +98,43 @@ func (o *OwnerRepo) GetOrder(id *models.IdReg) (*[]models.Product, error) {
 
 func (o *OwnerRepo) GetOwner(email string) (*models.Owner, error) {
 	var user models.Owner
-	sqlStatement := `SELECT shop_id,name,email,password,phone,address FROM owner WHERE email=$1`
+	sqlStatement := `SELECT shop_id,email,password FROM shop WHERE email=$1`
 
 	row := o.db.QueryRow(sqlStatement, email)
-	if err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Phone); err != nil {
+	if err := row.Scan(&user.Id, &user.Email, &user.Password); err != nil {
 		return &models.Owner{}, err
 	}
 	return &user, nil
+}
+
+func (o *OwnerRepo) SaveImage(id *models.IdReg, file string) (string, error) {
+	// generate new uuid for image name
+	uniqueId := uuid.New()
+	// remove "- from imageName"
+	filename := strings.Replace(uniqueId.String(), "-", "", -1)
+	// extract image extension from original file filename
+	fileExt := strings.Split(file, ".")[1]
+
+	// generate image from filename and extension
+	image := fmt.Sprintf("%s.%s", filename, fileExt)
+	path := fmt.Sprintf("./images/product/%d/%s", id.Id, image)
+	if err := os.MkdirAll(fmt.Sprintf("./images/product/%d", id.Id), os.ModePerm); err != nil {
+		return "", err
+	}
+
+	sqlStatement := `UPDATE product SET image=$2 WHERE product_id=$1`
+	_, err := o.db.Exec(sqlStatement, id.Id, path)
+	if err != nil {
+		return "", err
+	}
+	return path, nil
+}
+
+func (o *OwnerRepo) DeleteImage(id *models.IdReg) error {
+	sqlStatement := `UPDATE product SET image=NULL WHERE product_id=$1`
+	_, err := o.db.Exec(sqlStatement, id.Id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

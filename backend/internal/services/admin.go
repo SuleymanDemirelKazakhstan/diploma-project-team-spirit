@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"os"
 	"secondChance/internal/db"
 	"secondChance/internal/models"
@@ -30,14 +31,14 @@ func (r *AdminService) Create(user *models.Owner) error {
 	return nil
 }
 
-func (r *AdminService) Delete(param *models.OwnerEmailRequest) error {
+func (r *AdminService) Delete(param *models.IdReg) error {
 	if err := r.repo.Delete(param); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *AdminService) Get(param *models.OwnerEmailRequest) (*models.Owner, error) {
+func (r *AdminService) Get(param *models.IdReg) (*models.Owner, error) {
 	user, err := r.repo.Get(param)
 	if err != nil {
 		return &models.Owner{}, err
@@ -53,14 +54,18 @@ func (r *AdminService) GetAll() ([]models.Owner, error) {
 	return users, nil
 }
 
-func (r *AdminService) Update(email *models.OwnerEmailRequest, userReq *models.Owner) error {
-	userDB, err := r.repo.Get(email)
+func (r *AdminService) Update(userReq *models.Owner) error {
+	userDB, err := r.repo.Get(&models.IdReg{userReq.Id})
 	if err != nil {
 		return err
 	}
-	user, err := newUser(userReq, userDB)
 
-	if err := r.repo.Update(email, user); err != nil {
+	user, err := newUser(userReq, userDB)
+	if err != nil {
+		return err
+	}
+
+	if err := r.repo.Update(user); err != nil {
 		return err
 	}
 	return nil
@@ -68,13 +73,16 @@ func (r *AdminService) Update(email *models.OwnerEmailRequest, userReq *models.O
 
 //Todo validate
 func newUser(userReq, user *models.Owner) (*models.Owner, error) {
+	if userReq.Id == 0 {
+		return nil, fmt.Errorf("id is not specified")
+	}
 	if userReq.Email != "" {
 		user.Email = userReq.Email
 	}
 	if userReq.Name != "" {
 		user.Name = userReq.Name
 	}
-	if userReq.Phone != 0 {
+	if userReq.Phone != "" {
 		user.Phone = userReq.Phone
 	}
 	if userReq.Address != "" {
@@ -91,7 +99,7 @@ func newUser(userReq, user *models.Owner) (*models.Owner, error) {
 }
 
 func (r *AdminService) Login(param *models.LoginInput) (string, error) {
-	owner, err := r.repo.Get(&models.OwnerEmailRequest{
+	owner, err := r.repo.GetLogin(&models.OwnerEmailRequest{
 		Email: param.Email,
 	})
 	if err != nil {
@@ -113,4 +121,18 @@ func (r *AdminService) Login(param *models.LoginInput) (string, error) {
 		return "", err
 	}
 	return t, nil
+}
+
+func (r *AdminService) SaveImage(id *models.IdReg, file string) (string, error) {
+	path, err := r.repo.SaveImage(id, file)
+	if err != nil {
+		return "", err
+	}
+	return path, nil
+}
+func (r *AdminService) DeleteImage(id *models.IdReg) error {
+	if err := r.repo.DeleteImage(id); err != nil {
+		return err
+	}
+	return nil
 }

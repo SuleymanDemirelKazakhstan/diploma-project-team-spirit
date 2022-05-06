@@ -7,11 +7,13 @@ import (
 
 type Admin interface {
 	Create(user *models.Owner) error
-	Delete(param *models.OwnerEmailRequest) error
-	Get(param *models.OwnerEmailRequest) (*models.Owner, error)
+	Delete(param *models.IdReg) error
+	Get(param *models.IdReg) (*models.Owner, error)
 	GetAll() ([]models.Owner, error)
-	Update(email *models.OwnerEmailRequest, userReq *models.Owner) error
+	Update(userReq *models.Owner) error
 	Login(param *models.LoginInput) (string, error)
+	SaveImage(id *models.IdReg, file string) (string, error)
+	DeleteImage(id *models.IdReg) error
 }
 
 type Customer interface {
@@ -20,6 +22,8 @@ type Customer interface {
 	Login(param *models.LoginInput) (t string, id int, err error)
 	CreateOrder(order *models.Order) (err error)
 	GetOrder(id *models.IdReg) (*[]models.Product, error)
+	SaveImage(id *models.IdReg, file string) (string, error)
+	DeleteImage(id *models.IdReg) error
 }
 
 type Shop interface {
@@ -30,6 +34,8 @@ type Shop interface {
 	Update(id *models.IdReg, productReq *models.Product) error
 	GetOrder(id *models.IdReg) (*[]models.Product, error)
 	Login(param *models.LoginInput) (string, error)
+	SaveImage(id *models.IdReg, file string) (string, error)
+	DeleteImage(id *models.IdReg) error
 }
 
 type Service struct {

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"os"
 	"secondChance/internal/db"
 	"secondChance/internal/models"
@@ -28,9 +29,10 @@ func (c *CustomerService) Get(param string) (*models.Customer, error) {
 func (c *CustomerService) Create(user *models.Customer) error {
 	hash, err := HashPassword(user.Password)
 	if err != nil {
-		return err
+		return fmt.Errorf("Hash Password: %w", err)
 	}
 	user.Password = hash
+	fmt.Printf("%+v\n", user)
 	if err := c.repo.Create(user); err != nil {
 		return err
 	}
@@ -73,4 +75,18 @@ func (c *CustomerService) GetOrder(id *models.IdReg) (*[]models.Product, error) 
 		return &[]models.Product{}, err
 	}
 	return products, nil
+}
+
+func (c *CustomerService) SaveImage(id *models.IdReg, file string) (string, error) {
+	path, err := c.repo.SaveImage(id, file)
+	if err != nil {
+		return "", err
+	}
+	return path, nil
+}
+func (c *CustomerService) DeleteImage(id *models.IdReg) error {
+	if err := c.repo.DeleteImage(id); err != nil {
+		return err
+	}
+	return nil
 }
