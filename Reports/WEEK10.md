@@ -11,7 +11,10 @@
 * creating database in server
 
 # Gaukhar  [link](https://github.com/SuleymanDemirelKazakhstan/diploma-project-team-spirit/tree/frontend)
+* Made some adjustments in the code, used tabs in the login page
 * Completed the visualization of the homepage
+![image](https://i.imgur.com/znoF4go.png)
+![image](https://i.imgur.com/tz9nL4j.png)
 
 # Zhanel
 * Completed UI kit for project

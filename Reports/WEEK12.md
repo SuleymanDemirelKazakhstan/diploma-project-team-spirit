@@ -18,4 +18,7 @@
  * ![image](https://user-images.githubusercontent.com/55758989/164986738-af4ddc30-31e8-4bcf-9003-b0caf32a90ee.png)
 
  # Gaukhar  [link](https://github.com/SuleymanDemirelKazakhstan/diploma-project-team-spirit/tree/frontend)
- * Started visualizing the catalogue page and its functions.
+ * Started visualizing the catalogue page.
+ * Create new component for catalogue page in React
+ * Made footer part
+ ![image](https://i.imgur.com/BpQOAZ8.png)

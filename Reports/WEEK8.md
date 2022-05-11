@@ -20,3 +20,6 @@
 * database created ar new place [here](https://dashboard.heroku.com/apps/secondchancedb)
 # Gaukhar  [link](https://github.com/SuleymanDemirelKazakhstan/diploma-project-team-spirit/tree/frontend)
 * Finished authorization visualization and sign up page also. 
+* Create new components in React (Sign up page, header)
+* Learning to work with the Figma program
+![image](https://i.imgur.com/Netwn2D.png)

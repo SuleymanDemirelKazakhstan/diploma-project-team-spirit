@@ -6,7 +6,8 @@
 * made java BLOB tester
 * added redis to project (no-sql)
 # Gaukhar  [link](https://github.com/SuleymanDemirelKazakhstan/diploma-project-team-spirit/tree/frontend)
-* We made a back and front connection using one wifi. Created routes for routing in React.
+* Created routes for routing in React.
+* After authorization, the designer checked the design and review code, and together we fixed some shortcomings
 # Dana
 * Planned the some tasks in Trello https://trello.com/invite/b/DHNt0ZMA/7749cbfcf80968ffe3d072cc9b661a08/diploma. Also made meeting with team members to discuss some problems.
 * started looking at materials for writing the documentation
