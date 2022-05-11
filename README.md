@@ -4,7 +4,7 @@
 + **Dana Aldabergenova** (*180107100*) - Project Manager (Github account: *180107100*)
 + **Gaukhar Bolatbek** (*180107067*) - Frontend Developer (Github account: *180107067*)
 + **Zhanel Oralova** (*180107266*) - UI/UX designer (GitHub account: *180107266*)
-+ **Baimolda Aray** (*180107128*) - Backend Developer (GitHub account:)
++ **Baimolda Aray** (*180107128*) - Backend Developer (GitHub account: *[4Aray2](https://github.com/4Aray2)*)
 
 ## Project
 Our project is a trading platform for a used goods store with the possibility of selling vintage goods and organizing auctions.
