@@ -105,7 +105,7 @@ func (c *CustomerService) GmailCode(email *models.EmailRequest) (int, error) {
 
 	// Receiver email address.
 	to := []string{
-		"180107192@stu.sdu.edu.kz",
+		email.Email,
 	}
 
 	// smtp server configuration.
