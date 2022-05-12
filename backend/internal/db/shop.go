@@ -28,11 +28,11 @@ func (o *OwnerRepo) Create(product *models.Product) error {
 
 func (o *OwnerRepo) Get(id *models.IdReg) (*models.Product, error) {
 	var product models.Product
-	sqlStatement := `SELECT shop_id,price, name,description, discount FROM product WHERE product_id=$1`
+	sqlStatement := `SELECT shop_id,price, name,description, discount, image FROM product WHERE product_id=$1`
 
 	row := o.db.QueryRow(sqlStatement, id.Id)
 	// unmarshal the row object to user
-	if err := row.Scan(&product.OwnerId, &product.Price, &product.Name, &product.Description, &product.Discount); err != nil {
+	if err := row.Scan(&product.OwnerId, &product.Price, &product.Name, &product.Description, &product.Discount, &product.Image); err != nil {
 		return &models.Product{}, err
 	}
 	return &product, nil
@@ -40,7 +40,7 @@ func (o *OwnerRepo) Get(id *models.IdReg) (*models.Product, error) {
 
 func (o *OwnerRepo) GetAll() ([]models.Products, error) {
 	var products []models.Products
-	sqlStatement := `SELECT product_id, shop_id, price, name from product where selled_at is null`
+	sqlStatement := `SELECT product_id, shop_id, price, name, image from product where selled_at is null`
 
 	rows, err := o.db.Query(sqlStatement)
 	if err != nil {
@@ -50,7 +50,7 @@ func (o *OwnerRepo) GetAll() ([]models.Products, error) {
 
 	for rows.Next() {
 		var product models.Products
-		if err := rows.Scan(&product.Id, &product.OwnerId, &product.Price, &product.Name); err != nil {
+		if err := rows.Scan(&product.Id, &product.OwnerId, &product.Price, &product.Name, &product.Image); err != nil {
 			return []models.Products{}, err
 		}
 		products = append(products, product)
@@ -59,7 +59,7 @@ func (o *OwnerRepo) GetAll() ([]models.Products, error) {
 }
 
 func (o *OwnerRepo) Update(id *models.IdReg, product *models.Product) error {
-	sqlStatement := `UPDATE product SET price=$2, name=$3, description=$4, discount=$5, is_auction=$6 WHERE id=$1`
+	sqlStatement := `UPDATE product SET price=$2, name=$3, description=$4, discount=$5, is_auction=$6 WHERE product_id=$1`
 	_, err := o.db.Exec(sqlStatement, id.Id, product.Price, product.Name,
 		product.Description, product.Discount, product.Auction)
 	if err != nil {
@@ -78,7 +78,7 @@ func (o *OwnerRepo) Delete(param *models.IdReg) error {
 
 func (o *OwnerRepo) GetOrder(id *models.IdReg) (*[]models.Product, error) {
 	var products []models.Product
-	sqlStatement := `SELECT product_id, price, name, discount, selled_at from "product" where product_id in (select product_id from "order" where shop_id = $1)`
+	sqlStatement := `SELECT product_id, price, name, discount, selled_at from "product" where product_id in (select product_id from "orders" where shop_id = $1)`
 
 	rows, err := o.db.Query(sqlStatement, id.Id)
 	if err != nil {
@@ -94,6 +94,15 @@ func (o *OwnerRepo) GetOrder(id *models.IdReg) (*[]models.Product, error) {
 		products = append(products, product)
 	}
 	return &products, nil
+}
+
+func (o *OwnerRepo) Issued(id *models.IdReg) error {
+	sqlStatement := `UPDATE orders SET status=true WHERE product_id=$1`
+	_, err := o.db.Exec(sqlStatement, id.Id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (o *OwnerRepo) GetOwner(email string) (*models.Owner, error) {

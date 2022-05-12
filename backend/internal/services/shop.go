@@ -1,20 +1,27 @@
 package services
 
 import (
+	"context"
+	"encoding/json"
 	"os"
 	"secondChance/internal/db"
 	"secondChance/internal/models"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/golang-jwt/jwt/v4"
 )
 
 type OwnerService struct {
 	repo db.Shop
+	rdb  *redis.Client
 }
 
-func NewOwnerService(repo db.Shop) *OwnerService {
-	return &OwnerService{repo: repo}
+func NewOwnerService(repo db.Shop, rdb *redis.Client) *OwnerService {
+	return &OwnerService{
+		repo: repo,
+		rdb:  rdb,
+	}
 }
 
 func (o *OwnerService) GetAll() ([]models.Products, error) {
@@ -34,6 +41,25 @@ func (o *OwnerService) Get(id *models.IdReg) (*models.Product, error) {
 }
 
 func (o *OwnerService) Create(product *models.Product) error {
+	//TODO: transaction
+	if product.Auction {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		exp := time.Hour * 3
+		json, err := json.Marshal(models.Value{
+			Price:      int(product.Price),
+			CustomerId: -1,
+			StartTime:  time.Now(),
+		})
+		if err != nil {
+			return err
+		}
+
+		if err := o.rdb.Set(ctx, string(product.Id), json, exp).Err(); err != nil {
+			return err
+		}
+	}
 	if err := o.repo.Create(product); err != nil {
 		return err
 	}
@@ -119,8 +145,16 @@ func (o *OwnerService) SaveImage(id *models.IdReg, file string) (string, error) 
 	}
 	return path, nil
 }
+
 func (o *OwnerService) DeleteImage(id *models.IdReg) error {
 	if err := o.repo.DeleteImage(id); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *OwnerService) Issued(id *models.IdReg) error {
+	if err := o.repo.Issued(id); err != nil {
 		return err
 	}
 	return nil

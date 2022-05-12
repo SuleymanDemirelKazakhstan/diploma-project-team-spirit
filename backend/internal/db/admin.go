@@ -49,7 +49,7 @@ func (a *AdminRepo) Delete(param *models.IdReg) error {
 //TODO: for the admin to return all stores even those that were deleted
 func (a *AdminRepo) GetAll() ([]models.Owner, error) {
 	var users []models.Owner
-	sqlStatement := `SELECT name,email,password,phone,address FROM shop where is_deleted=false`
+	sqlStatement := `SELECT name,email,password,phone,address, image FROM shop where is_deleted=false`
 
 	rows, err := a.db.Query(sqlStatement)
 	if err != nil {
@@ -59,7 +59,7 @@ func (a *AdminRepo) GetAll() ([]models.Owner, error) {
 
 	for rows.Next() {
 		var user models.Owner
-		if err := rows.Scan(&user.Name, &user.Email, &user.Password, &user.Phone, &user.Address); err != nil {
+		if err := rows.Scan(&user.Name, &user.Email, &user.Password, &user.Phone, &user.Address, &user.Image); err != nil {
 			return []models.Owner{}, err
 		}
 		users = append(users, user)

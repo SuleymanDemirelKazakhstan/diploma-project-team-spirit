@@ -3,6 +3,9 @@ package db
 import (
 	"database/sql"
 	"secondChance/internal/models"
+	"time"
+
+	"github.com/go-redis/redis/v8"
 )
 
 type Admin interface {
@@ -18,11 +21,14 @@ type Admin interface {
 
 type Customer interface {
 	Get(email string) (*models.Customer, error)
+	GetPassword(email string) (*models.Customer, error)
 	Create(user *models.Customer) error
 	CreateOrder(order *models.Order) error
 	GetOrder(id *models.IdReg) (*[]models.Product, error)
 	SaveImage(id *models.IdReg, file string) (string, error)
 	DeleteImage(id *models.IdReg) error
+	Setter(deal *models.Deal, t time.Duration) error
+	Getter(id *models.ProductId) (*models.Value, error)
 }
 
 type Shop interface {
@@ -35,6 +41,7 @@ type Shop interface {
 	GetOwner(email string) (*models.Owner, error)
 	SaveImage(id *models.IdReg, file string) (string, error)
 	DeleteImage(id *models.IdReg) error
+	Issued(id *models.IdReg) error
 }
 
 type Repository struct {
@@ -43,10 +50,10 @@ type Repository struct {
 	Shop
 }
 
-func NewDataBaseLayers(db *sql.DB) *Repository {
+func NewDataBaseLayers(db *sql.DB, rdb *redis.Client) *Repository {
 	return &Repository{
 		Admin:    NewAdminRepo(db),
-		Customer: NewCustomerRepo(db),
+		Customer: NewCustomerRepo(db, rdb),
 		Shop:     NewOwnerRepo(db),
 	}
 }

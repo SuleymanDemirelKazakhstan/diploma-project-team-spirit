@@ -1,22 +1,29 @@
 package db
 
 import (
+	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"os"
 	"secondChance/internal/models"
 	"strings"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 )
 
 type CustomerRepo struct {
-	db *sql.DB
+	db  *sql.DB
+	rdb *redis.Client
 }
 
-func NewCustomerRepo(db *sql.DB) *CustomerRepo {
-	return &CustomerRepo{db: db}
+func NewCustomerRepo(db *sql.DB, rdb *redis.Client) *CustomerRepo {
+	return &CustomerRepo{
+		db:  db,
+		rdb: rdb,
+	}
 }
 
 func (c *CustomerRepo) Get(email string) (*models.Customer, error) {
@@ -25,6 +32,17 @@ func (c *CustomerRepo) Get(email string) (*models.Customer, error) {
 
 	row := c.db.QueryRow(sqlStatement, email)
 	if err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Phone, &user.Image); err != nil {
+		return &models.Customer{}, err
+	}
+	return &user, nil
+}
+
+func (c *CustomerRepo) GetPassword(email string) (*models.Customer, error) {
+	var user models.Customer
+	sqlStatement := `SELECT customer_id,name,email,password FROM customer WHERE email=$1`
+
+	row := c.db.QueryRow(sqlStatement, email)
+	if err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Password); err != nil {
 		return &models.Customer{}, err
 	}
 	return &user, nil
@@ -44,22 +62,20 @@ func (c *CustomerRepo) CreateOrder(order *models.Order) error {
 		return err
 	}
 
-	sqlStatement := `INSERT INTO order (customer_id, product_id, shop_id) VALUES ($1, $2, $3)`
-	if err := tx.QueryRow(sqlStatement, order.Customer_id, order.Shop_id, order.Product_id); err != nil {
+	sqlStatement := `INSERT INTO orders (customer_id, product_id, shop_id) VALUES ($1, $2, $3)`
+	if _, err := tx.Exec(sqlStatement, order.Customer_id, order.Product_id, order.Shop_id); err != nil {
 		if txErr := tx.Rollback(); txErr != nil {
 			return txErr
 		}
-		return err.Err()
-
+		return err
 	}
 
 	sqlStatement = `UPDATE product SET selled_at=$2 WHERE product_id=$1`
-	if err := tx.QueryRow(sqlStatement, order.Product_id, time.Now()); err != nil {
+	if _, err := tx.Exec(sqlStatement, order.Product_id, time.Now()); err != nil {
 		if txErr := tx.Rollback(); txErr != nil {
 			return txErr
 		}
-		return err.Err()
-
+		return err
 	}
 	if txErr := tx.Commit(); txErr != nil {
 		return txErr
@@ -69,7 +85,7 @@ func (c *CustomerRepo) CreateOrder(order *models.Order) error {
 
 func (c *CustomerRepo) GetOrder(id *models.IdReg) (*[]models.Product, error) {
 	var products []models.Product
-	sqlStatement := `SELECT product_id, price, name, discount, selled_at from "product" where product_id in (select product_id from "order" where customer_id = $1)`
+	sqlStatement := `SELECT product_id, price, name, discount, selled_at from "product" where product_id in (select product_id from "orders" where customer_id = $1)`
 
 	rows, err := c.db.Query(sqlStatement, id.Id)
 	if err != nil {
@@ -117,4 +133,40 @@ func (c *CustomerRepo) DeleteImage(id *models.IdReg) error {
 		return err
 	}
 	return nil
+}
+
+func (c *CustomerRepo) Setter(deal *models.Deal, t time.Duration) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	json, err := json.Marshal(models.Value{
+		Price:      deal.Price,
+		CustomerId: deal.CustomerId,
+		StartTime:  time.Now(),
+	})
+	if err != nil {
+		return err
+	}
+
+	if err := c.rdb.Set(ctx, deal.ProductId.Id, json, t).Err(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *CustomerRepo) Getter(id *models.ProductId) (*models.Value, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	v, err := c.rdb.Get(ctx, id.Id).Result()
+	if err != nil {
+		return &models.Value{}, err
+	}
+
+	data := new(models.Value)
+	if err := json.Unmarshal([]byte(v), data); err != nil {
+		return &models.Value{}, err
+	}
+	return data, nil
 }

@@ -25,6 +25,8 @@ type Customer interface {
 	SaveImage(c *fiber.Ctx) error
 	DeleteImage(c *fiber.Ctx) error
 	GmailCode(c *fiber.Ctx) error
+	Setter(c *fiber.Ctx) error
+	Getter(c *fiber.Ctx) error
 }
 
 type Shop interface {
@@ -37,6 +39,7 @@ type Shop interface {
 	Login(c *fiber.Ctx) (err error)
 	SaveImage(c *fiber.Ctx) error
 	DeleteImage(c *fiber.Ctx) error
+	Issued(c *fiber.Ctx) error
 }
 
 type Handler struct {

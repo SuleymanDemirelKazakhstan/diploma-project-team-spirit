@@ -46,10 +46,12 @@ func Run() {
 	_app.Static("/images", "./images")
 
 	_db := db.NewDB()
+	_rdb := db.NewRedis()
 	defer _db.Close()
+	defer _rdb.Close()
 
-	_dbm := db.NewDataBaseLayers(_db)
-	_service := services.NewService(_dbm)
+	_dbm := db.NewDataBaseLayers(_db, _rdb)
+	_service := services.NewService(_dbm, _rdb)
 	_handler := handlers.NewHandler(_service)
 
 	api.Routes(_app, _handler)
@@ -67,11 +69,6 @@ func Run() {
 	_ = <-c //This block the main thread until an interrupt is received
 	log.Println("Gracefully shutting down...")
 	_ = _app.Shutdown()
-
-	log.Println("Running cleanup tasks...")
-
-	// Here cleanup tasks
-	_db.Close()
 
 	log.Println("Service successful shutdown.")
 }

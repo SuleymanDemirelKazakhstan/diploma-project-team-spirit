@@ -43,13 +43,13 @@ func (c *CustomerService) Create(user *models.Customer) error {
 }
 
 func (c *CustomerService) Login(param *models.LoginInput) (t string, id int, err error) {
-	customer, err := c.repo.Get(param.Email)
+	customer, err := c.repo.GetPassword(param.Email)
 	if err != nil {
-		return "", 0, err
+		return "", -1, err
 	}
 
 	if !CheckPasswordHash(param.Password, customer.Password) {
-		return "", 0, err
+		return "", -1, err
 	}
 
 	token := jwt.New(jwt.SigningMethodHS256)
@@ -126,4 +126,21 @@ func (c *CustomerService) GmailCode(email *models.EmailRequest) (int, error) {
 		return -1, err
 	}
 	return code, nil
+}
+
+func (c *CustomerService) Setter(deal *models.Deal) error {
+	exp := time.Minute * 5
+	if err := c.repo.Setter(deal, exp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *CustomerService) Getter(id *models.ProductId) (*models.Value, error) {
+	v, err := c.repo.Getter(id)
+	if err != nil {
+		return &models.Value{}, err
+	}
+	return v, nil
 }

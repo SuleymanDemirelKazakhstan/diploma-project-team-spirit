@@ -120,7 +120,6 @@ func (h *CustomerHandler) Buy(c *fiber.Ctx) error {
 			Message: err.Error(),
 		})
 	}
-
 	if err := h.handler.CreateOrder(order); err != nil {
 		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
 			Status:  false,
@@ -235,5 +234,61 @@ func (h *CustomerHandler) GmailCode(c *fiber.Ctx) error {
 		"status":  true,
 		"message": "success",
 		"code":    code,
+	})
+}
+
+func (h *CustomerHandler) Setter(c *fiber.Ctx) error {
+	deal := new(models.Deal)
+	if err := c.BodyParser(deal); err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	validate = validator.New()
+	if err := validate.Struct(deal); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	if err := h.handler.Setter(deal); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"Status":  false,
+			"Message": err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":  true,
+		"message": "success",
+	})
+}
+
+func (h *CustomerHandler) Getter(c *fiber.Ctx) error {
+	id := new(models.ProductId)
+	if err := c.BodyParser(id); err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	validate = validator.New()
+	if err := validate.Struct(id); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	v, err := h.handler.Getter(id)
+	if err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"Status":  false,
+			"Message": err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":  true,
+		"message": "success",
+		"Value":   v,
 	})
 }

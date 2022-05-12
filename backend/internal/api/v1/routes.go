@@ -1,10 +1,11 @@
 package api
 
 import (
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/basicauth"
 	"secondChance/internal/api/v1/handlers"
 	"secondChance/internal/api/v1/middlewares"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/basicauth"
 )
 
 func Routes(app *fiber.App, h *handlers.Handler) {
@@ -32,11 +33,17 @@ func Routes(app *fiber.App, h *handlers.Handler) {
 	guest.Post("/signup", h.Customer.SignUp)
 	guest.Get("/get", h.Shop.Get)
 	guest.Get("/allproduct", h.Shop.GetAll)
+	guest.Get("/verify", h.Customer.GmailCode)
 
 	// Authorized customer
 	customer := app.Group("/c")
 	customer.Use(middlewares.Protected())
-	customer.Get("/buy", h.Customer.Buy)
+	customer.Post("/buy", h.Customer.Buy)
+	customer.Get("/getter", h.Customer.Getter)
+	customer.Post("/setter", h.Customer.Setter)
+	customer.Post("/saveimage", h.Customer.SaveImage)
+	customer.Delete("/deleteimage", h.Customer.DeleteImage)
+	customer.Get("/order", h.Customer.GetOrder)
 
 	// Owner
 	owner := app.Group("/owner")
@@ -46,4 +53,8 @@ func Routes(app *fiber.App, h *handlers.Handler) {
 	owner.Get("/get", h.Shop.Get)
 	owner.Get("/getall", h.Shop.GetAll)
 	owner.Put("/update", h.Shop.Update)
+	owner.Post("/saveimage", h.Shop.SaveImage)
+	owner.Delete("/deleteimage", h.Shop.DeleteImage)
+	owner.Get("/order", h.Shop.GetOrder)
+	owner.Put("/issued", h.Shop.Issued)
 }

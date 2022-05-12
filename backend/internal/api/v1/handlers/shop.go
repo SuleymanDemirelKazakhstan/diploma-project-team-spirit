@@ -292,3 +292,30 @@ func (h *OwnerHandler) DeleteImage(c *fiber.Ctx) error {
 		"message": "Image deleted successfully",
 	})
 }
+
+func (h *OwnerHandler) Issued(c *fiber.Ctx) error {
+	id := new(models.IdReg)
+	if err := c.BodyParser(id); err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	validate = validator.New()
+	if err := validate.Struct(id); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	if err := h.handler.Issued(id); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":  true,
+		"message": "success",
+	})
+}
