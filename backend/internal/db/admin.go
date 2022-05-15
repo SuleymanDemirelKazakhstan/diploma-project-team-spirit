@@ -98,7 +98,7 @@ func (a *AdminRepo) SaveImage(id *models.IdReg, file string) (string, error) {
 
 	// generate image from filename and extension
 	image := fmt.Sprintf("%s.%s", filename, fileExt)
-	path := fmt.Sprintf("./images/shop/%d/%s", id.Id, image)
+	path := fmt.Sprintf("/images/shop/%d/%s", id.Id, image)
 	if err := os.MkdirAll(fmt.Sprintf("./images/shop/%d", id.Id), os.ModePerm); err != nil {
 		return "", err
 	}

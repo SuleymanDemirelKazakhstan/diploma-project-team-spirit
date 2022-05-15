@@ -160,7 +160,7 @@ func (h *CustomerHandler) SaveImage(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := c.SaveFile(file, path); err != nil {
+	if err := c.SaveFile(file, "."+path); err != nil {
 		return c.Status(500).JSON(models.ErrorResp{
 			Status:  false,
 			Message: "Save File handler" + err.Error(),

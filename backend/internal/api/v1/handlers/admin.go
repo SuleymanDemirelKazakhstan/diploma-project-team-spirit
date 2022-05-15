@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 )
 
 var validate *validator.Validate
@@ -110,6 +111,14 @@ func (h *AdminHandler) Get(c *fiber.Ctx) (err error) {
 			Message: err.Error(),
 		})
 	}
+	if err := godotenv.Load(); err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(models.ErrorResp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+	_url := os.Getenv("baseUrl")
+	user.Image = _url + user.Image
 
 	return c.JSON(fiber.Map{
 		"status":  true,
@@ -206,7 +215,7 @@ func (h *AdminHandler) SaveImage(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := c.SaveFile(file, path); err != nil {
+	if err := c.SaveFile(file, "."+path); err != nil {
 		return c.Status(500).JSON(models.ErrorResp{
 			Status:  false,
 			Message: "Save File handler" + err.Error(),

@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"net/smtp"
 	"os"
@@ -9,6 +10,7 @@ import (
 	"secondChance/internal/models"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/joho/godotenv"
 )
@@ -129,11 +131,23 @@ func (c *CustomerService) GmailCode(email *models.EmailRequest) (int, error) {
 }
 
 func (c *CustomerService) Setter(deal *models.Deal) error {
-	exp := time.Minute * 5
-	if err := c.repo.Setter(deal, exp); err != nil {
+	v, err := c.repo.Getter(&models.ProductId{
+		Id: deal.ProductId.Id,
+	})
+	if err == redis.Nil {
+		log.Println(err)
+	} else if err != nil {
 		return err
 	}
 
+	if v.Price < deal.Price {
+		exp := time.Minute * 5
+		if err := c.repo.Setter(deal, exp); err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("price is less than the current one")
+	}
 	return nil
 }
 
