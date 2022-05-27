@@ -45,9 +45,8 @@ While for the shop owner:
 
 - Shop (Editing information about shop)
 
-The next stage was Designing Wireframes, which started from drawing simple prototypes abstractly showing location of each element and finishing with high fidelity wireframes grouped into flows. Figma was the most convenient tool for implementing this task, because it gives opportunity to make work more effective and consistent. (See Figure \ref{fig:image005},\ref{fig:image007}).
+The next stage was Designing Wireframes, which started from drawing simple prototypes abstractly showing location of each element and finishing with high fidelity wireframes grouped into flows(Our full design in Appendix \ref{app:A}). Figma was the most convenient tool for implementing this task, because it gives opportunity to make work more effective and consistent. (See Figure \ref{fig:image005},\ref{fig:image007}).
 
-You can check our design in Appendix\ref{app:A} 
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.53]{figures/image005.png}
@@ -64,7 +63,7 @@ You can check our design in Appendix\ref{app:A}
 %Monkey is a beast that can jump. See Appendix \ref{app:B}.
 \section{Project database}
 There are many dbms (database management systems) to raise the database but our choice was
-postgres because of its great advantages. (See Figure \ref{fig:database}).
+postgres\cite{greenpeace} because of its great advantages. (See Figure \ref{fig:database}).
 \begin{figure}[ht!]
     \centering
     \includegraphics[scale=0.5]{figures/database.jpg}
@@ -76,7 +75,7 @@ However not all the features are used in our project, it is still the most comfo
 and for more convenient data management, it was decided to make it remote, due to free
 service heroku.
 
-Although postgres is nice place to save data, in our project there is an auction
+Although postgres is nice place to save data\cite{postgre}, in our project there is an auction
 functionality and using just simple dbms would not be enough to meet the response speed
 requirements. Therefore we used redis rdbms. Since no/sql languages   have an advantage over
 just sql languages   for example data processing speed, scalability, distributed systems
@@ -86,7 +85,8 @@ As a server we used Raspberry Pi because of its low cost, processing power, linu
 interfaces like HDMI, multiple USB, Ethernet, onboard Wi-Fi and so on.
 \clearpage
 \section{Back-end implementation}
-In our project, we used the golang programming language for the backend part. Our main database was postgres. We also used redis to store the jwt token and the refresh token, as well as to store the prices of the goods for the auction. 
+In our project, we used the golang programming language for the backend part.Since, golang was created in order to be convenient to use and at the same time be very effective\cite{golang}. We also used redis to store the jwt token and the refresh token, as well as to store the prices of the goods for the auction. 
+
 You can see the structure of our project. (See Figure \ref{fig:backend1}).
 \begin{figure}[ht!]
     \centering
@@ -113,6 +113,6 @@ This project's user section is for anyone who wants to buy old stuff. Ordinary u
     \label{fig:front-end}
 \end{figure}
 
-Such as: categories, discounts of the day, auctions, shops. There are also pages such as a catalog, product details and a payment page. Several libraries were used in the creation of this site, and one of them is the most up-to-date bootstrap library. The entire front-end site was written in react js.
+Such as: categories, discounts of the day, auctions, shops. There are also pages such as a catalog, product details and a payment page. Several libraries were used in the creation of this site, and one of them is the most up-to-date bootstrap library. The entire front-end site was written in react js.React - JavaScript library, which helps to build UI part. Since, it's flexible and has great performance\cite{react}.
 
 The front-end of our website consists of two parts, admin and client. The admin part is for second hand stores that display their products. This part helps sellers to lay out their goods. And the second is the client part, this is for users and buyers. So, the whole design was written in react.js, so it is connected to the golang backend.
