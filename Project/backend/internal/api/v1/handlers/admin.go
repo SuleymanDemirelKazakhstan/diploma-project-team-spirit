@@ -24,7 +24,7 @@ func NewAdminHandler(service services.Admin) *AdminHandler {
 func (h *AdminHandler) Create(c *fiber.Ctx) (err error) {
 	a := new(models.Owner)
 	if err := c.BodyParser(a); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -32,29 +32,29 @@ func (h *AdminHandler) Create(c *fiber.Ctx) (err error) {
 
 	validate = validator.New()
 	if err := validate.Struct(a); err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 
 	if err := h.handler.Create(a); err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(fiber.Map{
-		"status":  true,
-		"message": "success",
+	return c.JSON(models.Resp{
+		Status:  true,
+		Message: "success",
 	})
 }
 
 func (h *AdminHandler) Delete(c *fiber.Ctx) (err error) {
 	a := new(models.IdReg)
 	if err := c.BodyParser(a); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -62,29 +62,29 @@ func (h *AdminHandler) Delete(c *fiber.Ctx) (err error) {
 
 	validate = validator.New()
 	if err := validate.Struct(a); err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 
 	if err := h.handler.Delete(a); err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(fiber.Map{
-		"status":  true,
-		"message": "success",
+	return c.JSON(models.Resp{
+		Status:  true,
+		Message: "success",
 	})
 }
 
 func (h *AdminHandler) Get(c *fiber.Ctx) (err error) {
 	a := new(models.IdReg)
 	if err := c.BodyParser(a); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -92,7 +92,7 @@ func (h *AdminHandler) Get(c *fiber.Ctx) (err error) {
 
 	validate = validator.New()
 	if err := validate.Struct(a); err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -101,18 +101,18 @@ func (h *AdminHandler) Get(c *fiber.Ctx) (err error) {
 	user, err := h.handler.Get(a)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
-			return c.Status(fiber.StatusNotFound).JSON(models.ErrorResp{
+			return c.Status(fiber.StatusNotFound).JSON(models.Resp{
 				Status:  false,
 				Message: err.Error(),
 			})
 		}
-		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 	if err := godotenv.Load(); err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusNotFound).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -130,7 +130,7 @@ func (h *AdminHandler) Get(c *fiber.Ctx) (err error) {
 func (h *AdminHandler) GetAll(c *fiber.Ctx) (err error) {
 	users, err := h.handler.GetAll()
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -146,45 +146,22 @@ func (h *AdminHandler) GetAll(c *fiber.Ctx) (err error) {
 func (h *AdminHandler) Update(c *fiber.Ctx) (err error) {
 	user := new(models.Owner)
 	if err := c.BodyParser(user); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 
 	if err := h.handler.Update(user); err != nil {
-		return c.JSON(models.ErrorResp{
+		return c.JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(fiber.Map{
-		"status":  true,
-		"message": "success",
-	})
-}
-
-func (h *AdminHandler) Login(c *fiber.Ctx) (err error) {
-	param := new(models.LoginInput)
-	if err := c.BodyParser(&param); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
-			Status:  false,
-			Message: err.Error(),
-		})
-	}
-
-	t, err := h.handler.Login(param)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
-			Status:  false,
-			Message: err.Error(),
-		})
-	}
-
-	return c.JSON(fiber.Map{
-		"status": "success",
-		"token":  t,
+	return c.JSON(models.Resp{
+		Status:  true,
+		Message: "success",
 	})
 }
 
@@ -201,7 +178,7 @@ func (h *AdminHandler) SaveImage(c *fiber.Ctx) error {
 
 	file, err := c.FormFile("image")
 	if err != nil {
-		return c.Status(500).JSON(models.ErrorResp{
+		return c.Status(500).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -209,14 +186,14 @@ func (h *AdminHandler) SaveImage(c *fiber.Ctx) error {
 
 	path, err := h.handler.SaveImage(id, file.Filename)
 	if err != nil {
-		return c.Status(500).JSON(models.ErrorResp{
+		return c.Status(500).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 
 	if err := c.SaveFile(file, "."+path); err != nil {
-		return c.Status(500).JSON(models.ErrorResp{
+		return c.Status(500).JSON(models.Resp{
 			Status:  false,
 			Message: "Save File handler" + err.Error(),
 		})
@@ -235,7 +212,7 @@ func (h *AdminHandler) DeleteImage(c *fiber.Ctx) error {
 
 	validate = validator.New()
 	if err := validate.Struct(image); err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -251,7 +228,7 @@ func (h *AdminHandler) DeleteImage(c *fiber.Ctx) error {
 	}
 
 	if err := h.handler.DeleteImage(&models.IdReg{image.Id}); err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})

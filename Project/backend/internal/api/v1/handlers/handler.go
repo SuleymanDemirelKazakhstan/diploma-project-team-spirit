@@ -12,7 +12,6 @@ type Admin interface {
 	Get(c *fiber.Ctx) (err error)
 	GetAll(c *fiber.Ctx) (err error)
 	Update(c *fiber.Ctx) (err error)
-	Login(c *fiber.Ctx) (err error)
 	SaveImage(c *fiber.Ctx) error
 	DeleteImage(c *fiber.Ctx) error
 }

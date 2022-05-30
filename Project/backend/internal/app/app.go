@@ -7,6 +7,7 @@ import (
 	"secondChance/internal/api/v1"
 	"secondChance/internal/api/v1/handlers"
 	"secondChance/internal/db"
+	"secondChance/internal/models"
 	"secondChance/internal/services"
 	"syscall"
 	"time"
@@ -35,9 +36,9 @@ func Run() {
 			//Status code default 500
 			code := fiber.StatusInternalServerError
 
-			return c.Status(code).JSON(fiber.Map{
-				"status":  false,
-				"message": err.Error(),
+			return c.Status(code).JSON(models.Resp{
+				Status:  false,
+				Message: err.Error(),
 			})
 		},
 		DisableStartupMessage: true,

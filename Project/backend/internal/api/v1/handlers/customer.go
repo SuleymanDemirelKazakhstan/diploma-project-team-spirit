@@ -22,7 +22,7 @@ func NewCustomerHandler(s services.Customer) *CustomerHandler {
 func (h *CustomerHandler) SignUp(c *fiber.Ctx) error {
 	user := new(models.Customer)
 	if err := c.BodyParser(user); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -30,28 +30,28 @@ func (h *CustomerHandler) SignUp(c *fiber.Ctx) error {
 
 	validate = validator.New()
 	if err := validate.Struct(user); err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 	if err := h.handler.Create(user); err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(fiber.Map{
-		"status":  true,
-		"message": "success",
+	return c.JSON(models.Resp{
+		Status:  true,
+		Message: "success",
 	})
 }
 
 func (h *CustomerHandler) GetOrder(c *fiber.Ctx) error {
 	id := new(models.IdReg)
 	if err := c.BodyParser(id); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -59,7 +59,7 @@ func (h *CustomerHandler) GetOrder(c *fiber.Ctx) error {
 
 	validate = validator.New()
 	if err := validate.Struct(id); err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -67,7 +67,7 @@ func (h *CustomerHandler) GetOrder(c *fiber.Ctx) error {
 
 	products, err := h.handler.GetOrder(id)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -83,7 +83,7 @@ func (h *CustomerHandler) GetOrder(c *fiber.Ctx) error {
 func (h *CustomerHandler) Login(c *fiber.Ctx) (err error) {
 	var param models.LoginInput
 	if err := c.BodyParser(&param); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -91,7 +91,7 @@ func (h *CustomerHandler) Login(c *fiber.Ctx) (err error) {
 
 	t, id, err := h.handler.Login(&param)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -107,7 +107,7 @@ func (h *CustomerHandler) Login(c *fiber.Ctx) (err error) {
 func (h *CustomerHandler) Buy(c *fiber.Ctx) error {
 	order := new(models.Order)
 	if err := c.BodyParser(order); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -115,21 +115,21 @@ func (h *CustomerHandler) Buy(c *fiber.Ctx) error {
 
 	validate = validator.New()
 	if err := validate.Struct(order); err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 	if err := h.handler.CreateOrder(order); err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(fiber.Map{
-		"status":  true,
-		"message": "success",
+	return c.JSON(models.Resp{
+		Status:  true,
+		Message: "success",
 	})
 }
 
@@ -146,7 +146,7 @@ func (h *CustomerHandler) SaveImage(c *fiber.Ctx) error {
 
 	file, err := c.FormFile("image")
 	if err != nil {
-		return c.Status(500).JSON(models.ErrorResp{
+		return c.Status(500).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -154,14 +154,14 @@ func (h *CustomerHandler) SaveImage(c *fiber.Ctx) error {
 
 	path, err := h.handler.SaveImage(id, file.Filename)
 	if err != nil {
-		return c.Status(500).JSON(models.ErrorResp{
+		return c.Status(500).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 
 	if err := c.SaveFile(file, "."+path); err != nil {
-		return c.Status(500).JSON(models.ErrorResp{
+		return c.Status(500).JSON(models.Resp{
 			Status:  false,
 			Message: "Save File handler" + err.Error(),
 		})
@@ -180,7 +180,7 @@ func (h *CustomerHandler) DeleteImage(c *fiber.Ctx) error {
 
 	validate = validator.New()
 	if err := validate.Struct(image); err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -196,7 +196,7 @@ func (h *CustomerHandler) DeleteImage(c *fiber.Ctx) error {
 	}
 
 	if err := h.handler.DeleteImage(&models.IdReg{image.Id}); err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -216,7 +216,7 @@ func (h *CustomerHandler) GmailCode(c *fiber.Ctx) error {
 
 	validate = validator.New()
 	if err := validate.Struct(email); err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -224,7 +224,7 @@ func (h *CustomerHandler) GmailCode(c *fiber.Ctx) error {
 
 	code, err := h.handler.GmailCode(email)
 	if err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -245,22 +245,22 @@ func (h *CustomerHandler) Setter(c *fiber.Ctx) error {
 
 	validate = validator.New()
 	if err := validate.Struct(deal); err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 
 	if err := h.handler.Setter(deal); err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
-			"Status":  false,
-			"Message": err.Error(),
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
 		})
 	}
 
-	return c.JSON(fiber.Map{
-		"status":  true,
-		"message": "success",
+	return c.JSON(models.Resp{
+		Status:  true,
+		Message: "success",
 	})
 }
 
@@ -272,7 +272,7 @@ func (h *CustomerHandler) Getter(c *fiber.Ctx) error {
 
 	validate = validator.New()
 	if err := validate.Struct(id); err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(models.ErrorResp{
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -280,9 +280,9 @@ func (h *CustomerHandler) Getter(c *fiber.Ctx) error {
 
 	v, err := h.handler.Getter(id)
 	if err != nil {
-		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
-			"Status":  false,
-			"Message": err.Error(),
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
 		})
 	}
 
