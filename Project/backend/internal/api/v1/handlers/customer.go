@@ -50,7 +50,7 @@ func (h *CustomerHandler) SignUp(c *fiber.Ctx) error {
 
 func (h *CustomerHandler) GetOrder(c *fiber.Ctx) error {
 	id := new(models.IdReg)
-	if err := c.BodyParser(id); err != nil {
+	if err := c.QueryParser(id); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
@@ -210,7 +210,7 @@ func (h *CustomerHandler) DeleteImage(c *fiber.Ctx) error {
 
 func (h *CustomerHandler) GmailCode(c *fiber.Ctx) error {
 	email := new(models.EmailRequest)
-	if err := c.BodyParser(email); err != nil {
+	if err := c.QueryParser(email); err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
 
@@ -266,7 +266,7 @@ func (h *CustomerHandler) Setter(c *fiber.Ctx) error {
 
 func (h *CustomerHandler) Getter(c *fiber.Ctx) error {
 	id := new(models.ProductId)
-	if err := c.BodyParser(id); err != nil {
+	if err := c.QueryParser(id); err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
 

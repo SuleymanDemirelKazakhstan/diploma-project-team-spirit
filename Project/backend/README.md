@@ -192,7 +192,11 @@ customer.Get("/c/getter", {
 		"Value":   v,
 	}
 // Set price for auction goods
-customer.Post("/c/setter", h.Customer.Setter)
+customer.Post("/c/setter", {
+    Id string
+    Price      int `json:"price,omitempty"`
+	CustomerId int
+})
 customer.Post("/c/saveimage", {
     Id int // shop id + image
 })

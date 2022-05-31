@@ -165,7 +165,7 @@ func (h *OwnerHandler) Update(c *fiber.Ctx) (err error) {
 
 func (h *OwnerHandler) GetOrder(c *fiber.Ctx) error {
 	id := new(models.IdReg)
-	if err := c.BodyParser(id); err != nil {
+	if err := c.QueryParser(id); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
@@ -295,7 +295,7 @@ func (h *OwnerHandler) DeleteImage(c *fiber.Ctx) error {
 
 func (h *OwnerHandler) Issued(c *fiber.Ctx) error {
 	id := new(models.IdReg)
-	if err := c.BodyParser(id); err != nil {
+	if err := c.QueryParser(id); err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
 

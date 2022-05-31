@@ -53,7 +53,7 @@ func (h *AdminHandler) Create(c *fiber.Ctx) (err error) {
 
 func (h *AdminHandler) Delete(c *fiber.Ctx) (err error) {
 	a := new(models.IdReg)
-	if err := c.BodyParser(a); err != nil {
+	if err := c.QueryParser(a); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
@@ -83,7 +83,7 @@ func (h *AdminHandler) Delete(c *fiber.Ctx) (err error) {
 
 func (h *AdminHandler) Get(c *fiber.Ctx) (err error) {
 	a := new(models.IdReg)
-	if err := c.BodyParser(a); err != nil {
+	if err := c.QueryParser(a); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
