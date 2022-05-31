@@ -45,6 +45,7 @@ func Routes(app *fiber.App, h *handlers.Handler) {
 	customer.Delete("/deleteimage", h.Customer.DeleteImage)
 	customer.Get("/order", h.Customer.GetOrder)
 	customer.Get("/verify", h.Customer.GmailCode)
+	customer.Get("/filter", h.Customer.GetFilter)
 
 	// Owner
 	owner := app.Group("/owner")
