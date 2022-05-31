@@ -158,3 +158,11 @@ func (c *CustomerService) Getter(id *models.ProductId) (*models.Value, error) {
 	}
 	return v, nil
 }
+
+func (c *CustomerService) GetFilter(f *models.Filter) ([]models.Product, error) {
+	p, err := c.repo.GetFilter(f)
+	if err != nil {
+		return []models.Product{}, err
+	}
+	return p, nil
+}

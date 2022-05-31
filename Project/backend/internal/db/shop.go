@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 type OwnerRepo struct {
@@ -19,8 +20,13 @@ func NewOwnerRepo(db *sql.DB) *OwnerRepo {
 }
 
 func (o *OwnerRepo) Create(product *models.Product) error {
-	sqlStatement := `INSERT INTO product (shop_id, price, name, description, is_auction) VALUES ($1, $2, $3, $4, $5)`
-	if err := o.db.QueryRow(sqlStatement, product.OwnerId, product.Price, product.Name, product.Description, product.Auction); err != nil {
+	sqlStatement := `INSERT INTO product (shop_id, price, name, description, is_auction, product_category, product_subcategory, product_size, product_colour, product_condition) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+	if err := o.db.QueryRow(sqlStatement, product.OwnerId,
+		product.Price, product.Name,
+		product.Description, product.Auction,
+		product.Category, product.Subcategory,
+		product.Size, product.Colour,
+		product.Condition); err != nil {
 		return err.Err()
 	}
 	return nil
@@ -28,30 +34,42 @@ func (o *OwnerRepo) Create(product *models.Product) error {
 
 func (o *OwnerRepo) Get(id *models.IdReg) (*models.Product, error) {
 	var product models.Product
-	sqlStatement := `SELECT shop_id,price, name,description, discount, image FROM product WHERE product_id=$1`
+	sqlStatement := `SELECT shop_id,price, name,description, discount, image, is_auction, product_category, product_subcategory, product_size, product_colour, product_condition FROM product WHERE product_id=$1`
 
 	row := o.db.QueryRow(sqlStatement, id.Id)
 	// unmarshal the row object to user
-	if err := row.Scan(&product.OwnerId, &product.Price, &product.Name, &product.Description, &product.Discount, &product.Image); err != nil {
+	if err := row.Scan(&product.OwnerId, &product.Price, &product.Name,
+		&product.Description, &product.Discount,
+		pq.Array(&product.Image), &product.Auction,
+		&product.Category, &product.Subcategory,
+		&product.Size, &product.Colour,
+		&product.Condition); err != nil {
 		return &models.Product{}, err
+	}
+	_url := os.Getenv("baseUrl")
+	for i := range product.Image {
+		product.Image[i] = _url + product.Image[i]
 	}
 	return &product, nil
 }
 
-func (o *OwnerRepo) GetAll() ([]models.Products, error) {
-	var products []models.Products
+func (o *OwnerRepo) GetAll() ([]models.Product, error) {
+	var products []models.Product
 	sqlStatement := `SELECT product_id, shop_id, price, name, image from product where selled_at is null`
 
 	rows, err := o.db.Query(sqlStatement)
 	if err != nil {
-		return []models.Products{}, err
+		return []models.Product{}, err
 	}
 	defer rows.Close()
-
+	_url := os.Getenv("baseUrl")
 	for rows.Next() {
-		var product models.Products
-		if err := rows.Scan(&product.Id, &product.OwnerId, &product.Price, &product.Name, &product.Image); err != nil {
-			return []models.Products{}, err
+		var product models.Product
+		if err := rows.Scan(&product.Id, &product.OwnerId, &product.Price, &product.Name, pq.Array(&product.Image)); err != nil {
+			return []models.Product{}, err
+		}
+		for i := range product.Image {
+			product.Image[i] = _url + product.Image[i]
 		}
 		products = append(products, product)
 	}

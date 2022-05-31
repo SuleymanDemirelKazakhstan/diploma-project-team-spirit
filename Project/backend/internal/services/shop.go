@@ -24,10 +24,10 @@ func NewOwnerService(repo db.Shop, rdb *redis.Client) *OwnerService {
 	}
 }
 
-func (o *OwnerService) GetAll() ([]models.Products, error) {
+func (o *OwnerService) GetAll() ([]models.Product, error) {
 	products, err := o.repo.GetAll()
 	if err != nil {
-		return []models.Products{}, err
+		return []models.Product{}, err
 	}
 	return products, nil
 }

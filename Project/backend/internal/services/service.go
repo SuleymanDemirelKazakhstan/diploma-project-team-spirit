@@ -29,10 +29,11 @@ type Customer interface {
 	GmailCode(email *models.EmailRequest) (int, error)
 	Setter(deal *models.Deal) error
 	Getter(id *models.ProductId) (*models.Value, error)
+	GetFilter(f *models.Filter) ([]models.Product, error)
 }
 
 type Shop interface {
-	GetAll() ([]models.Products, error)
+	GetAll() ([]models.Product, error)
 	Get(id *models.IdReg) (*models.Product, error)
 	Create(product *models.Product) error
 	Delete(id *models.IdReg) error

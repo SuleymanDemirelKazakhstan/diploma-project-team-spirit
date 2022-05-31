@@ -12,6 +12,7 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 type CustomerRepo struct {
@@ -169,4 +170,42 @@ func (c *CustomerRepo) Getter(id *models.ProductId) (*models.Value, error) {
 		return &models.Value{}, err
 	}
 	return data, nil
+}
+
+func (c *CustomerRepo) GetFilter(f *models.Filter) ([]models.Product, error) {
+	var products []models.Product
+	sqlStatement := `SELECT product_id, shop_id, price, name, image, discount from product where selled_at is null`
+	if f.Category != "" {
+		sqlStatement += fmt.Sprintf(" and product_category = %s", f.Category)
+	}
+	if f.Subcategory != "" {
+		sqlStatement += fmt.Sprintf(" and product_subcategory = %s", f.Subcategory)
+	}
+	if f.Size != "" {
+		sqlStatement += fmt.Sprintf(" and product_size = %s", f.Size)
+	}
+	if f.Colour != "" {
+		sqlStatement += fmt.Sprintf(" and product_colour = %s", f.Colour)
+	}
+	if f.Condition != "" {
+		sqlStatement += fmt.Sprintf(" and product_condition = %s", f.Condition)
+	}
+
+	rows, err := c.db.Query(sqlStatement)
+	if err != nil {
+		return []models.Product{}, err
+	}
+	defer rows.Close()
+	_url := os.Getenv("baseUrl")
+	for rows.Next() {
+		var product models.Product
+		if err := rows.Scan(&product.Id, &product.OwnerId, &product.Price, &product.Name, pq.Array(&product.Image), &product.Discount); err != nil {
+			return []models.Product{}, err
+		}
+		for i := range product.Image {
+			product.Image[i] = _url + product.Image[i]
+		}
+		products = append(products, product)
+	}
+	return products, nil
 }

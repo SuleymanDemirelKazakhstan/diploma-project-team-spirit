@@ -29,12 +29,13 @@ type Customer interface {
 	DeleteImage(id *models.IdReg) error
 	Setter(deal *models.Deal, t time.Duration) error
 	Getter(id *models.ProductId) (*models.Value, error)
+	GetFilter(f *models.Filter) ([]models.Product, error)
 }
 
 type Shop interface {
 	Create(product *models.Product) error
 	Get(id *models.IdReg) (*models.Product, error)
-	GetAll() ([]models.Products, error)
+	GetAll() ([]models.Product, error)
 	Update(id *models.IdReg, product *models.Product) error
 	Delete(param *models.IdReg) error
 	GetOrder(id *models.IdReg) (*[]models.Product, error)

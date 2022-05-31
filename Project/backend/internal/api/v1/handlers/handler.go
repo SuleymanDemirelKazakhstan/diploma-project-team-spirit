@@ -26,6 +26,7 @@ type Customer interface {
 	GmailCode(c *fiber.Ctx) error
 	Setter(c *fiber.Ctx) error
 	Getter(c *fiber.Ctx) error
+	GetFilter(f *fiber.Ctx) error
 }
 
 type Shop interface {

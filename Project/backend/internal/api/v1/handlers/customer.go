@@ -292,3 +292,27 @@ func (h *CustomerHandler) Getter(c *fiber.Ctx) error {
 		"Value":   v,
 	})
 }
+
+func (h *CustomerHandler) GetFilter(c *fiber.Ctx) error {
+	f := new(models.Filter)
+	if err := c.QueryParser(f); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	products, err := h.handler.GetFilter(f)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":   true,
+		"message":  "success",
+		"products": products,
+	})
+}

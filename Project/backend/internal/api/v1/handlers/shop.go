@@ -72,8 +72,6 @@ func (h *OwnerHandler) Get(c *fiber.Ctx) (err error) {
 			Message: err.Error(),
 		})
 	}
-	_url := os.Getenv("baseUrl")
-	product.Image = _url + product.Image
 
 	return c.JSON(fiber.Map{
 		"status":  true,
