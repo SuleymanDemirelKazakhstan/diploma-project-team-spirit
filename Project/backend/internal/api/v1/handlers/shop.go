@@ -143,16 +143,6 @@ func (h *OwnerHandler) Create(c *fiber.Ctx) (err error) {
 }
 
 func (h *OwnerHandler) Update(c *fiber.Ctx) (err error) {
-	id := new(models.IdReg)
-	if err := c.QueryParser(id); err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
-	}
-
-	validate = validator.New()
-	if err := validate.Struct(id); err != nil {
-		return c.Status(fiber.StatusForbidden).SendString(err.Error())
-	}
-
 	productReq := new(models.Product)
 	if err := c.BodyParser(productReq); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
@@ -160,7 +150,7 @@ func (h *OwnerHandler) Update(c *fiber.Ctx) (err error) {
 			Message: err.Error(),
 		})
 	}
-	if err := h.handler.Update(id, productReq); err != nil {
+	if err := h.handler.Update(productReq); err != nil {
 		return c.JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),

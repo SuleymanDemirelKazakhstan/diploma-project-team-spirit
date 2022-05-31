@@ -73,7 +73,8 @@ func (o *OwnerService) Delete(id *models.IdReg) error {
 	return nil
 }
 
-func (o *OwnerService) Update(id *models.IdReg, productReq *models.Product) error {
+func (o *OwnerService) Update(productReq *models.Product) error {
+	id := &models.IdReg{productReq.Id}
 	productDB, err := o.repo.Get(id)
 	if err != nil {
 		return err

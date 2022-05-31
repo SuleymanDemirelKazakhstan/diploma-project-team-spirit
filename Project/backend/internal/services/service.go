@@ -36,7 +36,7 @@ type Shop interface {
 	Get(id *models.IdReg) (*models.Product, error)
 	Create(product *models.Product) error
 	Delete(id *models.IdReg) error
-	Update(id *models.IdReg, productReq *models.Product) error
+	Update(productReq *models.Product) error
 	GetOrder(id *models.IdReg) (*[]models.Product, error)
 	Login(param *models.LoginInput) (string, error)
 	SaveImage(id *models.IdReg, file string) (string, error)
