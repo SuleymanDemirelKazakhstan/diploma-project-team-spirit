@@ -316,3 +316,19 @@ func (h *CustomerHandler) GetFilter(c *fiber.Ctx) error {
 		"products": products,
 	})
 }
+
+func (h *CustomerHandler) GetDiscountProducts(c *fiber.Ctx) error{
+	products, err := h.handler.GetDiscountProducts()
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":   true,
+		"message":  "success",
+		"products": products,
+	})
+}

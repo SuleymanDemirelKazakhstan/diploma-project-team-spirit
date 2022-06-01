@@ -208,3 +208,28 @@ func (c *CustomerRepo) GetFilter(f *models.Filter) ([]models.Product, error) {
 	}
 	return products, nil
 }
+
+func (c *CustomerRepo) GetDiscountProducts() ([]models.Product, error) {
+	var products []models.Product
+	sqlStatement := `SELECT product_id, shop_id, price, name, image, discount, product_category, product_size from product where selled_at is null and discount != 0 limit 4`
+
+	rows, err := c.db.Query(sqlStatement)
+	if err != nil {
+		return []models.Product{}, err
+	}
+	defer rows.Close()
+	_url := os.Getenv("baseUrl")
+	for rows.Next() {
+		var product models.Product
+		if err := rows.Scan(&product.Id, &product.OwnerId, &product.Price, 
+			&product.Name, pq.Array(&product.Image), &product.Discount, 
+			&product.Category, &product.Size); err != nil {
+			return []models.Product{}, err
+		}
+		for i := range product.Image {
+			product.Image[i] = _url + product.Image[i]
+		}
+		products = append(products, product)
+	}
+	return products, nil
+}

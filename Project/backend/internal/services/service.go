@@ -30,6 +30,7 @@ type Customer interface {
 	Setter(deal *models.Deal) error
 	Getter(id *models.ProductId) (*models.Value, error)
 	GetFilter(f *models.Filter) ([]models.Product, error)
+	GetDiscountProducts() ([]models.Product, error)
 }
 
 type Shop interface {

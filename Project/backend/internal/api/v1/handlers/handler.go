@@ -27,6 +27,7 @@ type Customer interface {
 	Setter(c *fiber.Ctx) error
 	Getter(c *fiber.Ctx) error
 	GetFilter(f *fiber.Ctx) error
+	GetDiscountProducts(f *fiber.Ctx) error
 }
 
 type Shop interface {
