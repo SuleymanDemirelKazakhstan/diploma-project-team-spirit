@@ -64,5 +64,6 @@ func Routes(app *fiber.App, h *handlers.Handler) {
 	owner.Get("/order", h.Shop.GetOrder)
 	owner.Put("/issued", h.Shop.Issued)
 	owner.Get("/verify", h.Customer.GmailCode)
-	owner.Put("updateinfo", h.Admin.Update)
+	owner.Put("/updateinfo", h.Admin.Update)
+	owner.Get("/myproducts", h.Shop.GetAllMyProduct)
 }

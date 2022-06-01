@@ -40,10 +40,11 @@ type Shop interface {
 	Delete(id *models.IdReg) error
 	Update(productReq *models.Product) error
 	GetOrder(id *models.IdReg) (*[]models.Product, error)
-	Login(param *models.LoginInput) (string, error)
+	Login(param *models.LoginInput) (string, int, error)
 	SaveImage(id *models.IdReg, file string) (string, error)
 	DeleteImage(id *models.IdReg) error
 	Issued(id *models.IdReg) error
+	GetAllMyProduct(id *models.IdReg) ([]models.Product, error)
 }
 
 type Service struct {

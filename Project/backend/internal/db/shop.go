@@ -165,3 +165,27 @@ func (o *OwnerRepo) DeleteImage(id *models.IdReg) error {
 	}
 	return nil
 }
+
+func (o *OwnerRepo) GetAllMyProduct(id *models.IdReg) ([]models.Product, error) {
+	var products []models.Product
+	sqlStatement := `SELECT product_id, price, name, image, product_category, product_subcategory, product_size, product_colour from product where selled_at is null and shop_id=$1`
+
+	rows, err := o.db.Query(sqlStatement, id.Id)
+	if err != nil {
+		return []models.Product{}, err
+	}
+	defer rows.Close()
+	_url := os.Getenv("baseUrl")
+	for rows.Next() {
+		var product models.Product
+		if err := rows.Scan(&product.Id, &product.Price, &product.Name, pq.Array(&product.Image),
+			&product.Category, &product.Subcategory, &product.Size, &product.Colour); err != nil {
+			return []models.Product{}, err
+		}
+		for i := range product.Image {
+			product.Image[i] = _url + product.Image[i]
+		}
+		products = append(products, product)
+	}
+	return products, nil
+}

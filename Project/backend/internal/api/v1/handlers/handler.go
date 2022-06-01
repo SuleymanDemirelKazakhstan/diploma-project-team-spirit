@@ -41,6 +41,7 @@ type Shop interface {
 	SaveImage(c *fiber.Ctx) error
 	DeleteImage(c *fiber.Ctx) error
 	Issued(c *fiber.Ctx) error
+	GetAllMyProduct(c *fiber.Ctx) error
 }
 
 type Handler struct {

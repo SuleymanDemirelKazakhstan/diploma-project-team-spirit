@@ -8,7 +8,6 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-	"github.com/joho/godotenv"
 )
 
 type OwnerHandler struct {
@@ -61,13 +60,6 @@ func (h *OwnerHandler) Get(c *fiber.Ctx) (err error) {
 			})
 		}
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
-			Status:  false,
-			Message: err.Error(),
-		})
-	}
-
-	if err := godotenv.Load(); err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -202,7 +194,7 @@ func (h *OwnerHandler) Login(c *fiber.Ctx) (err error) {
 		})
 	}
 
-	t, err := h.handler.Login(param)
+	t, id, err := h.handler.Login(param)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
@@ -211,8 +203,9 @@ func (h *OwnerHandler) Login(c *fiber.Ctx) (err error) {
 	}
 
 	return c.JSON(fiber.Map{
-		"status": "success",
-		"token":  t,
+		"status":  "success",
+		"token":   t,
+		"shop_id": id,
 	})
 }
 
@@ -315,5 +308,37 @@ func (h *OwnerHandler) Issued(c *fiber.Ctx) error {
 	return c.JSON(models.Resp{
 		Status:  true,
 		Message: "success",
+	})
+}
+
+func (h *OwnerHandler) GetAllMyProduct(c *fiber.Ctx) error {
+	id := new(models.IdReg)
+	if err := c.QueryParser(id); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	validate = validator.New()
+	if err := validate.Struct(id); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	products, err := h.handler.GetAllMyProduct(id)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":  true,
+		"message": "success",
+		"products": products,
 	})
 }
