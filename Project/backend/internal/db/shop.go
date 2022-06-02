@@ -117,20 +117,20 @@ func (o *OwnerRepo) Delete(param *models.IdReg) error {
 	return nil
 }
 
-func (o *OwnerRepo) GetOrder(id *models.IdReg) (*[]models.Product, error) {
-	var products []models.Product
-	sqlStatement := `SELECT product_id, price, name, discount, selled_at from "product" where product_id in (select product_id from "orders" where shop_id = $1)`
+func (o *OwnerRepo) GetOrder(id *models.IdReg) (*[]models.OwnerOrder, error) {
+	var products []models.OwnerOrder
+	sqlStatement := `select t1.name, t2.name, t2.price, t2.is_auction, t2.selled_at t3.status from customer t1, product t2, orders t3 where t1.customer_id = t3.customer_id and t2.product_id = t3.product_id and t3.shop_id = $1;`
 
 	rows, err := o.db.Query(sqlStatement, id.Id)
 	if err != nil {
-		return &[]models.Product{}, err
+		return &[]models.OwnerOrder{}, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		var product models.Product
-		if err := rows.Scan(&product.Id, &product.Price, &product.Name, &product.Discount, &product.Selled_at); err != nil {
-			return &[]models.Product{}, err
+		var product models.OwnerOrder
+		if err := rows.Scan(&product.CustomerName, &product.ProductName, &product.Price, &product.Auction, &product.Selled_at, &product.Status); err != nil {
+			return &[]models.OwnerOrder{}, err
 		}
 		products = append(products, product)
 	}

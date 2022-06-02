@@ -81,10 +81,10 @@ func (o *OwnerService) Update(product *models.Product) error {
 	return nil
 }
 
-func (o *OwnerService) GetOrder(id *models.IdReg) (*[]models.Product, error) {
+func (o *OwnerService) GetOrder(id *models.IdReg) (*[]models.OwnerOrder, error) {
 	products, err := o.repo.GetOrder(id)
 	if err != nil {
-		return &[]models.Product{}, err
+		return &[]models.OwnerOrder{}, err
 	}
 	return products, nil
 }

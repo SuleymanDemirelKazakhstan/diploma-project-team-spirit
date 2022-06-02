@@ -40,7 +40,7 @@ type Shop interface {
 	GetAll() ([]models.Product, error)
 	Update(product *models.Product) error
 	Delete(param *models.IdReg) error
-	GetOrder(id *models.IdReg) (*[]models.Product, error)
+	GetOrder(id *models.IdReg) (*[]models.OwnerOrder, error)
 	GetOwner(email string) (*models.Owner, error)
 	SaveImage(id *models.IdReg, file string) (string, error)
 	DeleteImage(id *models.IdReg) error

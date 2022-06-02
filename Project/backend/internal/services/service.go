@@ -40,7 +40,7 @@ type Shop interface {
 	Create(product *models.Product) error
 	Delete(id *models.IdReg) error
 	Update(productReq *models.Product) error
-	GetOrder(id *models.IdReg) (*[]models.Product, error)
+	GetOrder(id *models.IdReg) (*[]models.OwnerOrder, error)
 	Login(param *models.LoginInput) (string, int, error)
 	SaveImage(id *models.IdReg, file string) (string, error)
 	DeleteImage(id *models.IdReg) error
