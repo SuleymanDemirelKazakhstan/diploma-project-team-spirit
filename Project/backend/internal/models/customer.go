@@ -8,3 +8,7 @@ type Customer struct {
 	Phone    string `json:"phone,omitempty" validate:"required"`
 	Image    string `json:"image"       form:"image"`
 }
+
+type SearchParam struct{
+	Param string `json:"param,omitempty" validate:"required"`
+}

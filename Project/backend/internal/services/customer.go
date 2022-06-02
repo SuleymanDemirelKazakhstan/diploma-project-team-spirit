@@ -174,3 +174,11 @@ func (c *CustomerService) GetDiscountProducts() ([]models.Product, error){
 	}
 	return p, nil
 }
+
+func (c *CustomerService) Search(p *models.SearchParam) ([]models.Product, error){
+	products, err := c.repo.Search(p)
+	if err != nil {
+		return []models.Product{}, err
+	}
+	return products, nil
+}

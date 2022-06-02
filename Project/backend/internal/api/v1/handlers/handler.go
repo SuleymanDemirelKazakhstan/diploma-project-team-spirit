@@ -28,6 +28,7 @@ type Customer interface {
 	Getter(c *fiber.Ctx) error
 	GetFilter(f *fiber.Ctx) error
 	GetDiscountProducts(f *fiber.Ctx) error
+	Search(f *fiber.Ctx) error
 }
 
 type Shop interface {

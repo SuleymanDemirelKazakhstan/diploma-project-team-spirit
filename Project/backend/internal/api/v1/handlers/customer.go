@@ -332,3 +332,32 @@ func (h *CustomerHandler) GetDiscountProducts(c *fiber.Ctx) error{
 		"products": products,
 	})
 }
+
+func (h *CustomerHandler) Search(c *fiber.Ctx) error {
+	name := new(models.SearchParam)
+	if err := c.QueryParser(name); err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	validate = validator.New()
+	if err := validate.Struct(name); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	products, err := h.handler.Search(name)
+	if err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":  true,
+		"message": "success",
+		"products":   products,
+	})
+}

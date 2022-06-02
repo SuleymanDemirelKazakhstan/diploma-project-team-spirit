@@ -233,3 +233,28 @@ func (c *CustomerRepo) GetDiscountProducts() ([]models.Product, error) {
 	}
 	return products, nil
 }
+
+func (c *CustomerRepo) Search(p *models.SearchParam) ([]models.Product, error) {
+	var products []models.Product
+	sqlStatement := fmt.Sprintf(`SELECT product_id, shop_id, price, name, image, discount, product_category, product_size from product where selled_at is null and name like '%s%%';`, p.Param)
+
+	rows, err := c.db.Query(sqlStatement)
+	if err != nil {
+		return []models.Product{}, err
+	}
+	defer rows.Close()
+	_url := os.Getenv("baseUrl")
+	for rows.Next() {
+		var product models.Product
+		if err := rows.Scan(&product.Id, &product.OwnerId, &product.Price, 
+			&product.Name, pq.Array(&product.Image), &product.Discount, 
+			&product.Category, &product.Size); err != nil {
+			return []models.Product{}, err
+		}
+		for i := range product.Image {
+			product.Image[i] = _url + product.Image[i]
+		}
+		products = append(products, product)
+	}
+	return products, nil
+}

@@ -36,6 +36,7 @@ func Routes(app *fiber.App, h *handlers.Handler) {
 	guest.Get("/verify", h.Customer.GmailCode)
 	guest.Get("/discountproduct", h.Customer.GetDiscountProducts)
 	guest.Get("/allshop", h.Admin.GetAll)
+	guest.Get("/search", h.Customer.Search)
 
 	// Authorized customer
 	customer := app.Group("/c")
