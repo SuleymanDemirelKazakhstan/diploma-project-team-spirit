@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/joho/godotenv"
 )
 
 type AdminRepo struct {
@@ -35,6 +36,11 @@ func (a *AdminRepo) Get(param *models.IdReg) (*models.Owner, error) {
 	if err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Phone, &user.Address, &user.Image); err != nil {
 		return &models.Owner{}, err
 	}
+	if err := godotenv.Load(); err != nil {
+		return &models.Owner{}, err
+	}
+	_url := os.Getenv("baseUrl")
+	user.Image = _url + user.Image
 	return &user, nil
 }
 
@@ -57,6 +63,10 @@ func (a *AdminRepo) GetAll() ([]models.Owner, error) {
 	}
 	defer rows.Close()
 
+	if err := godotenv.Load(); err != nil {
+		return []models.Owner{}, err
+	}
+	_url := os.Getenv("baseUrl")
 	for rows.Next() {
 		var user models.Owner
 		var description sql.NullString
@@ -64,6 +74,7 @@ func (a *AdminRepo) GetAll() ([]models.Owner, error) {
 			return []models.Owner{}, err
 		}
 		user.Description = description.String
+		user.Image = _url + user.Image
 		users = append(users, user)
 	}
 	return users, nil

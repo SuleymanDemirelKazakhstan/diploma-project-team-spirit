@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/joho/godotenv"
 	"github.com/lib/pq"
 )
 
@@ -47,6 +48,9 @@ func (o *OwnerRepo) Get(id *models.IdReg) (*models.Product, *models.Owner, error
 		&product.Condition); err != nil {
 		return &models.Product{}, &models.Owner{}, err
 	}
+	if err := godotenv.Load(); err != nil {
+		return &models.Product{}, &models.Owner{}, err
+	}
 	_url := os.Getenv("baseUrl")
 	for i := range product.Image {
 		product.Image[i] = _url + product.Image[i]
@@ -70,6 +74,9 @@ func (o *OwnerRepo) GetAll() ([]models.Product, error) {
 		return []models.Product{}, err
 	}
 	defer rows.Close()
+	if err := godotenv.Load(); err != nil {
+		return []models.Product{}, err
+	}
 	_url := os.Getenv("baseUrl")
 	for rows.Next() {
 		var product models.Product
@@ -198,7 +205,12 @@ func (o *OwnerRepo) GetAllMyProduct(id *models.IdReg) ([]models.Product, error) 
 		return []models.Product{}, err
 	}
 	defer rows.Close()
+
+	if err := godotenv.Load(); err != nil {
+		return []models.Product{}, err
+	}
 	_url := os.Getenv("baseUrl")
+
 	for rows.Next() {
 		var product models.Product
 		if err := rows.Scan(&product.Id, &product.Price, &product.Name, pq.Array(&product.Image),

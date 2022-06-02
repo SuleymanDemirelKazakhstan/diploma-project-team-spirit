@@ -12,6 +12,7 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
+	"github.com/joho/godotenv"
 	"github.com/lib/pq"
 )
 
@@ -35,6 +36,13 @@ func (c *CustomerRepo) Get(email string) (*models.Customer, error) {
 	if err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Phone, &user.Image); err != nil {
 		return &models.Customer{}, err
 	}
+
+	if err := godotenv.Load(); err != nil {
+		return &models.Customer{}, err
+	}
+	_url := os.Getenv("baseUrl")
+
+	user.Image = _url + user.Image
 	return &user, nil
 }
 
@@ -195,7 +203,12 @@ func (c *CustomerRepo) GetFilter(f *models.Filter) ([]models.Product, error) {
 		return []models.Product{}, err
 	}
 	defer rows.Close()
+
+	if err := godotenv.Load(); err != nil {
+		return []models.Product{}, err
+	}
 	_url := os.Getenv("baseUrl")
+
 	for rows.Next() {
 		var product models.Product
 		if err := rows.Scan(&product.Id, &product.OwnerId, &product.Price, &product.Name, pq.Array(&product.Image), &product.Discount); err != nil {
@@ -218,11 +231,15 @@ func (c *CustomerRepo) GetDiscountProducts() ([]models.Product, error) {
 		return []models.Product{}, err
 	}
 	defer rows.Close()
+
+	if err := godotenv.Load(); err != nil {
+		return []models.Product{}, err
+	}
 	_url := os.Getenv("baseUrl")
 	for rows.Next() {
 		var product models.Product
-		if err := rows.Scan(&product.Id, &product.OwnerId, &product.Price, 
-			&product.Name, pq.Array(&product.Image), &product.Discount, 
+		if err := rows.Scan(&product.Id, &product.OwnerId, &product.Price,
+			&product.Name, pq.Array(&product.Image), &product.Discount,
 			&product.Category, &product.Size); err != nil {
 			return []models.Product{}, err
 		}
@@ -243,11 +260,15 @@ func (c *CustomerRepo) Search(p *models.SearchParam) ([]models.Product, error) {
 		return []models.Product{}, err
 	}
 	defer rows.Close()
+
+	if err := godotenv.Load(); err != nil {
+		return []models.Product{}, err
+	}
 	_url := os.Getenv("baseUrl")
 	for rows.Next() {
 		var product models.Product
-		if err := rows.Scan(&product.Id, &product.OwnerId, &product.Price, 
-			&product.Name, pq.Array(&product.Image), &product.Discount, 
+		if err := rows.Scan(&product.Id, &product.OwnerId, &product.Price,
+			&product.Name, pq.Array(&product.Image), &product.Discount,
 			&product.Category, &product.Size); err != nil {
 			return []models.Product{}, err
 		}
