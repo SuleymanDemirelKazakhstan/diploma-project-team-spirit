@@ -32,12 +32,12 @@ func (o *OwnerService) GetAll() ([]models.Product, error) {
 	return products, nil
 }
 
-func (o *OwnerService) Get(id *models.IdReg) (*models.Product, error) {
-	product, err := o.repo.Get(id)
+func (o *OwnerService) Get(id *models.IdReg) (*models.Product, *models.Owner, error) {
+	product, shop, err := o.repo.Get(id)
 	if err != nil {
-		return &models.Product{}, err
+		return &models.Product{}, &models.Owner{}, err
 	}
-	return product, nil
+	return product, shop, nil
 }
 
 func (o *OwnerService) Create(product *models.Product) error {
@@ -73,38 +73,12 @@ func (o *OwnerService) Delete(id *models.IdReg) error {
 	return nil
 }
 
-func (o *OwnerService) Update(productReq *models.Product) error {
-	id := &models.IdReg{productReq.Id}
-	productDB, err := o.repo.Get(id)
-	if err != nil {
-		return err
-	}
-
-	product := newProduct(productReq, productDB)
-	if err := o.repo.Update(id, product); err != nil {
+func (o *OwnerService) Update(product *models.Product) error {
+	if err := o.repo.Update(product); err != nil {
 		return err
 	}
 
 	return nil
-}
-
-func newProduct(productReq, productDB *models.Product) *models.Product {
-	if productReq.Price != 0 {
-		productDB.Price = productReq.Price
-	}
-	if productReq.Name != "" {
-		productDB.Name = productReq.Name
-	}
-	if productReq.Description != "" {
-		productDB.Description = productReq.Description
-	}
-	if productReq.Discount != 0 {
-		productDB.Discount = productReq.Discount
-	}
-	if productReq.Auction != productDB.Auction {
-		productDB.Auction = productReq.Auction
-	}
-	return productDB
 }
 
 func (o *OwnerService) GetOrder(id *models.IdReg) (*[]models.Product, error) {

@@ -36,9 +36,9 @@ type Customer interface {
 
 type Shop interface {
 	Create(product *models.Product) error
-	Get(id *models.IdReg) (*models.Product, error)
+	Get(id *models.IdReg) (*models.Product, *models.Owner, error)
 	GetAll() ([]models.Product, error)
-	Update(id *models.IdReg, product *models.Product) error
+	Update(product *models.Product) error
 	Delete(param *models.IdReg) error
 	GetOrder(id *models.IdReg) (*[]models.Product, error)
 	GetOwner(email string) (*models.Owner, error)

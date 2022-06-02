@@ -51,7 +51,7 @@ func (h *OwnerHandler) Get(c *fiber.Ctx) (err error) {
 		})
 	}
 
-	product, err := h.handler.Get(id)
+	product, shop, err := h.handler.Get(id)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			return c.Status(fiber.StatusNotFound).JSON(models.Resp{
@@ -69,6 +69,7 @@ func (h *OwnerHandler) Get(c *fiber.Ctx) (err error) {
 		"status":  true,
 		"message": "success",
 		"product": product,
+		"shop": shop,
 	})
 }
 
@@ -140,6 +141,7 @@ func (h *OwnerHandler) Update(c *fiber.Ctx) (err error) {
 			Message: err.Error(),
 		})
 	}
+	//TODO: valide id
 	if err := h.handler.Update(productReq); err != nil {
 		return c.JSON(models.Resp{
 			Status:  false,

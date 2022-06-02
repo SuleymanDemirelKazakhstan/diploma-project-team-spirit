@@ -32,8 +32,9 @@ func (o *OwnerRepo) Create(product *models.Product) error {
 	return nil
 }
 
-func (o *OwnerRepo) Get(id *models.IdReg) (*models.Product, error) {
+func (o *OwnerRepo) Get(id *models.IdReg) (*models.Product, *models.Owner, error) {
 	var product models.Product
+	var user models.Owner
 	sqlStatement := `SELECT shop_id,price, name,description, discount, image, is_auction, product_category, product_subcategory, product_size, product_colour, product_condition FROM product WHERE product_id=$1`
 
 	row := o.db.QueryRow(sqlStatement, id.Id)
@@ -44,13 +45,20 @@ func (o *OwnerRepo) Get(id *models.IdReg) (*models.Product, error) {
 		&product.Category, &product.Subcategory,
 		&product.Size, &product.Colour,
 		&product.Condition); err != nil {
-		return &models.Product{}, err
+		return &models.Product{}, &models.Owner{}, err
 	}
 	_url := os.Getenv("baseUrl")
 	for i := range product.Image {
 		product.Image[i] = _url + product.Image[i]
 	}
-	return &product, nil
+
+	sqlStatement = `SELECT shop_id,name, description,email,phone,address FROM shop WHERE shop_id=$1 and is_deleted=false`
+	row = o.db.QueryRow(sqlStatement, product.OwnerId)
+	if err := row.Scan(&user.Id, &user.Name, &user.Description, &user.Email, &user.Phone, &user.Address); err != nil {
+		return &models.Product{}, &models.Owner{}, err
+	}
+
+	return &product, &user, nil
 }
 
 func (o *OwnerRepo) GetAll() ([]models.Product, error) {
@@ -76,9 +84,24 @@ func (o *OwnerRepo) GetAll() ([]models.Product, error) {
 	return products, nil
 }
 
-func (o *OwnerRepo) Update(id *models.IdReg, product *models.Product) error {
-	sqlStatement := `UPDATE product SET price=$2, name=$3, description=$4, discount=$5, is_auction=$6 WHERE product_id=$1`
-	_, err := o.db.Exec(sqlStatement, id.Id, product.Price, product.Name,
+func (o *OwnerRepo) Update(product *models.Product) error {
+	str := []string{}
+	if product.Price != 0 {
+		str = append(str, fmt.Sprintf("price=%v", product.Price))
+	}
+	if product.Name != "" {
+		str = append(str, fmt.Sprintf("name=%v", product.Name))
+	}
+	if product.Description != "" {
+		str = append(str, fmt.Sprintf("description=%v", product.Description))
+	}
+	if product.Discount != 0 {
+		str = append(str, fmt.Sprintf("discount=%v", product.Discount))
+	}
+	str = append(str, fmt.Sprintf("is_auction=%v", product.Auction))
+
+	sqlStatement := fmt.Sprintf(`UPDATE product SET %v WHERE product_id=$1`, strings.Join(str, ","))
+	_, err := o.db.Exec(sqlStatement, product.Id, product.Price, product.Name,
 		product.Description, product.Discount, product.Auction)
 	if err != nil {
 		return err
