@@ -198,6 +198,22 @@ func (c *CustomerRepo) GetFilter(f *models.Filter) ([]models.Product, error) {
 	if f.Condition != "" {
 		sqlStatement += fmt.Sprintf(" and product_condition = '%s'", f.Condition)
 	}
+	if f.MinPrice != 0 || f.MaxPrice != 0 {
+		if f.MinPrice != 0 && f.MaxPrice != 0 {
+			sqlStatement += fmt.Sprintf("and price BETWEEN %d AND %d", f.MinPrice, f.MaxPrice)
+		} else if f.MinPrice != 0 {
+			sqlStatement += fmt.Sprintf("and price >= %d", f.MinPrice)
+		} else {
+			sqlStatement += fmt.Sprintf("and price <= %d", f.MaxPrice)
+		}
+	}
+	if f.Type > 0 {
+		if f.Type == 1 {
+			sqlStatement += "and is_auction=true"
+		} else {
+			sqlStatement += "and is_auction=false"
+		}
+	}
 	rows, err := c.db.Query(sqlStatement)
 	if err != nil {
 		return []models.Product{}, err

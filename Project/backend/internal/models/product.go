@@ -27,6 +27,9 @@ type Filter struct {
 	Size        string `json:"size,omitempty"`
 	Colour      string `json:"colour,omitempty"`
 	Condition   string `json:"condition,omitempty"`
+	MinPrice    int    `json:"minprice,omitempty"`
+	MaxPrice    int    `json:"maxprice,omitempty"`
+	Type        int    `json:"type,omitempty"`
 }
 
 type IdReg struct {
