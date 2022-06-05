@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"reflect"
 	"secondChance/internal/models"
 	"strings"
 	"time"
@@ -182,7 +183,7 @@ func (c *CustomerRepo) Getter(id *models.ProductId) (*models.Value, error) {
 
 func (c *CustomerRepo) GetFilter(f *models.Filter) ([]models.Product, error) {
 	var products []models.Product
-	sqlStatement := `SELECT product_id, shop_id, price, name, image, discount from product where selled_at is null`
+	sqlStatement := `SELECT product_id, shop_id, price, name, image, discount, product_size from product where selled_at is null`
 	if f.Category != "" {
 		sqlStatement += fmt.Sprintf(" and product_category = '%s'", f.Category)
 	}
@@ -200,20 +201,22 @@ func (c *CustomerRepo) GetFilter(f *models.Filter) ([]models.Product, error) {
 	}
 	if f.MinPrice != 0 || f.MaxPrice != 0 {
 		if f.MinPrice != 0 && f.MaxPrice != 0 {
-			sqlStatement += fmt.Sprintf("and price BETWEEN %d AND %d", f.MinPrice, f.MaxPrice)
+			sqlStatement += fmt.Sprintf(" and price BETWEEN %d AND %d", f.MinPrice, f.MaxPrice)
 		} else if f.MinPrice != 0 {
-			sqlStatement += fmt.Sprintf("and price >= %d", f.MinPrice)
+			sqlStatement += fmt.Sprintf(" and price >= %d", f.MinPrice)
 		} else {
-			sqlStatement += fmt.Sprintf("and price <= %d", f.MaxPrice)
+			sqlStatement += fmt.Sprintf(" and price <= %d", f.MaxPrice)
 		}
 	}
+	fmt.Println(f.Type, reflect.TypeOf(f.Type))
 	if f.Type > 0 {
 		if f.Type == 1 {
-			sqlStatement += "and is_auction=true"
+			sqlStatement += " and is_auction=true"
 		} else {
-			sqlStatement += "and is_auction=false"
+			sqlStatement += " and is_auction=false"
 		}
 	}
+	fmt.Println(sqlStatement)
 	rows, err := c.db.Query(sqlStatement)
 	if err != nil {
 		return []models.Product{}, err
@@ -227,7 +230,7 @@ func (c *CustomerRepo) GetFilter(f *models.Filter) ([]models.Product, error) {
 
 	for rows.Next() {
 		var product models.Product
-		if err := rows.Scan(&product.Id, &product.OwnerId, &product.Price, &product.Name, pq.Array(&product.Image), &product.Discount); err != nil {
+		if err := rows.Scan(&product.Id, &product.OwnerId, &product.Price, &product.Name, pq.Array(&product.Image), &product.Discount, &product.Size); err != nil {
 			return []models.Product{}, err
 		}
 		for i := range product.Image {
