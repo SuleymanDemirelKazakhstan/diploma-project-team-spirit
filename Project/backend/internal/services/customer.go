@@ -167,7 +167,7 @@ func (c *CustomerService) GetFilter(f *models.Filter) ([]models.Product, error) 
 	return p, nil
 }
 
-func (c *CustomerService) GetDiscountProducts() ([]models.Product, error){
+func (c *CustomerService) GetDiscountProducts() ([]models.Product, error) {
 	p, err := c.repo.GetDiscountProducts()
 	if err != nil {
 		return []models.Product{}, err
@@ -175,10 +175,18 @@ func (c *CustomerService) GetDiscountProducts() ([]models.Product, error){
 	return p, nil
 }
 
-func (c *CustomerService) Search(p *models.SearchParam) ([]models.Product, error){
+func (c *CustomerService) Search(p *models.SearchParam) ([]models.Product, error) {
 	products, err := c.repo.Search(p)
 	if err != nil {
 		return []models.Product{}, err
+	}
+	return products, nil
+}
+
+func (c *CustomerService) GetAllMyProduct(id *models.IdReg) ([]models.CustomerOrder, error) {
+	products, err := c.repo.GetAllMyProduct(id)
+	if err != nil {
+		return []models.CustomerOrder{}, err
 	}
 	return products, nil
 }

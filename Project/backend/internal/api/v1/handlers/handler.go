@@ -26,9 +26,10 @@ type Customer interface {
 	GmailCode(c *fiber.Ctx) error
 	Setter(c *fiber.Ctx) error
 	Getter(c *fiber.Ctx) error
-	GetFilter(f *fiber.Ctx) error
-	GetDiscountProducts(f *fiber.Ctx) error
-	Search(f *fiber.Ctx) error
+	GetFilter(c *fiber.Ctx) error
+	GetDiscountProducts(c *fiber.Ctx) error
+	Search(c *fiber.Ctx) error
+	GetAllMyProduct(c *fiber.Ctx) error
 }
 
 type Shop interface {

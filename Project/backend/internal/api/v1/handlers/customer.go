@@ -317,7 +317,7 @@ func (h *CustomerHandler) GetFilter(c *fiber.Ctx) error {
 	})
 }
 
-func (h *CustomerHandler) GetDiscountProducts(c *fiber.Ctx) error{
+func (h *CustomerHandler) GetDiscountProducts(c *fiber.Ctx) error {
 	products, err := h.handler.GetDiscountProducts()
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
@@ -356,8 +356,40 @@ func (h *CustomerHandler) Search(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"status":  true,
-		"message": "success",
-		"products":   products,
+		"status":   true,
+		"message":  "success",
+		"products": products,
+	})
+}
+
+func (h *CustomerHandler) GetAllMyProduct(c *fiber.Ctx) error {
+	id := new(models.IdReg)
+	if err := c.QueryParser(id); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	validate = validator.New()
+	if err := validate.Struct(id); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	products, err := h.handler.GetOrder(id)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":   true,
+		"message":  "success",
+		"products": products,
 	})
 }

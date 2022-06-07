@@ -183,7 +183,7 @@ func (c *CustomerRepo) Getter(id *models.ProductId) (*models.Value, error) {
 
 func (c *CustomerRepo) GetFilter(f *models.Filter) ([]models.Product, error) {
 	var products []models.Product
-	sqlStatement := `SELECT product_id, shop_id, price, name, image, discount, product_size from product where selled_at is null`
+	sqlStatement := `SELECT product_id, shop_id, price, name, image, discount, product_size, is_auction from product where selled_at is null`
 	if f.Category != "" {
 		sqlStatement += fmt.Sprintf(" and product_category = '%s'", f.Category)
 	}
@@ -230,7 +230,7 @@ func (c *CustomerRepo) GetFilter(f *models.Filter) ([]models.Product, error) {
 
 	for rows.Next() {
 		var product models.Product
-		if err := rows.Scan(&product.Id, &product.OwnerId, &product.Price, &product.Name, pq.Array(&product.Image), &product.Discount, &product.Size); err != nil {
+		if err := rows.Scan(&product.Id, &product.OwnerId, &product.Price, &product.Name, pq.Array(&product.Image), &product.Discount, &product.Size, &product.Auction); err != nil {
 			return []models.Product{}, err
 		}
 		for i := range product.Image {
@@ -290,6 +290,36 @@ func (c *CustomerRepo) Search(p *models.SearchParam) ([]models.Product, error) {
 			&product.Name, pq.Array(&product.Image), &product.Discount,
 			&product.Category, &product.Size); err != nil {
 			return []models.Product{}, err
+		}
+		for i := range product.Image {
+			product.Image[i] = _url + product.Image[i]
+		}
+		products = append(products, product)
+	}
+	return products, nil
+}
+
+func (c *CustomerRepo) GetAllMyProduct(id *models.IdReg) ([]models.CustomerOrder, error) {
+	var products []models.CustomerOrder
+	sqlStatement := `select t1.product_id, t1.selled_at, t2.address, t3.status from product t1, shop t2, orders t3 where t1.product_id = t3.product_id and t2.shop_id = t3.shop_id and t3.customer_id = $1;`
+
+	rows, err := c.db.Query(sqlStatement, id.Id)
+	if err != nil {
+		return []models.CustomerOrder{}, err
+	}
+	defer rows.Close()
+
+	if err := godotenv.Load(); err != nil {
+		return []models.CustomerOrder{}, err
+	}
+	_url := os.Getenv("baseUrl")
+
+	for rows.Next() {
+		var product models.CustomerOrder
+		if err := rows.Scan(&product.ProductId, &product.SelledAt,
+			&product.Address, pq.Array(&product.Image),
+			&product.Status); err != nil {
+			return []models.CustomerOrder{}, err
 		}
 		for i := range product.Image {
 			product.Image[i] = _url + product.Image[i]

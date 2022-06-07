@@ -32,6 +32,7 @@ type Customer interface {
 	GetFilter(f *models.Filter) ([]models.Product, error)
 	GetDiscountProducts() ([]models.Product, error)
 	Search(p *models.SearchParam) ([]models.Product, error)
+	GetAllMyProduct(id *models.IdReg) ([]models.CustomerOrder, error)
 }
 
 type Shop interface {

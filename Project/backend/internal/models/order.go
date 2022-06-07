@@ -8,11 +8,19 @@ type Order struct {
 	Shop_id     int `json:"shop_id,omitempty" validate:"required"`
 }
 
-type OwnerOrder struct{
+type OwnerOrder struct {
 	CustomerName string
-	ProductName string
-	Price int
-	Auction bool
-	Selled_at time.Time
-	Status bool
+	ProductName  string
+	Price        int
+	Auction      bool
+	Selled_at    time.Time
+	Status       bool
+}
+
+type CustomerOrder struct {
+	ProductId int
+	SelledAt  time.Time
+	Address   string
+	Status    bool
+	Image     []string
 }
