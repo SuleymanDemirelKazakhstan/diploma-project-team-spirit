@@ -51,7 +51,7 @@ func Routes(app *fiber.App, h *handlers.Handler) {
 	customer.Get("/verify", h.Customer.GmailCode)
 	customer.Get("/myproducts", h.Customer.GetAllMyProduct)
 	customer.Put("/updatepassword", h.Customer.UpdatePassword)
-	customer.Put("updateemail", h.Customer.UpdateEmail)
+	customer.Put("/updateemail", h.Customer.UpdateEmail)
 
 	// Owner
 	owner := app.Group("/owner")
