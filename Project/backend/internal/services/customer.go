@@ -44,8 +44,8 @@ func (c *CustomerService) Create(user *models.Customer) error {
 	return nil
 }
 
-func (c *CustomerService) Login(param *models.LoginInput) (t string, id int, err error) {
-	customer, err := c.repo.GetPassword(param.Email)
+func (c *CustomerService) Login(param *models.Login) (t string, id int, err error) {
+	customer, err := c.repo.Get(param.Email)
 	if err != nil {
 		return "", -1, err
 	}
@@ -189,4 +189,12 @@ func (c *CustomerService) GetAllMyProduct(id *models.IdReg) ([]models.CustomerOr
 		return []models.CustomerOrder{}, err
 	}
 	return products, nil
+}
+
+func (c *CustomerService) GetLogin(id *models.IdReg) (*models.Login, error) {
+	user, err := c.repo.GetLogin(id)
+	if err != nil {
+		return nil, err
+	}
+	return user, err
 }

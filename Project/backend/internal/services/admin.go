@@ -98,7 +98,7 @@ func newUser(userReq, user *models.Owner) (*models.Owner, error) {
 	return user, nil
 }
 
-func (r *AdminService) Login(param *models.LoginInput) (string, error) {
+func (r *AdminService) Login(param *models.Login) (string, error) {
 	owner, err := r.repo.GetLogin(&models.EmailRequest{
 		Email: param.Email,
 	})

@@ -89,7 +89,7 @@ func (o *OwnerService) GetOrder(id *models.IdReg) (*[]models.OwnerOrder, error) 
 	return products, nil
 }
 
-func (o *OwnerService) Login(param *models.LoginInput) (string, int, error) {
+func (o *OwnerService) Login(param *models.Login) (string, int, error) {
 	// s.DBLayer.GetOwner
 	owner, err := o.repo.GetOwner(param.Email)
 	if err != nil {
@@ -135,7 +135,7 @@ func (o *OwnerService) Issued(id *models.IdReg) error {
 	return nil
 }
 
-func (o *OwnerService) GetAllMyProduct(id *models.IdReg) ([]models.Product, error){
+func (o *OwnerService) GetAllMyProduct(id *models.IdReg) ([]models.Product, error) {
 	products, err := o.repo.GetAllMyProduct(id)
 	if err != nil {
 		return []models.Product{}, err

@@ -21,7 +21,7 @@ type Admin interface {
 
 type Customer interface {
 	Get(email string) (*models.Customer, error)
-	GetPassword(email string) (*models.Customer, error)
+	GetLogin(id *models.IdReg) (*models.Login, error)
 	Create(user *models.Customer) error
 	CreateOrder(order *models.Order) error
 	GetOrder(id *models.IdReg) (*[]models.Product, error)

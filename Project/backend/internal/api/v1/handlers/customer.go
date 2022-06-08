@@ -81,7 +81,7 @@ func (h *CustomerHandler) GetOrder(c *fiber.Ctx) error {
 }
 
 func (h *CustomerHandler) Login(c *fiber.Ctx) (err error) {
-	var param models.LoginInput
+	var param models.Login
 	if err := c.BodyParser(&param); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
@@ -391,5 +391,37 @@ func (h *CustomerHandler) GetAllMyProduct(c *fiber.Ctx) error {
 		"status":   true,
 		"message":  "success",
 		"products": products,
+	})
+}
+
+func (h *CustomerHandler) Get(c *fiber.Ctx) error {
+	id := new(models.IdReg)
+	if err := c.QueryParser(id); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	validate = validator.New()
+	if err := validate.Struct(id); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	user, err := h.handler.GetLogin(id)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":   true,
+		"message":  "success",
+		"user": user,
 	})
 }

@@ -47,13 +47,13 @@ func (c *CustomerRepo) Get(email string) (*models.Customer, error) {
 	return &user, nil
 }
 
-func (c *CustomerRepo) GetPassword(email string) (*models.Customer, error) {
-	var user models.Customer
-	sqlStatement := `SELECT customer_id,name,email,password FROM customer WHERE email=$1`
+func (c *CustomerRepo) GetLogin(id *models.IdReg) (*models.Login, error) {
+	var user models.Login
+	sqlStatement := `SELECT email,password FROM customer WHERE customer_id=$1`
 
-	row := c.db.QueryRow(sqlStatement, email)
-	if err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Password); err != nil {
-		return &models.Customer{}, err
+	row := c.db.QueryRow(sqlStatement, id)
+	if err := row.Scan(&user.Email, &user.Password); err != nil {
+		return &models.Login{}, err
 	}
 	return &user, nil
 }

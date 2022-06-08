@@ -13,7 +13,7 @@ type Admin interface {
 	Get(param *models.IdReg) (*models.Owner, error)
 	GetAll() ([]models.Owner, error)
 	Update(userReq *models.Owner) error
-	Login(param *models.LoginInput) (string, error)
+	Login(param *models.Login) (string, error)
 	SaveImage(id *models.IdReg, file string) (string, error)
 	DeleteImage(id *models.IdReg) error
 }
@@ -21,7 +21,7 @@ type Admin interface {
 type Customer interface {
 	Get(param string) (*models.Customer, error)
 	Create(user *models.Customer) error
-	Login(param *models.LoginInput) (t string, id int, err error)
+	Login(param *models.Login) (t string, id int, err error)
 	CreateOrder(order *models.Order) (err error)
 	GetOrder(id *models.IdReg) (*[]models.Product, error)
 	SaveImage(id *models.IdReg, file string) (string, error)
@@ -33,6 +33,7 @@ type Customer interface {
 	GetDiscountProducts() ([]models.Product, error)
 	Search(p *models.SearchParam) ([]models.Product, error)
 	GetAllMyProduct(id *models.IdReg) ([]models.CustomerOrder, error)
+	GetLogin(id *models.IdReg) (*models.Login, error)
 }
 
 type Shop interface {
@@ -42,7 +43,7 @@ type Shop interface {
 	Delete(id *models.IdReg) error
 	Update(productReq *models.Product) error
 	GetOrder(id *models.IdReg) (*[]models.OwnerOrder, error)
-	Login(param *models.LoginInput) (string, int, error)
+	Login(param *models.Login) (string, int, error)
 	SaveImage(id *models.IdReg, file string) (string, error)
 	DeleteImage(id *models.IdReg) error
 	Issued(id *models.IdReg) error

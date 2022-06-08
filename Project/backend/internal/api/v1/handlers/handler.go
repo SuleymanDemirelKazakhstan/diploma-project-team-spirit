@@ -30,6 +30,7 @@ type Customer interface {
 	GetDiscountProducts(c *fiber.Ctx) error
 	Search(c *fiber.Ctx) error
 	GetAllMyProduct(c *fiber.Ctx) error
+	Get(c *fiber.Ctx) error
 }
 
 type Shop interface {

@@ -69,7 +69,7 @@ func (h *OwnerHandler) Get(c *fiber.Ctx) (err error) {
 		"status":  true,
 		"message": "success",
 		"product": product,
-		"shop": shop,
+		"shop":    shop,
 	})
 }
 
@@ -188,7 +188,7 @@ func (h *OwnerHandler) GetOrder(c *fiber.Ctx) error {
 }
 
 func (h *OwnerHandler) Login(c *fiber.Ctx) (err error) {
-	param := new(models.LoginInput)
+	param := new(models.Login)
 	if err := c.BodyParser(&param); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
@@ -339,8 +339,8 @@ func (h *OwnerHandler) GetAllMyProduct(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(fiber.Map{
-		"status":  true,
-		"message": "success",
+		"status":   true,
+		"message":  "success",
 		"products": products,
 	})
 }

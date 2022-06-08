@@ -50,6 +50,7 @@ func Routes(app *fiber.App, h *handlers.Handler) {
 	customer.Get("/order", h.Customer.GetOrder)
 	customer.Get("/verify", h.Customer.GmailCode)
 	customer.Get("/myproducts", h.Customer.GetAllMyProduct)
+	customer.Get("/get", h.Customer.Get)
 
 	// Owner
 	owner := app.Group("/owner")
