@@ -347,3 +347,13 @@ func (c *CustomerRepo) UpdatePassword(param *models.Password) error {
 
 	return nil
 }
+
+func (c *CustomerRepo) UpdateEmail(param *models.EmailUser) error {
+	sqlStatement := `UPDATE customer SET email=$2 WHERE customer_id=$1`
+	_, err := c.db.Exec(sqlStatement, param.Id, param.Email)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

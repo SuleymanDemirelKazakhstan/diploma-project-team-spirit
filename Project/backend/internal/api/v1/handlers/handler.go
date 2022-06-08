@@ -31,6 +31,7 @@ type Customer interface {
 	Search(c *fiber.Ctx) error
 	GetAllMyProduct(c *fiber.Ctx) error
 	UpdatePassword(c *fiber.Ctx) error
+	UpdateEmail(c *fiber.Ctx) error
 }
 
 type Shop interface {

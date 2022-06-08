@@ -18,3 +18,8 @@ type Password struct {
 	Old string `json:"old,omitempty" validate:"required"`
 	New string `json:"new,omitempty" validate:"required"`
 }
+
+type EmailUser struct {
+	Id    int    `json:"customer_id,omitempty" validate:"required"`
+	Email string `json:"email,omitempty" validate:"required"`
+}

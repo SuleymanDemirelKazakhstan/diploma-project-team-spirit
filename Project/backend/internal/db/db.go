@@ -33,6 +33,7 @@ type Customer interface {
 	Search(p *models.SearchParam) ([]models.Product, error)
 	GetAllMyProduct(id *models.IdReg) ([]models.CustomerOrder, error)
 	UpdatePassword(param *models.Password) error
+	UpdateEmail(param *models.EmailUser) error
 }
 
 type Shop interface {

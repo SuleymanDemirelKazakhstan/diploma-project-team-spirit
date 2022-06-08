@@ -423,3 +423,33 @@ func (h *CustomerHandler) UpdatePassword(c *fiber.Ctx) error {
 		"message": "success",
 	})
 }
+
+func (h *CustomerHandler) UpdateEmail(c *fiber.Ctx) error {
+	param := new(models.EmailUser)
+	if err := c.BodyParser(param); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	validate = validator.New()
+	if err := validate.Struct(param); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	if err := h.handler.UpdateEmail(param); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":  true,
+		"message": "success",
+	})
+}

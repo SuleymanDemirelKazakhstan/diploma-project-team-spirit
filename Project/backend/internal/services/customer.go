@@ -173,8 +173,15 @@ func (c *CustomerService) GetAllMyProduct(id *models.IdReg) ([]models.CustomerOr
 	return products, nil
 }
 
-func (c *CustomerService) UpdatePassword(param *models.Password) error{
-	if err := c.repo.UpdatePassword(param); err !=nil{
+func (c *CustomerService) UpdatePassword(param *models.Password) error {
+	if err := c.repo.UpdatePassword(param); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *CustomerService) UpdateEmail(param *models.EmailUser) error {
+	if err := c.repo.UpdateEmail(param); err != nil {
 		return err
 	}
 	return nil
