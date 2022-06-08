@@ -31,10 +31,10 @@ func NewCustomerRepo(db *sql.DB, rdb *redis.Client) *CustomerRepo {
 
 func (c *CustomerRepo) Get(param *models.Login) (*models.Customer, error) {
 	var user models.Customer
-	sqlStatement := `SELECT customer_id,name,email,password,phone, image FROM customer WHERE email=$1`
+	sqlStatement := `SELECT customer_id,email,password FROM customer WHERE email=$1`
 
 	row := c.db.QueryRow(sqlStatement, param.Email)
-	if err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Phone, &user.Image); err != nil {
+	if err := row.Scan(&user.Id, &user.Email, &user.Password); err != nil {
 		return &models.Customer{}, err
 	}
 
@@ -42,12 +42,6 @@ func (c *CustomerRepo) Get(param *models.Login) (*models.Customer, error) {
 		return nil, fmt.Errorf("password hash")
 	}
 
-	if err := godotenv.Load(); err != nil {
-		return &models.Customer{}, err
-	}
-	_url := os.Getenv("baseUrl")
-
-	user.Image = _url + user.Image
 	return &user, nil
 }
 
