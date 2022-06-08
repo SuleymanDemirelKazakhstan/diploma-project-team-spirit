@@ -153,13 +153,16 @@ func (o *OwnerRepo) Issued(id *models.IdReg) error {
 	return nil
 }
 
-func (o *OwnerRepo) GetOwner(email string) (*models.Owner, error) {
+func (o *OwnerRepo) GetOwner(param *models.Login) (*models.Owner, error) {
 	var user models.Owner
 	sqlStatement := `SELECT shop_id,email,password FROM shop WHERE email=$1`
 
-	row := o.db.QueryRow(sqlStatement, email)
+	row := o.db.QueryRow(sqlStatement, param.Email)
 	if err := row.Scan(&user.Id, &user.Email, &user.Password); err != nil {
 		return &models.Owner{}, err
+	}
+	if !CheckPasswordHash(param.Password, user.Password) {
+		return nil, fmt.Errorf("login error")
 	}
 	return &user, nil
 }

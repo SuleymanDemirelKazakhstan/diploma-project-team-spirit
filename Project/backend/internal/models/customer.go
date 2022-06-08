@@ -9,6 +9,12 @@ type Customer struct {
 	Image    string `json:"image"       form:"image"`
 }
 
-type SearchParam struct{
+type SearchParam struct {
 	Param string `json:"param,omitempty" validate:"required"`
+}
+
+type Password struct {
+	Id  int    `json:"id,omitempty" validate:"required"`
+	Old string `json:"old,omitempty" validate:"required"`
+	New string `json:"new,omitempty" validate:"required"`
 }

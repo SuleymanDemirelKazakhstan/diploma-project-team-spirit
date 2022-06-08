@@ -29,13 +29,17 @@ func NewCustomerRepo(db *sql.DB, rdb *redis.Client) *CustomerRepo {
 	}
 }
 
-func (c *CustomerRepo) Get(email string) (*models.Customer, error) {
+func (c *CustomerRepo) Get(param *models.Login) (*models.Customer, error) {
 	var user models.Customer
 	sqlStatement := `SELECT customer_id,name,email,password,phone, image FROM customer WHERE email=$1`
 
-	row := c.db.QueryRow(sqlStatement, email)
+	row := c.db.QueryRow(sqlStatement, param.Email)
 	if err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Phone, &user.Image); err != nil {
 		return &models.Customer{}, err
+	}
+
+	if !CheckPasswordHash(param.Password, user.Password) {
+		return nil, fmt.Errorf("password hash")
 	}
 
 	if err := godotenv.Load(); err != nil {
@@ -47,18 +51,12 @@ func (c *CustomerRepo) Get(email string) (*models.Customer, error) {
 	return &user, nil
 }
 
-func (c *CustomerRepo) GetLogin(id *models.IdReg) (*models.Login, error) {
-	var user models.Login
-	sqlStatement := `SELECT email,password FROM customer WHERE customer_id=$1`
-
-	row := c.db.QueryRow(sqlStatement, id)
-	if err := row.Scan(&user.Email, &user.Password); err != nil {
-		return &models.Login{}, err
-	}
-	return &user, nil
-}
-
 func (c *CustomerRepo) Create(user *models.Customer) error {
+	hash, err := HashPassword(user.Password)
+	if err != nil {
+		return fmt.Errorf("Hash Password: %w", err)
+	}
+	user.Password = hash
 	sqlStatement := `INSERT INTO customer (phone, email, name, password) VALUES ($1, $2, $3, $4)`
 	if err := c.db.QueryRow(sqlStatement, user.Phone, user.Email, user.Name, user.Password); err != nil {
 		return err.Err()
@@ -327,4 +325,25 @@ func (c *CustomerRepo) GetAllMyProduct(id *models.IdReg) ([]models.CustomerOrder
 		products = append(products, product)
 	}
 	return products, nil
+}
+
+func (c *CustomerRepo) UpdatePassword(param *models.Password) error {
+	var password models.Password
+	sqlStatement := `SELECT password FROM customer WHERE customer_id=$1`
+	row := c.db.QueryRow(sqlStatement, param.Id)
+	if err := row.Scan(&password.Old); err != nil {
+		return err
+	}
+
+	if !CheckPasswordHash(param.Old, password.Old) {
+		return fmt.Errorf("password hash error")
+	}
+
+	sqlStatement = `UPDATE customer SET password=$2 WHERE customer_id=$1`
+	_, err := c.db.Exec(sqlStatement, param.Id, param.New)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

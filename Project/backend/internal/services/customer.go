@@ -23,21 +23,7 @@ func NewCustomerService(repo db.Customer) *CustomerService {
 	return &CustomerService{repo: repo}
 }
 
-func (c *CustomerService) Get(param string) (*models.Customer, error) {
-	user, err := c.repo.Get(param)
-	if err != nil {
-		return &models.Customer{}, err
-	}
-	return user, nil
-}
-
 func (c *CustomerService) Create(user *models.Customer) error {
-	hash, err := HashPassword(user.Password)
-	if err != nil {
-		return fmt.Errorf("Hash Password: %w", err)
-	}
-	user.Password = hash
-	fmt.Printf("%+v\n", user)
 	if err := c.repo.Create(user); err != nil {
 		return err
 	}
@@ -45,12 +31,8 @@ func (c *CustomerService) Create(user *models.Customer) error {
 }
 
 func (c *CustomerService) Login(param *models.Login) (t string, id int, err error) {
-	customer, err := c.repo.Get(param.Email)
+	customer, err := c.repo.Get(param)
 	if err != nil {
-		return "", -1, err
-	}
-
-	if !CheckPasswordHash(param.Password, customer.Password) {
 		return "", -1, err
 	}
 
@@ -191,10 +173,9 @@ func (c *CustomerService) GetAllMyProduct(id *models.IdReg) ([]models.CustomerOr
 	return products, nil
 }
 
-func (c *CustomerService) GetLogin(id *models.IdReg) (*models.Login, error) {
-	user, err := c.repo.GetLogin(id)
-	if err != nil {
-		return nil, err
+func (c *CustomerService) UpdatePassword(param *models.Password) error{
+	if err := c.repo.UpdatePassword(param); err !=nil{
+		return err
 	}
-	return user, err
+	return nil
 }

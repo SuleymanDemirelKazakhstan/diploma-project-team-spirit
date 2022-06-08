@@ -12,7 +12,7 @@ type Admin interface {
 	Create(user *models.Owner) error
 	Get(param *models.IdReg) (*models.Owner, error)
 	GetAll() ([]models.Owner, error)
-	GetLogin(param *models.EmailRequest) (*models.Owner, error)
+	GetLogin(param *models.Login) (*models.Owner, error)
 	Update(user *models.Owner) error
 	Delete(param *models.IdReg) error
 	SaveImage(id *models.IdReg, file string) (string, error)
@@ -20,8 +20,7 @@ type Admin interface {
 }
 
 type Customer interface {
-	Get(email string) (*models.Customer, error)
-	GetLogin(id *models.IdReg) (*models.Login, error)
+	Get(param *models.Login) (*models.Customer, error)
 	Create(user *models.Customer) error
 	CreateOrder(order *models.Order) error
 	GetOrder(id *models.IdReg) (*[]models.Product, error)
@@ -33,6 +32,7 @@ type Customer interface {
 	GetDiscountProducts() ([]models.Product, error)
 	Search(p *models.SearchParam) ([]models.Product, error)
 	GetAllMyProduct(id *models.IdReg) ([]models.CustomerOrder, error)
+	UpdatePassword(param *models.Password) error
 }
 
 type Shop interface {
@@ -42,7 +42,7 @@ type Shop interface {
 	Update(product *models.Product) error
 	Delete(param *models.IdReg) error
 	GetOrder(id *models.IdReg) (*[]models.OwnerOrder, error)
-	GetOwner(email string) (*models.Owner, error)
+	GetOwner(param *models.Login) (*models.Owner, error)
 	SaveImage(id *models.IdReg, file string) (string, error)
 	DeleteImage(id *models.IdReg) error
 	Issued(id *models.IdReg) error

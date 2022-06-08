@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"os"
 	"secondChance/internal/models"
@@ -20,6 +21,12 @@ func NewAdminRepo(db *sql.DB) *AdminRepo {
 }
 
 func (a *AdminRepo) Create(user *models.Owner) error {
+	hash, err := HashPassword(user.Password)
+	if err != nil {
+		return err
+	}
+
+	user.Password = hash
 	sqlStatement := `INSERT INTO shop (phone, email, name, password, address) VALUES ($1, $2, $3, $4, $5)`
 	if err := a.db.QueryRow(sqlStatement, user.Phone, user.Email, user.Name, user.Password, user.Address); err != nil {
 		return err.Err()
@@ -81,15 +88,40 @@ func (a *AdminRepo) GetAll() ([]models.Owner, error) {
 }
 
 func (a *AdminRepo) Update(user *models.Owner) error {
-	sqlStatement := `UPDATE shop SET name=$2, password=$3, phone=$4, email=$5, address=$6 WHERE shop_id=$1`
-	_, err := a.db.Exec(sqlStatement, user.Id, user.Name, user.Password, user.Phone, user.Email, user.Address)
+	if user.Id == 0 {
+		return fmt.Errorf("id is not specified")
+	}
+	str := []string{}
+	if user.Email != "" {
+		str = append(str, user.Email)
+	}
+	if user.Name != "" {
+		str = append(str, user.Name)
+	}
+	if user.Phone != "" {
+		str = append(str, user.Phone)
+	}
+	if user.Address != "" {
+		str = append(str, user.Address)
+	}
+	if user.Password != "" {
+		var err error
+		user.Password, err = HashPassword(user.Password)
+		if err != nil {
+			return err
+		}
+		str = append(str, user.Password)
+	}
+
+	sqlStatement := fmt.Sprintf(`UPDATE shop SET %v WHERE shop_id=$1`, strings.Join(str,","))
+	_, err := a.db.Exec(sqlStatement, user.Id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (a *AdminRepo) GetLogin(param *models.EmailRequest) (*models.Owner, error) {
+func (a *AdminRepo) GetLogin(param *models.Login) (*models.Owner, error) {
 	var user models.Owner
 	sqlStatement := `SELECT shop_id,email,password FROM shop WHERE shop_id=$1`
 
@@ -98,6 +130,11 @@ func (a *AdminRepo) GetLogin(param *models.EmailRequest) (*models.Owner, error) 
 	if err := row.Scan(&user.Id, &user.Email, &user.Password); err != nil {
 		return &models.Owner{}, err
 	}
+
+	if !CheckPasswordHash(param.Password, user.Password) {
+		return nil, errors.New("login error")
+	}
+
 	return &user, nil
 }
 

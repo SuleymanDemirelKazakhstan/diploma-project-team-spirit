@@ -90,15 +90,12 @@ func (o *OwnerService) GetOrder(id *models.IdReg) (*[]models.OwnerOrder, error) 
 }
 
 func (o *OwnerService) Login(param *models.Login) (string, int, error) {
-	// s.DBLayer.GetOwner
-	owner, err := o.repo.GetOwner(param.Email)
+	owner, err := o.repo.GetOwner(param)
 	if err != nil {
 		return "", -1, err
 	}
 
-	if !CheckPasswordHash(param.Password, owner.Password) {
-		return "", -1, err
-	}
+	
 
 	token := jwt.New(jwt.SigningMethodHS256)
 

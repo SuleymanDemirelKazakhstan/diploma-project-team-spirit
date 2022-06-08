@@ -394,9 +394,9 @@ func (h *CustomerHandler) GetAllMyProduct(c *fiber.Ctx) error {
 	})
 }
 
-func (h *CustomerHandler) Get(c *fiber.Ctx) error {
-	id := new(models.IdReg)
-	if err := c.QueryParser(id); err != nil {
+func (h *CustomerHandler) UpdatePassword(c *fiber.Ctx) error {
+	password := new(models.Password)
+	if err := c.BodyParser(password); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
@@ -404,24 +404,22 @@ func (h *CustomerHandler) Get(c *fiber.Ctx) error {
 	}
 
 	validate = validator.New()
-	if err := validate.Struct(id); err != nil {
+	if err := validate.Struct(password); err != nil {
 		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 
-	user, err := h.handler.GetLogin(id)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+	if err := h.handler.UpdatePassword(password); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 
 	return c.JSON(fiber.Map{
-		"status":   true,
-		"message":  "success",
-		"user": user,
+		"status":  true,
+		"message": "success",
 	})
 }

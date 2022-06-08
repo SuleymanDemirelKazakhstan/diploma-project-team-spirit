@@ -19,7 +19,6 @@ type Admin interface {
 }
 
 type Customer interface {
-	Get(param string) (*models.Customer, error)
 	Create(user *models.Customer) error
 	Login(param *models.Login) (t string, id int, err error)
 	CreateOrder(order *models.Order) (err error)
@@ -33,7 +32,7 @@ type Customer interface {
 	GetDiscountProducts() ([]models.Product, error)
 	Search(p *models.SearchParam) ([]models.Product, error)
 	GetAllMyProduct(id *models.IdReg) ([]models.CustomerOrder, error)
-	GetLogin(id *models.IdReg) (*models.Login, error)
+	UpdatePassword(param *models.Password) error
 }
 
 type Shop interface {

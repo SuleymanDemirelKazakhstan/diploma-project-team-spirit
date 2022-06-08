@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"os"
 	"secondChance/internal/db"
 	"secondChance/internal/models"
@@ -19,12 +18,6 @@ func NewAdminService(repo db.Admin) *AdminService {
 }
 
 func (r *AdminService) Create(user *models.Owner) error {
-	hash, err := HashPassword(user.Password)
-	if err != nil {
-		return err
-	}
-
-	user.Password = hash
 	if err := r.repo.Create(user); err != nil {
 		return err
 	}
@@ -55,58 +48,15 @@ func (r *AdminService) GetAll() ([]models.Owner, error) {
 }
 
 func (r *AdminService) Update(userReq *models.Owner) error {
-	userDB, err := r.repo.Get(&models.IdReg{userReq.Id})
-	if err != nil {
-		return err
-	}
-
-	user, err := newUser(userReq, userDB)
-	if err != nil {
-		return err
-	}
-
-	if err := r.repo.Update(user); err != nil {
+	if err := r.repo.Update(userReq); err != nil {
 		return err
 	}
 	return nil
 }
 
-//Todo validate
-func newUser(userReq, user *models.Owner) (*models.Owner, error) {
-	if userReq.Id == 0 {
-		return nil, fmt.Errorf("id is not specified")
-	}
-	if userReq.Email != "" {
-		user.Email = userReq.Email
-	}
-	if userReq.Name != "" {
-		user.Name = userReq.Name
-	}
-	if userReq.Phone != "" {
-		user.Phone = userReq.Phone
-	}
-	if userReq.Address != "" {
-		user.Address = userReq.Address
-	}
-	if userReq.Password != "" {
-		var err error
-		user.Password, err = HashPassword(userReq.Password)
-		if err != nil {
-			return &models.Owner{}, err
-		}
-	}
-	return user, nil
-}
-
 func (r *AdminService) Login(param *models.Login) (string, error) {
-	owner, err := r.repo.GetLogin(&models.EmailRequest{
-		Email: param.Email,
-	})
+	owner, err := r.repo.GetLogin(param)
 	if err != nil {
-		return "", err
-	}
-
-	if !CheckPasswordHash(param.Password, owner.Password) {
 		return "", err
 	}
 
