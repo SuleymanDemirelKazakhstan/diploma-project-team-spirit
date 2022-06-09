@@ -8,7 +8,6 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-	"github.com/joho/godotenv"
 )
 
 var validate *validator.Validate
@@ -82,8 +81,8 @@ func (h *AdminHandler) Delete(c *fiber.Ctx) (err error) {
 }
 
 func (h *AdminHandler) Get(c *fiber.Ctx) (err error) {
-	a := new(models.IdReg)
-	if err := c.QueryParser(a); err != nil {
+	id := new(models.IdReg)
+	if err := c.QueryParser(id); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
@@ -91,14 +90,14 @@ func (h *AdminHandler) Get(c *fiber.Ctx) (err error) {
 	}
 
 	validate = validator.New()
-	if err := validate.Struct(a); err != nil {
+	if err := validate.Struct(id); err != nil {
 		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 
-	user, err := h.handler.Get(a)
+	user, err := h.handler.Get(id)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			return c.Status(fiber.StatusNotFound).JSON(models.Resp{
@@ -111,14 +110,6 @@ func (h *AdminHandler) Get(c *fiber.Ctx) (err error) {
 			Message: err.Error(),
 		})
 	}
-	if err := godotenv.Load(); err != nil {
-		return c.Status(fiber.StatusNotFound).JSON(models.Resp{
-			Status:  false,
-			Message: err.Error(),
-		})
-	}
-	_url := os.Getenv("baseUrl")
-	user.Image = _url + user.Image
 
 	return c.JSON(fiber.Map{
 		"status":  true,
