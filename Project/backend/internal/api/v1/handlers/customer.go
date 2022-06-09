@@ -379,7 +379,7 @@ func (h *CustomerHandler) GetAllMyProduct(c *fiber.Ctx) error {
 		})
 	}
 
-	products, err := h.handler.GetOrder(id)
+	products, err := h.handler.GetAllMyProduct(id)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,

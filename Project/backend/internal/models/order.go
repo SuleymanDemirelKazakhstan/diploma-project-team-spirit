@@ -19,6 +19,7 @@ type OwnerOrder struct {
 
 type CustomerOrder struct {
 	ProductId int
+	ShopId    int
 	SelledAt  time.Time
 	Address   string
 	Status    bool

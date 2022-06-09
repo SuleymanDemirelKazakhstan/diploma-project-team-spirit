@@ -293,7 +293,7 @@ func (c *CustomerRepo) Search(p *models.SearchParam) ([]models.Product, error) {
 
 func (c *CustomerRepo) GetAllMyProduct(id *models.IdReg) ([]models.CustomerOrder, error) {
 	var products []models.CustomerOrder
-	sqlStatement := `select t1.product_id, t1.selled_at, t2.address, t3.status from product t1, shop t2, orders t3 where t1.product_id = t3.product_id and t2.shop_id = t3.shop_id and t3.customer_id = $1;`
+	sqlStatement := `select t1.product_id, t1.shop_id, t1.selled_at, t2.address, t1.image, t3.status from product t1, shop t2, orders t3 where t1.product_id = t3.product_id and t2.shop_id = t3.shop_id and t3.customer_id = $1;`
 
 	rows, err := c.db.Query(sqlStatement, id.Id)
 	if err != nil {
@@ -308,7 +308,7 @@ func (c *CustomerRepo) GetAllMyProduct(id *models.IdReg) ([]models.CustomerOrder
 
 	for rows.Next() {
 		var product models.CustomerOrder
-		if err := rows.Scan(&product.ProductId, &product.SelledAt,
+		if err := rows.Scan(&product.ProductId, &product.ShopId, &product.SelledAt,
 			&product.Address, pq.Array(&product.Image),
 			&product.Status); err != nil {
 			return []models.CustomerOrder{}, err
