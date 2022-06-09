@@ -141,7 +141,7 @@ func (h *OwnerHandler) Update(c *fiber.Ctx) (err error) {
 			Message: err.Error(),
 		})
 	}
-	//TODO: valide id
+	
 	if err := h.handler.Update(productReq); err != nil {
 		return c.JSON(models.Resp{
 			Status:  false,
