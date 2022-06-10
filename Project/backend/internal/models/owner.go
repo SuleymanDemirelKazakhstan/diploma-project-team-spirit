@@ -23,17 +23,11 @@ type OwnerFillter struct {
 }
 
 type OwnerProduct struct {
-	Id          int       `json:"id,omitempty"`
-	Price       float64   `json:"price,omitempty" validate:"required"`
-	Name        string    `json:"name,omitempty" validate:"required"`
-	Auction     bool      `json:"is_auction,omitempty"`
-	Category    string    `json:"category,omitempty" validate:"required"`
-	Subcategory string    `json:"subcategory,omitempty" validate:"required"`
-	Size        string    `json:"size,omitempty" validate:"required"`
-	Colour      string    `json:"colour,omitempty" validate:"required"`
-	Condition   string    `json:"condition,omitempty" validate:"required"`
-	Selled_at   time.Time `json:"time,omitempty"`
-	Image       []string  `json:"image"       form:"image"`
-	Status      bool      `json:"status,omitempty"`
-	Customer    string    `json:"customer,omitempty"`
+	Id        int       `json:"id,omitempty"`
+	Price     float64   `json:"price,omitempty" validate:"required"`
+	Name      string    `json:"name,omitempty" validate:"required"`
+	Auction   bool      `json:"is_auction,omitempty"`
+	Selled_at time.Time `json:"time,omitempty"`
+	Status    bool      `json:"status,omitempty"`
+	Customer  string    `json:"customer,omitempty"`
 }

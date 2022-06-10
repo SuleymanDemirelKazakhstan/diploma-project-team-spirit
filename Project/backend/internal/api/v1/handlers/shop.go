@@ -344,3 +344,35 @@ func (h *OwnerHandler) GetAllMyProduct(c *fiber.Ctx) error {
 		"products": products,
 	})
 }
+
+func (h *OwnerHandler) GetCatalog(c *fiber.Ctx) error {
+	id := new(models.IdReg)
+	if err := c.QueryParser(id); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	validate = validator.New()
+	if err := validate.Struct(id); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	products, err := h.handler.GetCatalog(id)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":   true,
+		"message":  "success",
+		"products": products,
+	})
+}

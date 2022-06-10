@@ -48,6 +48,7 @@ type Shop interface {
 	DeleteImage(id *models.IdReg) error
 	Issued(id *models.IdReg) error
 	GetAllMyProduct(param *models.OwnerFillter) ([]models.OwnerProduct, error)
+	GetCatalog(id *models.IdReg) ([]models.Product, error)
 }
 
 type Service struct {

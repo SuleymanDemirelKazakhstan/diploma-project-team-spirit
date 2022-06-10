@@ -137,3 +137,11 @@ func (o *OwnerService) GetAllMyProduct(param *models.OwnerFillter) ([]models.Own
 	}
 	return products, nil
 }
+
+func (o *OwnerService) GetCatalog(id *models.IdReg) ([]models.Product, error) {
+	products, err := o.repo.GetCatalog(id)
+	if err != nil {
+		return []models.Product{}, err
+	}
+	return products, nil
+}
