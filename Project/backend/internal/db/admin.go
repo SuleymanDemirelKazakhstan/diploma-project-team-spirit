@@ -104,6 +104,9 @@ func (a *AdminRepo) Update(user *models.Owner) error {
 	if user.Address != "" {
 		str = append(str, user.Address)
 	}
+	if user.Description != "" {
+		str = append(str, user.Description)
+	}
 	if user.Password != "" {
 		var err error
 		user.Password, err = HashPassword(user.Password)
@@ -113,7 +116,11 @@ func (a *AdminRepo) Update(user *models.Owner) error {
 		str = append(str, user.Password)
 	}
 
-	sqlStatement := fmt.Sprintf(`UPDATE shop SET %v WHERE shop_id=$1`, strings.Join(str,","))
+	if len(str) == 0 {
+		return fmt.Errorf("there is no data to update")
+	}
+
+	sqlStatement := fmt.Sprintf(`UPDATE shop SET %v WHERE shop_id=$1`, strings.Join(str, ","))
 	_, err := a.db.Exec(sqlStatement, user.Id)
 	if err != nil {
 		return err

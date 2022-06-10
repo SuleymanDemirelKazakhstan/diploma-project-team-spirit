@@ -95,8 +95,6 @@ func (o *OwnerService) Login(param *models.Login) (string, int, error) {
 		return "", -1, err
 	}
 
-	
-
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
@@ -132,10 +130,10 @@ func (o *OwnerService) Issued(id *models.IdReg) error {
 	return nil
 }
 
-func (o *OwnerService) GetAllMyProduct(id *models.IdReg) ([]models.Product, error) {
-	products, err := o.repo.GetAllMyProduct(id)
+func (o *OwnerService) GetAllMyProduct(param *models.OwnerFillter) ([]models.OwnerProduct, error) {
+	products, err := o.repo.GetAllMyProduct(param)
 	if err != nil {
-		return []models.Product{}, err
+		return []models.OwnerProduct{}, err
 	}
 	return products, nil
 }

@@ -141,7 +141,7 @@ func (h *OwnerHandler) Update(c *fiber.Ctx) (err error) {
 			Message: err.Error(),
 		})
 	}
-	
+
 	if err := h.handler.Update(productReq); err != nil {
 		return c.JSON(models.Resp{
 			Status:  false,
@@ -314,8 +314,8 @@ func (h *OwnerHandler) Issued(c *fiber.Ctx) error {
 }
 
 func (h *OwnerHandler) GetAllMyProduct(c *fiber.Ctx) error {
-	id := new(models.IdReg)
-	if err := c.QueryParser(id); err != nil {
+	param := new(models.OwnerFillter)
+	if err := c.QueryParser(param); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
@@ -323,14 +323,14 @@ func (h *OwnerHandler) GetAllMyProduct(c *fiber.Ctx) error {
 	}
 
 	validate = validator.New()
-	if err := validate.Struct(id); err != nil {
+	if err := validate.Struct(param); err != nil {
 		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 
-	products, err := h.handler.GetAllMyProduct(id)
+	products, err := h.handler.GetAllMyProduct(param)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,

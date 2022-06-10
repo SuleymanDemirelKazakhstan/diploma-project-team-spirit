@@ -47,7 +47,7 @@ type Shop interface {
 	SaveImage(id *models.IdReg, file string) (string, error)
 	DeleteImage(id *models.IdReg) error
 	Issued(id *models.IdReg) error
-	GetAllMyProduct(id *models.IdReg) ([]models.Product, error)
+	GetAllMyProduct(param *models.OwnerFillter) ([]models.OwnerProduct, error)
 }
 
 type Repository struct {

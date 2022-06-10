@@ -199,26 +199,55 @@ func (o *OwnerRepo) DeleteImage(id *models.IdReg) error {
 	return nil
 }
 
-func (o *OwnerRepo) GetAllMyProduct(id *models.IdReg) ([]models.Product, error) {
-	var products []models.Product
-	sqlStatement := `SELECT product_id, price, name, image, product_category, product_subcategory, product_size, product_colour from product where selled_at is null and shop_id=$1`
+func (o *OwnerRepo) GetAllMyProduct(param *models.OwnerFillter) ([]models.OwnerProduct, error) {
+	var products []models.OwnerProduct
+	sqlStatement := `SELECT t1.product_id, t1.price, t1.name, t1.image, t1.product_category, 
+	t1.product_subcategory, t1.product_size, t1.product_colour, t1.selled_at, t1.is_auction, t3.name, t2.status
+	from product t1, orders t2, customer t3 where t1.selled_at is null and t1.shop_id=$1 and t1.product_id = t2.product_id and t2.customer_id = t3.customer_id`
 
-	rows, err := o.db.Query(sqlStatement, id.Id)
+	if param.Status > 0 {
+		if param.Status == 1 {
+			sqlStatement += " and t2.status=true"
+		} else {
+			sqlStatement += " and t2.status=false"
+		}
+	}
+	if param.MinPrice != 0 || param.MaxPrice != 0 {
+		if param.MinPrice != 0 && param.MaxPrice != 0 {
+			sqlStatement += fmt.Sprintf(" and t1.price BETWEEN %d AND %d", param.MinPrice, param.MaxPrice)
+		} else if param.MinPrice != 0 {
+			sqlStatement += fmt.Sprintf(" and t1.price >= %d", param.MinPrice)
+		} else {
+			sqlStatement += fmt.Sprintf(" and t1.price <= %d", param.MaxPrice)
+		}
+	}
+	if !param.StartDate.IsZero() || !param.EndDate.IsZero() {
+		if !param.StartDate.IsZero() && !param.EndDate.IsZero() {
+			sqlStatement += fmt.Sprintf(" and t1.selled_at BETWEEN %d AND %d", param.StartDate, param.EndDate)
+		} else if !param.StartDate.IsZero() {
+			sqlStatement += fmt.Sprintf(" and t1.selled_at >= %d", param.StartDate)
+		} else {
+			sqlStatement += fmt.Sprintf(" and t1.selled_at <= %d", param.EndDate)
+		}
+	}
+
+	rows, err := o.db.Query(sqlStatement, param.Id)
 	if err != nil {
-		return []models.Product{}, err
+		return []models.OwnerProduct{}, err
 	}
 	defer rows.Close()
 
 	if err := godotenv.Load(); err != nil {
-		return []models.Product{}, err
+		return []models.OwnerProduct{}, err
 	}
 	_url := os.Getenv("baseUrl")
 
 	for rows.Next() {
-		var product models.Product
+		var product models.OwnerProduct
 		if err := rows.Scan(&product.Id, &product.Price, &product.Name, pq.Array(&product.Image),
-			&product.Category, &product.Subcategory, &product.Size, &product.Colour); err != nil {
-			return []models.Product{}, err
+			&product.Category, &product.Subcategory, &product.Size, &product.Colour, &product.Selled_at,
+			&product.Auction, &product.Customer, &product.Status); err != nil {
+			return []models.OwnerProduct{}, err
 		}
 		for i := range product.Image {
 			product.Image[i] = _url + product.Image[i]
