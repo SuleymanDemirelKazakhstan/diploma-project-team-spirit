@@ -47,6 +47,7 @@ type Shop interface {
 	Issued(c *fiber.Ctx) error
 	GetAllMyProduct(c *fiber.Ctx) error
 	GetCatalog(c *fiber.Ctx) error
+	UpdateEmail(c *fiber.Ctx) error
 }
 
 type Handler struct {

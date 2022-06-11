@@ -21,12 +21,12 @@ func NewOwnerRepo(db *sql.DB) *OwnerRepo {
 }
 
 func (o *OwnerRepo) Create(product *models.Product) error {
-	sqlStatement := `INSERT INTO product (shop_id, price, name, description, is_auction, product_category, product_subcategory, product_size, product_colour, product_condition) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+	sqlStatement := `INSERT INTO product (shop_id, price, name, description, is_auction, product_category, product_subcategory, product_size, product_colour, discount, product_condition) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
 	if err := o.db.QueryRow(sqlStatement, product.OwnerId,
 		product.Price, product.Name,
 		product.Description, product.Auction,
 		product.Category, product.Subcategory,
-		product.Size, product.Colour,
+		product.Size, product.Colour, product.Discount,
 		product.Condition); err != nil {
 		return err.Err()
 	}
@@ -144,9 +144,9 @@ func (o *OwnerRepo) GetOrder(id *models.IdReg) (*[]models.OwnerOrder, error) {
 	return &products, nil
 }
 
-func (o *OwnerRepo) Issued(id *models.IdReg) error {
-	sqlStatement := `UPDATE orders SET status=true WHERE product_id=$1`
-	_, err := o.db.Exec(sqlStatement, id.Id)
+func (o *OwnerRepo) Issued(param *models.Issued) error {
+	sqlStatement := `UPDATE orders SET status=%2 WHERE product_id=$1`
+	_, err := o.db.Exec(sqlStatement, param.Id, param.Issued)
 	if err != nil {
 		return err
 	}
@@ -229,6 +229,9 @@ func (o *OwnerRepo) GetAllMyProduct(param *models.OwnerFillter) ([]models.OwnerP
 			sqlStatement += fmt.Sprintf(" and t1.selled_at <= %d", param.EndDate)
 		}
 	}
+	if param.Search != "" {
+		sqlStatement += fmt.Sprintf(" and t1.name like '%s%%'", param.Search)
+	}
 
 	rows, err := o.db.Query(sqlStatement, param.Id)
 	if err != nil {
@@ -305,4 +308,14 @@ func (o *OwnerRepo) GetCatalog(param *models.CatalogFilter) ([]models.Product, e
 		products = append(products, product)
 	}
 	return products, nil
+}
+
+func (o *OwnerRepo) UpdateEmail(param *models.EmailUser) error {
+	sqlStatement := `UPDATE shop SET email=$2 WHERE shop_id=$1`
+	_, err := o.db.Exec(sqlStatement, param.Id, param.Email)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

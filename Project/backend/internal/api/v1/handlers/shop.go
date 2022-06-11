@@ -287,20 +287,20 @@ func (h *OwnerHandler) DeleteImage(c *fiber.Ctx) error {
 }
 
 func (h *OwnerHandler) Issued(c *fiber.Ctx) error {
-	id := new(models.IdReg)
-	if err := c.QueryParser(id); err != nil {
+	param := new(models.Issued)
+	if err := c.QueryParser(param); err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
 
 	validate = validator.New()
-	if err := validate.Struct(id); err != nil {
+	if err := validate.Struct(param); err != nil {
 		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 
-	if err := h.handler.Issued(id); err != nil {
+	if err := h.handler.Issued(param); err != nil {
 		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
@@ -374,5 +374,35 @@ func (h *OwnerHandler) GetCatalog(c *fiber.Ctx) error {
 		"status":   true,
 		"message":  "success",
 		"products": products,
+	})
+}
+
+func (h *OwnerHandler) UpdateEmail(c *fiber.Ctx) error {
+	param := new(models.EmailUser)
+	if err := c.BodyParser(param); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	validate = validator.New()
+	if err := validate.Struct(param); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	if err := h.handler.UpdateEmail(param); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":  true,
+		"message": "success",
 	})
 }

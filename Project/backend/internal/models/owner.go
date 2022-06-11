@@ -20,6 +20,7 @@ type OwnerFillter struct {
 	Status    int       `json:"status,omitempty"`
 	MinPrice  int       `json:"min_price,omitempty"`
 	MaxPrice  int       `json:"max_price,omitempty"`
+	Search    string    `json:"search,omitempty"`
 }
 
 type OwnerProduct struct {
@@ -30,6 +31,7 @@ type OwnerProduct struct {
 	Selled_at time.Time `json:"time,omitempty"`
 	Status    bool      `json:"status,omitempty"`
 	Customer  string    `json:"customer,omitempty"`
+	Search    string    `json:"search,omitempty"`
 }
 
 type CatalogFilter struct {
@@ -39,5 +41,5 @@ type CatalogFilter struct {
 	Category    []string `json:"category,omitempty"`
 	Subcategory []string `json:"subcategory,omitempty"`
 	Auction     bool     `json:"is_auction,omitempty"`
-	Search      string   `json:"is_auction,omitempty"`
+	Search      string   `json:"search,omitempty"`
 }

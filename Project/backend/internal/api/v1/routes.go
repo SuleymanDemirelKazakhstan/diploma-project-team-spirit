@@ -72,4 +72,5 @@ func Routes(app *fiber.App, h *handlers.Handler) {
 	owner.Get("/profile", h.Admin.Get)
 	owner.Put("/updateprofile", h.Admin.Update)
 	owner.Get("/getcatalog", h.Shop.GetCatalog)
+	owner.Put("/updateemail", h.Shop.UpdateEmail)
 }

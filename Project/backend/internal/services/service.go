@@ -46,9 +46,10 @@ type Shop interface {
 	Login(param *models.Login) (string, int, error)
 	SaveImage(id *models.IdReg, file string) (string, error)
 	DeleteImage(id *models.IdReg) error
-	Issued(id *models.IdReg) error
+	Issued(param *models.Issued) error
 	GetAllMyProduct(param *models.OwnerFillter) ([]models.OwnerProduct, error)
 	GetCatalog(param *models.CatalogFilter) ([]models.Product, error)
+	UpdateEmail(param *models.EmailUser) error
 }
 
 type Service struct {

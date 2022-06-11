@@ -35,3 +35,8 @@ type Filter struct {
 type IdReg struct {
 	Id int `json:"id,omitempty" validate:"required"`
 }
+
+type Issued struct {
+	Id     int  `json:"id,omitempty" validate:"required"`
+	Issued bool `json:"issued,omitempty"`
+}

@@ -123,8 +123,8 @@ func (o *OwnerService) DeleteImage(id *models.IdReg) error {
 	return nil
 }
 
-func (o *OwnerService) Issued(id *models.IdReg) error {
-	if err := o.repo.Issued(id); err != nil {
+func (o *OwnerService) Issued(param *models.Issued) error {
+	if err := o.repo.Issued(param); err != nil {
 		return err
 	}
 	return nil
@@ -144,4 +144,11 @@ func (o *OwnerService) GetCatalog(param *models.CatalogFilter) ([]models.Product
 		return []models.Product{}, err
 	}
 	return products, nil
+}
+
+func (o *OwnerService) UpdateEmail(param *models.EmailUser) error {
+	if err := o.repo.UpdateEmail(param); err != nil {
+		return err
+	}
+	return nil
 }
