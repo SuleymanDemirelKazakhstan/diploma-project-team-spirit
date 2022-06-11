@@ -31,3 +31,13 @@ type OwnerProduct struct {
 	Status    bool      `json:"status,omitempty"`
 	Customer  string    `json:"customer,omitempty"`
 }
+
+type CatalogFilter struct {
+	Id          int      `json:"id,omitempty" validate:"required"`
+	MinPrice    int      `json:"min_price,omitempty"`
+	MaxPrice    int      `json:"max_price,omitempty"`
+	Category    []string `json:"category,omitempty"`
+	Subcategory []string `json:"subcategory,omitempty"`
+	Auction     bool     `json:"is_auction,omitempty"`
+	Search      string   `json:"is_auction,omitempty"`
+}

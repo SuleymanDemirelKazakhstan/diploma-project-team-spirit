@@ -202,7 +202,7 @@ func (o *OwnerRepo) DeleteImage(id *models.IdReg) error {
 func (o *OwnerRepo) GetAllMyProduct(param *models.OwnerFillter) ([]models.OwnerProduct, error) {
 	var products []models.OwnerProduct
 	sqlStatement := `SELECT t1.product_id, t1.price, t1.name, t1.selled_at, t1.is_auction, t3.name, t2.status
-	from product t1, orders t2, customer t3 where t1.selled_at is null and t1.shop_id=$1 and t1.product_id = t2.product_id and t2.customer_id = t3.customer_id`
+	from product t1, orders t2, customer t3 where t1.selled_at is not null and t1.shop_id=$1 and t1.product_id = t2.product_id and t2.customer_id = t3.customer_id`
 
 	if param.Status > 0 {
 		if param.Status == 1 {
@@ -247,11 +247,42 @@ func (o *OwnerRepo) GetAllMyProduct(param *models.OwnerFillter) ([]models.OwnerP
 	return products, nil
 }
 
-func (o *OwnerRepo) GetCatalog(id *models.IdReg) ([]models.Product, error) {
+func (o *OwnerRepo) GetCatalog(param *models.CatalogFilter) ([]models.Product, error) {
 	var products []models.Product
 	sqlStatement := `SELECT product_id, price, name, image, product_category, product_subcategory, product_size, product_colour from product where selled_at is null and shop_id=$1`
 
-	rows, err := o.db.Query(sqlStatement, id.Id)
+	if param.MinPrice != 0 || param.MaxPrice != 0 {
+		if param.MinPrice != 0 && param.MaxPrice != 0 {
+			sqlStatement += fmt.Sprintf(" and price BETWEEN %d AND %d", param.MinPrice, param.MaxPrice)
+		} else if param.MinPrice != 0 {
+			sqlStatement += fmt.Sprintf(" and price >= %d", param.MinPrice)
+		} else {
+			sqlStatement += fmt.Sprintf(" and price <= %d", param.MaxPrice)
+		}
+	}
+	if param.Category != nil {
+		for i := range param.Category {
+			param.Category[i] = fmt.Sprintf("'%s'", param.Category[i])
+		}
+		sqlStatement += fmt.Sprintf(" and product_category in (%s)", strings.Join(param.Category, ","))
+		fmt.Println(sqlStatement)
+	}
+	if param.Subcategory != nil {
+		for i := range param.Subcategory {
+			param.Subcategory[i] = fmt.Sprintf("'%s'", param.Subcategory[i])
+		}
+		sqlStatement += fmt.Sprintf(" and product_subcategory in (%s)", strings.Join(param.Subcategory, ","))
+	}
+	if param.Search != "" {
+		sqlStatement += fmt.Sprintf(" and name like '%s%%'", param.Search)
+	}
+	if param.Auction {
+		sqlStatement += " and is_auction=true"
+	} else {
+		sqlStatement += " and is_auction=false"
+	}
+
+	rows, err := o.db.Query(sqlStatement, param.Id)
 	if err != nil {
 		return []models.Product{}, err
 	}

@@ -346,8 +346,8 @@ func (h *OwnerHandler) GetAllMyProduct(c *fiber.Ctx) error {
 }
 
 func (h *OwnerHandler) GetCatalog(c *fiber.Ctx) error {
-	id := new(models.IdReg)
-	if err := c.QueryParser(id); err != nil {
+	param := new(models.CatalogFilter)
+	if err := c.QueryParser(param); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
@@ -355,14 +355,14 @@ func (h *OwnerHandler) GetCatalog(c *fiber.Ctx) error {
 	}
 
 	validate = validator.New()
-	if err := validate.Struct(id); err != nil {
+	if err := validate.Struct(param); err != nil {
 		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 
-	products, err := h.handler.GetCatalog(id)
+	products, err := h.handler.GetCatalog(param)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
