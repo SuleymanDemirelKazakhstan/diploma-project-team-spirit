@@ -39,17 +39,21 @@ type Customer interface {
 type Shop interface {
 	GetAll() ([]models.Product, error)
 	Get(id *models.IdReg) (*models.Product, *models.Owner, error)
-	Create(product *models.Product) error
+	Create(product *models.CreateProduct) (*models.ImagePath, error)
 	Delete(id *models.IdReg) error
-	Update(productReq *models.Product) error
+	Update(product *models.CreateProduct) (*models.ImagePath, error)
 	GetOrder(id *models.IdReg) (*[]models.OwnerOrder, error)
 	Login(param *models.Login) (string, int, error)
 	SaveImage(id *models.IdReg, file string) (string, error)
-	DeleteImage(id *models.IdReg) error
+	DeleteImage(id *models.Image) error
 	Issued(param *models.Issued) error
-	GetAllMyProduct(param *models.OwnerFillter) ([]models.OwnerProduct, error)
 	GetCatalog(param *models.CatalogFilter) ([]models.Product, error)
+	GetOrders(param *models.OwnerFillter) ([]models.OwnerProduct, error)
 	UpdateEmail(param *models.EmailUser) error
+	GetProfile(param *models.IdReg) (*models.DTOowner, error)
+	UpdatePassword(param *models.Password) error
+	UpdateProfile(param *models.DTOowner) error
+	MainPage(id *models.IdReg) (*models.MainPage, []models.OwnerProduct, error)
 }
 
 type Service struct {
@@ -62,6 +66,6 @@ func NewService(repo *db.Repository, rdb *redis.Client) *Service {
 	return &Service{
 		Admin:    NewAdminService(repo.Admin),
 		Customer: NewCustomerService(repo.Customer),
-		Shop:     NewOwnerService(repo.Shop, rdb),
+		Shop:     NewOwnerService(repo.Shop),
 	}
 }

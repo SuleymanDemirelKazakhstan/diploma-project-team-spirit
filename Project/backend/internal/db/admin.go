@@ -36,11 +36,11 @@ func (a *AdminRepo) Create(user *models.Owner) error {
 
 func (a *AdminRepo) Get(param *models.IdReg) (*models.Owner, error) {
 	var user models.Owner
-	sqlStatement := `SELECT shop_id,name,email,password,phone,address,image FROM shop WHERE shop_id=$1 and is_deleted=false`
+	sqlStatement := `SELECT shop_id,name,email,phone,address,image FROM shop WHERE shop_id=$1 and is_deleted=false`
 
 	row := a.db.QueryRow(sqlStatement, param.Id)
 	// unmarshal the row object to user
-	if err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Phone, &user.Address, &user.Image); err != nil {
+	if err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Phone, &user.Address, &user.Image); err != nil {
 		return &models.Owner{}, err
 	}
 	if err := godotenv.Load(); err != nil {

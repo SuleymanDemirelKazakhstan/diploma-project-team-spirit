@@ -40,3 +40,23 @@ type Issued struct {
 	Id     int  `json:"id,omitempty" validate:"required"`
 	Issued bool `json:"issued,omitempty"`
 }
+
+type CreateProduct struct {
+	Id          int     `json:"id,omitempty" validate:"required"`
+	Price       float64 `json:"price,omitempty" validate:"required"`
+	Name        string  `json:"name,omitempty" validate:"required"`
+	Description string  `json:"description,omitempty" validate:"required"`
+	Discount    int     `json:"discount,omitempty"`
+	Auction     bool    `json:"auction,omitempty"`
+	Category    string  `json:"category,omitempty" validate:"required"`
+	Subcategory string  `json:"subcategory,omitempty" validate:"required"`
+	Size        string  `json:"size,omitempty" validate:"required"`
+	Colour      string  `json:"colour,omitempty" validate:"required"`
+	Condition   string  `json:"condition,omitempty" validate:"required"`
+	FileName    []string
+	Selled      time.Time `json:"time"`
+}
+
+type ImagePath struct {
+	Path []string
+}

@@ -37,19 +37,23 @@ type Customer interface {
 }
 
 type Shop interface {
-	Create(product *models.Product) error
+	Create(product *models.CreateProduct) (*models.ImagePath, error)
 	Get(id *models.IdReg) (*models.Product, *models.Owner, error)
 	GetAll() ([]models.Product, error)
-	Update(product *models.Product) error
+	Update(product *models.CreateProduct) (*models.ImagePath, error)
 	Delete(param *models.IdReg) error
 	GetOrder(id *models.IdReg) (*[]models.OwnerOrder, error)
 	GetOwner(param *models.Login) (*models.Owner, error)
 	SaveImage(id *models.IdReg, file string) (string, error)
-	DeleteImage(id *models.IdReg) error
+	DeleteImage(id *models.Image) error
 	Issued(id *models.Issued) error
-	GetAllMyProduct(param *models.OwnerFillter) ([]models.OwnerProduct, error)
 	GetCatalog(param *models.CatalogFilter) ([]models.Product, error)
+	GetOrders(param *models.OwnerFillter) ([]models.OwnerProduct, error)
+	GetProfile(param *models.IdReg) (*models.DTOowner, error)
 	UpdateEmail(param *models.EmailUser) error
+	UpdatePassword(param *models.Password) error
+	UpdateProfile(param *models.DTOowner) error
+	MainPage(id *models.IdReg) (*models.MainPage, []models.OwnerProduct, error)
 }
 
 type Repository struct {
@@ -62,6 +66,6 @@ func NewDataBaseLayers(db *sql.DB, rdb *redis.Client) *Repository {
 	return &Repository{
 		Admin:    NewAdminRepo(db),
 		Customer: NewCustomerRepo(db, rdb),
-		Shop:     NewOwnerRepo(db),
+		Shop:     NewOwnerRepo(db, rdb),
 	}
 }

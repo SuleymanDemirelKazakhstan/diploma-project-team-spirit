@@ -13,12 +13,6 @@ type SearchParam struct {
 	Param string `json:"param,omitempty" validate:"required"`
 }
 
-type Password struct {
-	Id  int    `json:"id,omitempty" validate:"required"`
-	Old string `json:"old,omitempty" validate:"required"`
-	New string `json:"new,omitempty" validate:"required"`
-}
-
 type EmailUser struct {
 	Id    int    `json:"customer_id,omitempty" validate:"required"`
 	Email string `json:"email,omitempty" validate:"required"`

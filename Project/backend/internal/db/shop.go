@@ -1,36 +1,83 @@
 package db
 
 import (
+	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"os"
 	"secondChance/internal/models"
 	"strings"
+	"time"
 
-	"github.com/google/uuid"
+	"github.com/go-redis/redis/v8"
 	"github.com/joho/godotenv"
 	"github.com/lib/pq"
 )
 
 type OwnerRepo struct {
-	db *sql.DB
+	db  *sql.DB
+	rdb *redis.Client
 }
 
-func NewOwnerRepo(db *sql.DB) *OwnerRepo {
-	return &OwnerRepo{db: db}
+func NewOwnerRepo(db *sql.DB, rdb *redis.Client) *OwnerRepo {
+	return &OwnerRepo{
+		db:  db,
+		rdb: rdb,
+	}
 }
 
-func (o *OwnerRepo) Create(product *models.Product) error {
-	sqlStatement := `INSERT INTO product (shop_id, price, name, description, is_auction, product_category, product_subcategory, product_size, product_colour, discount, product_condition) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
-	if err := o.db.QueryRow(sqlStatement, product.OwnerId,
+func (o *OwnerRepo) Create(product *models.CreateProduct) (*models.ImagePath, error) {
+	var id models.IdReg
+	paths := new(models.ImagePath)
+	sqlStatement := `select max(product_id) from product`
+
+	row := o.db.QueryRow(sqlStatement)
+	if err := row.Scan(&id.Id); err != nil {
+		return &models.ImagePath{}, err
+	}
+	for _, v := range product.FileName {
+		path := fmt.Sprintf("/images/product/%d/%s", id.Id+1, v)
+		if err := os.MkdirAll(fmt.Sprintf("./images/product/%d", id.Id+1), os.ModePerm); err != nil {
+			return &models.ImagePath{}, err
+		}
+		paths.Path = append(paths.Path, path)
+	}
+
+	sqlStatement = `INSERT INTO product (shop_id, price, name, 
+		description, is_auction, product_category, product_subcategory, 
+		product_size, product_colour, discount, product_condition, image) 
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`
+
+	if _, err := o.db.Exec(sqlStatement, product.Id,
 		product.Price, product.Name,
 		product.Description, product.Auction,
 		product.Category, product.Subcategory,
 		product.Size, product.Colour, product.Discount,
-		product.Condition); err != nil {
-		return err.Err()
+		product.Condition, pq.Array(paths.Path)); err != nil {
+		return &models.ImagePath{}, err
 	}
-	return nil
+
+	if product.Auction {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		exp := time.Hour * 3
+		json, err := json.Marshal(models.Value{
+			Price:      int(product.Price),
+			CustomerId: -1,
+			StartTime:  time.Now(),
+		})
+		if err != nil {
+			return &models.ImagePath{}, err
+		}
+
+		if err := o.rdb.Set(ctx, string(id.Id+1), json, exp).Err(); err != nil {
+			return &models.ImagePath{}, err
+		}
+	}
+
+	return paths, nil
 }
 
 func (o *OwnerRepo) Get(id *models.IdReg) (*models.Product, *models.Owner, error) {
@@ -91,29 +138,57 @@ func (o *OwnerRepo) GetAll() ([]models.Product, error) {
 	return products, nil
 }
 
-func (o *OwnerRepo) Update(product *models.Product) error {
+func (o *OwnerRepo) Update(product *models.CreateProduct) (*models.ImagePath, error) {
 	str := []string{}
+	paths := new(models.ImagePath)
 	if product.Price != 0 {
-		str = append(str, fmt.Sprintf("price=%v", product.Price))
+		str = append(str, fmt.Sprintf("price=%f", product.Price))
 	}
 	if product.Name != "" {
-		str = append(str, fmt.Sprintf("name=%v", product.Name))
+		str = append(str, fmt.Sprintf("name='%s'", product.Name))
 	}
 	if product.Description != "" {
-		str = append(str, fmt.Sprintf("description=%v", product.Description))
+		str = append(str, fmt.Sprintf("description='%s'", product.Description))
 	}
 	if product.Discount != 0 {
-		str = append(str, fmt.Sprintf("discount=%v", product.Discount))
+		str = append(str, fmt.Sprintf("discount=%d", product.Discount))
+	}
+	if product.Category != "" {
+		str = append(str, fmt.Sprintf("product_category='%s'", product.Category))
+	}
+	if product.Subcategory != "" {
+		str = append(str, fmt.Sprintf("product_subcategory='%s'", product.Subcategory))
+	}
+	if product.Size != "" {
+		str = append(str, fmt.Sprintf("product_size='%s'", product.Size))
+	}
+	if product.Colour != "" {
+		str = append(str, fmt.Sprintf("product_colour='%s'", product.Colour))
+	}
+	if product.Condition != "" {
+		str = append(str, fmt.Sprintf("product_condition='%s'", product.Condition))
 	}
 	str = append(str, fmt.Sprintf("is_auction=%v", product.Auction))
 
-	sqlStatement := fmt.Sprintf(`UPDATE product SET %v WHERE product_id=$1`, strings.Join(str, ","))
-	_, err := o.db.Exec(sqlStatement, product.Id, product.Price, product.Name,
-		product.Description, product.Discount, product.Auction)
-	if err != nil {
-		return err
+	for _, v := range product.FileName {
+		path := fmt.Sprintf("/images/product/%d/%s", product.Id, v)
+		paths.Path = append(paths.Path, path)
 	}
-	return nil
+
+	sqlStatement := ""
+	if product.FileName != nil {
+		sqlStatement = fmt.Sprintf(`UPDATE product SET %v, %v WHERE product_id=$1`, strings.Join(str, ","), pq.Array(paths.Path))
+	}
+	if product.FileName == nil {
+		sqlStatement = fmt.Sprintf(`UPDATE product SET %v WHERE product_id=$1`, strings.Join(str, ","))
+	}
+
+	_, err := o.db.Exec(sqlStatement, product.Id)
+	if err != nil {
+		return &models.ImagePath{}, err
+	}
+
+	return paths, nil
 }
 
 func (o *OwnerRepo) Delete(param *models.IdReg) error {
@@ -126,7 +201,9 @@ func (o *OwnerRepo) Delete(param *models.IdReg) error {
 
 func (o *OwnerRepo) GetOrder(id *models.IdReg) (*[]models.OwnerOrder, error) {
 	var products []models.OwnerOrder
-	sqlStatement := `select t1.name, t2.name, t2.price, t2.is_auction, t2.selled_at t3.status from customer t1, product t2, orders t3 where t1.customer_id = t3.customer_id and t2.product_id = t3.product_id and t3.shop_id = $1;`
+	sqlStatement := `select t1.name, t1.email, t2.product_id, t2.name, t2.product_size, t2.price, t2.image, t2.crated_at, t2.selled_at, t3.status 
+	from customer t1, product t2, orders t3 
+	where t1.customer_id = t3.customer_id and t2.product_id = t3.product_id and t3.order_id = $1;`
 
 	rows, err := o.db.Query(sqlStatement, id.Id)
 	if err != nil {
@@ -136,7 +213,8 @@ func (o *OwnerRepo) GetOrder(id *models.IdReg) (*[]models.OwnerOrder, error) {
 
 	for rows.Next() {
 		var product models.OwnerOrder
-		if err := rows.Scan(&product.CustomerName, &product.ProductName, &product.Price, &product.Auction, &product.Selled_at, &product.Status); err != nil {
+		if err := rows.Scan(&product.CustomerName, &product.CustomerEmail, &product.ProductId, &product.ProductName,
+			&product.Size, &product.Price, pq.Array(&product.Image), &product.Create_at, &product.Selled_at, &product.Status); err != nil {
 			return &[]models.OwnerOrder{}, err
 		}
 		products = append(products, product)
@@ -145,7 +223,7 @@ func (o *OwnerRepo) GetOrder(id *models.IdReg) (*[]models.OwnerOrder, error) {
 }
 
 func (o *OwnerRepo) Issued(param *models.Issued) error {
-	sqlStatement := `UPDATE orders SET status=%2 WHERE product_id=$1`
+	sqlStatement := `UPDATE orders SET status=$2 WHERE product_id=$1`
 	_, err := o.db.Exec(sqlStatement, param.Id, param.Issued)
 	if err != nil {
 		return err
@@ -168,40 +246,31 @@ func (o *OwnerRepo) GetOwner(param *models.Login) (*models.Owner, error) {
 }
 
 func (o *OwnerRepo) SaveImage(id *models.IdReg, file string) (string, error) {
-	// generate new uuid for image name
-	uniqueId := uuid.New()
-	// remove "- from imageName"
-	filename := strings.Replace(uniqueId.String(), "-", "", -1)
-	// extract image extension from original file filename
-	fileExt := strings.Split(file, ".")[1]
-
-	// generate image from filename and extension
-	image := fmt.Sprintf("%s.%s", filename, fileExt)
-	path := fmt.Sprintf("/images/product/%d/%s", id.Id, image)
+	path := fmt.Sprintf("/images/product/%d/%s", id.Id, file)
 	if err := os.MkdirAll(fmt.Sprintf("./images/product/%d", id.Id), os.ModePerm); err != nil {
 		return "", err
 	}
-
-	sqlStatement := `UPDATE product SET image=$2 WHERE product_id=$1`
-	_, err := o.db.Exec(sqlStatement, id.Id, path)
+	sqlStatement := fmt.Sprintf(`UPDATE product SET image=array_append(image, '%s') WHERE product_id=$1`, path)
+	_, err := o.db.Exec(sqlStatement, id.Id)
 	if err != nil {
 		return "", err
 	}
 	return path, nil
 }
 
-func (o *OwnerRepo) DeleteImage(id *models.IdReg) error {
-	sqlStatement := `UPDATE product SET image=NULL WHERE product_id=$1`
-	_, err := o.db.Exec(sqlStatement, id.Id)
+func (o *OwnerRepo) DeleteImage(param *models.Image) error {
+	path := fmt.Sprintf("/images/product/%d/%s", param.Id, param.Name)
+	sqlStatement := fmt.Sprintf(`UPDATE product SET image=array_remove(image, '%s') WHERE product_id=$1`, path)
+	_, err := o.db.Exec(sqlStatement, param.Id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (o *OwnerRepo) GetAllMyProduct(param *models.OwnerFillter) ([]models.OwnerProduct, error) {
+func (o *OwnerRepo) GetOrders(param *models.OwnerFillter) ([]models.OwnerProduct, error) {
 	var products []models.OwnerProduct
-	sqlStatement := `SELECT t1.product_id, t1.price, t1.name, t1.selled_at, t1.is_auction, t3.name, t2.status
+	sqlStatement := `SELECT t1.product_id, t1.price, t1.name, t1.selled_at, t1.is_auction, t3.name, t2.status, t2.order_id
 	from product t1, orders t2, customer t3 where t1.selled_at is not null and t1.shop_id=$1 and t1.product_id = t2.product_id and t2.customer_id = t3.customer_id`
 
 	if param.Status > 0 {
@@ -242,7 +311,7 @@ func (o *OwnerRepo) GetAllMyProduct(param *models.OwnerFillter) ([]models.OwnerP
 	for rows.Next() {
 		var product models.OwnerProduct
 		if err := rows.Scan(&product.Id, &product.Price, &product.Name, &product.Selled_at,
-			&product.Auction, &product.Customer, &product.Status); err != nil {
+			&product.Auction, &product.Customer, &product.Status, &product.OrderId); err != nil {
 			return []models.OwnerProduct{}, err
 		}
 		products = append(products, product)
@@ -318,4 +387,123 @@ func (o *OwnerRepo) UpdateEmail(param *models.EmailUser) error {
 	}
 
 	return nil
+}
+
+func (o *OwnerRepo) GetProfile(param *models.IdReg) (*models.DTOowner, error) {
+	var user models.DTOowner
+	sqlStatement := `SELECT name,email,phone,address,image,social_network FROM shop WHERE shop_id=$1 and is_deleted=false`
+
+	row := o.db.QueryRow(sqlStatement, param.Id)
+	// unmarshal the row object to user
+	if err := row.Scan(&user.Name, &user.Email, &user.Phone, &user.Address, &user.Image, &user.Social); err != nil {
+		return &models.DTOowner{}, err
+	}
+	if err := godotenv.Load(); err != nil {
+		return &models.DTOowner{}, err
+	}
+	_url := os.Getenv("baseUrl")
+	user.Image = _url + user.Image
+	return &user, nil
+}
+
+func (o *OwnerRepo) UpdatePassword(param *models.Password) error {
+	var password models.Password
+	sqlStatement := `SELECT password FROM shop WHERE shop_id=$1`
+	row := o.db.QueryRow(sqlStatement, param.Id)
+	if err := row.Scan(&password.Old); err != nil {
+		return err
+	}
+
+	if !CheckPasswordHash(param.Old, password.Old) {
+		return fmt.Errorf("password hash error")
+	}
+
+	sqlStatement = `UPDATE shop SET password=$2 WHERE shop_id=$1`
+	_, err := o.db.Exec(sqlStatement, param.Id, param.New)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (o *OwnerRepo) UpdateProfile(param *models.DTOowner) error {
+	str := []string{}
+	if param.Name != "" {
+		str = append(str, fmt.Sprintf("name='%s'", param.Name))
+	}
+	if param.Address != "" {
+		str = append(str, fmt.Sprintf("address='%s'", param.Address))
+	}
+	if param.Phone != "" {
+		str = append(str, fmt.Sprintf("phone='%s'", param.Phone))
+	}
+	if param.Social != "" {
+		str = append(str, fmt.Sprintf("social_network='%s'", param.Social))
+	}
+
+	if len(str) == 0 {
+		return fmt.Errorf("params empty")
+	}
+	sqlStatement := fmt.Sprintf(`UPDATE shop SET %v WHERE shop_id=$1`, strings.Join(str, ","))
+	fmt.Println(sqlStatement)
+	_, err := o.db.Exec(sqlStatement, param.Id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (o *OwnerRepo) MainPage(id *models.IdReg) (*models.MainPage, []models.OwnerProduct, error) {
+	var products []models.OwnerProduct
+	sqlStatement := `SELECT t1.product_id, t1.price, t1.name, t1.selled_at, t1.is_auction, t3.name, t2.status, t2.order_id
+	from product t1, orders t2, customer t3 where t1.selled_at is not null and t1.shop_id=$1 and t1.product_id = t2.product_id and t2.customer_id = t3.customer_id`
+	rows, err := o.db.Query(sqlStatement, id.Id)
+	if err != nil {
+		return &models.MainPage{}, []models.OwnerProduct{}, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var product models.OwnerProduct
+		if err := rows.Scan(&product.Id, &product.Price, &product.Name, &product.Selled_at,
+			&product.Auction, &product.Customer, &product.Status, &product.OrderId); err != nil {
+			return &models.MainPage{}, []models.OwnerProduct{}, err
+		}
+		products = append(products, product)
+	}
+
+	var param models.MainPage
+	sqlStatement = `SELECT DISTINCT count(product_id) FROM orders where shop_id=$1;`
+	row := o.db.QueryRow(sqlStatement, id.Id)
+	if err := row.Scan(&param.Customers); err != nil {
+		return &models.MainPage{}, []models.OwnerProduct{}, err
+	}
+
+	sqlStatement = `SELECT count(order_id) FROM orders where shop_id=$1;`
+	row = o.db.QueryRow(sqlStatement, id.Id)
+	if err := row.Scan(&param.Orders); err != nil {
+		return &models.MainPage{}, []models.OwnerProduct{}, err
+	}
+
+	sqlStatement = `SELECT sum(price-discount) FROM product where shop_id=$1;`
+	row = o.db.QueryRow(sqlStatement, id.Id)
+	if err := row.Scan(&param.Earnings); err != nil {
+		return &models.MainPage{}, []models.OwnerProduct{}, fmt.Errorf("database Earnings %w", err)
+	}
+
+	sqlStatement = `SELECT name FROM shop where shop_id=$1;`
+	row = o.db.QueryRow(sqlStatement, id.Id)
+	if err := row.Scan(&param.Name); err != nil {
+		return &models.MainPage{}, []models.OwnerProduct{}, err
+	}
+
+	sqlStatement = `SELECT count(*) FROM product where shop_id=$1 and selled_at is null;`
+	row = o.db.QueryRow(sqlStatement, id.Id)
+	if err := row.Scan(&param.Products); err != nil {
+		return &models.MainPage{}, []models.OwnerProduct{}, err
+	}
+
+	return &param, products, nil
 }

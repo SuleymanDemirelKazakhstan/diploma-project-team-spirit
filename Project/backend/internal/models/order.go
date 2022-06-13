@@ -9,12 +9,16 @@ type Order struct {
 }
 
 type OwnerOrder struct {
-	CustomerName string
-	ProductName  string
-	Price        int
-	Auction      bool
-	Selled_at    time.Time
-	Status       bool
+	CustomerName  string `json:"customer_name,omitempty"`
+	CustomerEmail string `json:"customer_email,omitempty"`
+	ProductId     int    `json:"product_id,omitempty"`
+	ProductName   string `json:"product_name,omitempty"`
+	Size          string `json:"siize,omitempty"`
+	Price         string `json:"price,omitempty"`
+	Image         []string
+	Create_at     time.Time `json:"create_time,omitempty"`
+	Selled_at     time.Time `json:"selled_time,omitempty"`
+	Status        bool      `json:"status"`
 }
 
 type CustomerOrder struct {

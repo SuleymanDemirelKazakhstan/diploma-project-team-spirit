@@ -1,8 +1,6 @@
 package services
 
 import (
-	"context"
-	"encoding/json"
 	"os"
 	"secondChance/internal/db"
 	"secondChance/internal/models"
@@ -17,10 +15,9 @@ type OwnerService struct {
 	rdb  *redis.Client
 }
 
-func NewOwnerService(repo db.Shop, rdb *redis.Client) *OwnerService {
+func NewOwnerService(repo db.Shop) *OwnerService {
 	return &OwnerService{
 		repo: repo,
-		rdb:  rdb,
 	}
 }
 
@@ -40,30 +37,12 @@ func (o *OwnerService) Get(id *models.IdReg) (*models.Product, *models.Owner, er
 	return product, shop, nil
 }
 
-func (o *OwnerService) Create(product *models.Product) error {
-	//TODO: transaction
-	if product.Auction {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-
-		exp := time.Hour * 3
-		json, err := json.Marshal(models.Value{
-			Price:      int(product.Price),
-			CustomerId: -1,
-			StartTime:  time.Now(),
-		})
-		if err != nil {
-			return err
-		}
-
-		if err := o.rdb.Set(ctx, string(product.Id), json, exp).Err(); err != nil {
-			return err
-		}
+func (o *OwnerService) Create(product *models.CreateProduct) (*models.ImagePath, error) {
+	path, err := o.repo.Create(product)
+	if err != nil {
+		return &models.ImagePath{}, err
 	}
-	if err := o.repo.Create(product); err != nil {
-		return err
-	}
-	return nil
+	return path, nil
 }
 
 func (o *OwnerService) Delete(id *models.IdReg) error {
@@ -73,12 +52,13 @@ func (o *OwnerService) Delete(id *models.IdReg) error {
 	return nil
 }
 
-func (o *OwnerService) Update(product *models.Product) error {
-	if err := o.repo.Update(product); err != nil {
-		return err
+func (o *OwnerService) Update(product *models.CreateProduct) (*models.ImagePath, error) {
+	path, err := o.repo.Update(product)
+	if err != nil {
+		return &models.ImagePath{}, err
 	}
 
-	return nil
+	return path, nil
 }
 
 func (o *OwnerService) GetOrder(id *models.IdReg) (*[]models.OwnerOrder, error) {
@@ -116,7 +96,7 @@ func (o *OwnerService) SaveImage(id *models.IdReg, file string) (string, error) 
 	return path, nil
 }
 
-func (o *OwnerService) DeleteImage(id *models.IdReg) error {
+func (o *OwnerService) DeleteImage(id *models.Image) error {
 	if err := o.repo.DeleteImage(id); err != nil {
 		return err
 	}
@@ -130,8 +110,8 @@ func (o *OwnerService) Issued(param *models.Issued) error {
 	return nil
 }
 
-func (o *OwnerService) GetAllMyProduct(param *models.OwnerFillter) ([]models.OwnerProduct, error) {
-	products, err := o.repo.GetAllMyProduct(param)
+func (o *OwnerService) GetOrders(param *models.OwnerFillter) ([]models.OwnerProduct, error) {
+	products, err := o.repo.GetOrders(param)
 	if err != nil {
 		return []models.OwnerProduct{}, err
 	}
@@ -151,4 +131,34 @@ func (o *OwnerService) UpdateEmail(param *models.EmailUser) error {
 		return err
 	}
 	return nil
+}
+
+func (o *OwnerService) GetProfile(param *models.IdReg) (*models.DTOowner, error) {
+	user, err := o.repo.GetProfile(param)
+	if err != nil {
+		return &models.DTOowner{}, err
+	}
+	return user, nil
+}
+
+func (o *OwnerService) UpdatePassword(param *models.Password) error {
+	if err := o.repo.UpdatePassword(param); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *OwnerService) UpdateProfile(param *models.DTOowner) error {
+	if err := o.repo.UpdateProfile(param); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *OwnerService) MainPage(id *models.IdReg) (*models.MainPage, []models.OwnerProduct, error) {
+	param, products, err := o.repo.MainPage(id)
+	if err != nil {
+		return &models.MainPage{}, []models.OwnerProduct{}, err
+	}
+	return param, products, nil
 }

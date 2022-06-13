@@ -104,9 +104,17 @@ func (h *OwnerHandler) Delete(c *fiber.Ctx) (err error) {
 }
 
 func (h *OwnerHandler) Create(c *fiber.Ctx) (err error) {
-	product := new(models.Product)
+	product := new(models.CreateProduct)
 	if err := c.BodyParser(product); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	form, err := c.MultipartForm()
+	if err != nil {
+		return c.Status(500).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
@@ -120,11 +128,32 @@ func (h *OwnerHandler) Create(c *fiber.Ctx) (err error) {
 		})
 	}
 
-	if err := h.handler.Create(product); err != nil {
+	if value, ok := form.File["image"]; ok {
+		for _, fileHeader := range value {
+			product.FileName = append(product.FileName, fileHeader.Filename)
+		}
+	} else {
+		return c.Status(500).JSON(models.Resp{
+			Status:  false,
+			Message: "image is missing",
+		})
+	}
+
+	path, err := h.handler.Create(product)
+	if err != nil {
 		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
+	}
+
+	for index, file := range form.File["image"] {
+		if err := c.SaveFile(file, "."+path.Path[index]); err != nil {
+			return c.Status(500).JSON(models.Resp{
+				Status:  false,
+				Message: err.Error(),
+			})
+		}
 	}
 
 	return c.JSON(models.Resp{
@@ -134,19 +163,51 @@ func (h *OwnerHandler) Create(c *fiber.Ctx) (err error) {
 }
 
 func (h *OwnerHandler) Update(c *fiber.Ctx) (err error) {
-	productReq := new(models.Product)
-	if err := c.BodyParser(productReq); err != nil {
+	product := new(models.CreateProduct)
+	if err := c.BodyParser(product); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
 	}
 
-	if err := h.handler.Update(productReq); err != nil {
-		return c.JSON(models.Resp{
+	form, err := c.MultipartForm()
+	if err != nil {
+		return c.Status(500).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
 		})
+	}
+
+	validate = validator.New()
+	if err := validate.Struct(product); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	if value, ok := form.File["image"]; ok {
+		for _, fileHeader := range value {
+			product.FileName = append(product.FileName, fileHeader.Filename)
+		}
+	}
+
+	path, err := h.handler.Update(product)
+	if err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	for index, file := range form.File["image"] {
+		if err := c.SaveFile(file, "."+path.Path[index]); err != nil {
+			return c.Status(500).JSON(models.Resp{
+				Status:  false,
+				Message: err.Error(),
+			})
+		}
 	}
 
 	return c.JSON(models.Resp{
@@ -241,7 +302,7 @@ func (h *OwnerHandler) SaveImage(c *fiber.Ctx) error {
 	if err := c.SaveFile(file, "."+path); err != nil {
 		return c.Status(500).JSON(models.Resp{
 			Status:  false,
-			Message: "Save File handler" + err.Error(),
+			Message: err.Error(),
 		})
 	}
 
@@ -273,7 +334,7 @@ func (h *OwnerHandler) DeleteImage(c *fiber.Ctx) error {
 		})
 	}
 
-	if err := h.handler.DeleteImage(&models.IdReg{image.Id}); err != nil {
+	if err := h.handler.DeleteImage(image); err != nil {
 		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
 			Status:  false,
 			Message: err.Error(),
@@ -288,7 +349,7 @@ func (h *OwnerHandler) DeleteImage(c *fiber.Ctx) error {
 
 func (h *OwnerHandler) Issued(c *fiber.Ctx) error {
 	param := new(models.Issued)
-	if err := c.QueryParser(param); err != nil {
+	if err := c.BodyParser(param); err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
 
@@ -313,7 +374,7 @@ func (h *OwnerHandler) Issued(c *fiber.Ctx) error {
 	})
 }
 
-func (h *OwnerHandler) GetAllMyProduct(c *fiber.Ctx) error {
+func (h *OwnerHandler) GetOrders(c *fiber.Ctx) error {
 	param := new(models.OwnerFillter)
 	if err := c.QueryParser(param); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
@@ -330,7 +391,7 @@ func (h *OwnerHandler) GetAllMyProduct(c *fiber.Ctx) error {
 		})
 	}
 
-	products, err := h.handler.GetAllMyProduct(param)
+	products, err := h.handler.GetOrders(param)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
 			Status:  false,
@@ -404,5 +465,136 @@ func (h *OwnerHandler) UpdateEmail(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"status":  true,
 		"message": "success",
+	})
+}
+
+func (h *OwnerHandler) GetProfile(c *fiber.Ctx) error {
+	id := new(models.IdReg)
+	if err := c.QueryParser(id); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	validate = validator.New()
+	if err := validate.Struct(id); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	user, err := h.handler.GetProfile(id)
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			return c.Status(fiber.StatusNotFound).JSON(models.Resp{
+				Status:  false,
+				Message: err.Error(),
+			})
+		}
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":  true,
+		"message": "success",
+		"user":    user,
+	})
+}
+
+func (h *OwnerHandler) UpdatePassword(c *fiber.Ctx) error {
+	password := new(models.Password)
+	if err := c.BodyParser(password); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	validate = validator.New()
+	if err := validate.Struct(password); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	if err := h.handler.UpdatePassword(password); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":  true,
+		"message": "success",
+	})
+}
+
+func (h *OwnerHandler) UpdateProfile(c *fiber.Ctx) error {
+	param := new(models.DTOowner)
+	if err := c.BodyParser(param); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	validate = validator.New()
+	if err := validate.Struct(param); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	if err := h.handler.UpdateProfile(param); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":  true,
+		"message": "success",
+	})
+}
+
+func (h *OwnerHandler) MainPage(c *fiber.Ctx) error {
+	id := new(models.IdReg)
+	if err := c.QueryParser(id); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	validate = validator.New()
+	if err := validate.Struct(id); err != nil {
+		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	info, products, err := h.handler.MainPage(id)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Resp{
+			Status:  false,
+			Message: err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":   true,
+		"message":  "success",
+		"stat":     info,
+		"products": products,
 	})
 }
