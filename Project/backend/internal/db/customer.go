@@ -137,20 +137,57 @@ func (c *CustomerRepo) DeleteImage(id *models.IdReg) error {
 	return nil
 }
 
-func (c *CustomerRepo) Setter(deal *models.Deal, t time.Duration) error {
+func (c *CustomerRepo) Setter(deal *models.Deal) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+
+	v, err := c.rdb.Get(ctx, deal.ProductId.Id).Result()
+	if err != nil {
+		return err
+	}
+
+	data := new(models.Value)
+	if err := json.Unmarshal([]byte(v), data); err != nil {
+		return err
+	}
+
+	if time.Now().After(data.StartTime) {
+		sqlStatement := `UPDATE product SET selled_at=$2, price=$3 WHERE product_id=$1`
+		_, err := c.db.Exec(sqlStatement, deal.ProductId.Id, data.StartTime, data.Price)
+		if err != nil {
+			return err
+		}
+		var orders models.Order
+		sqlStatement = `select product_id, shop_id from product where product_id=$1;`
+		row := c.db.QueryRow(sqlStatement, deal.ProductId.Id)
+		if err := row.Scan(&orders.Product_id, &orders.Shop_id); err != nil {
+			return err
+		}
+
+		sqlStatement = fmt.Sprintf(`INSERT INTO orders
+		(customer_id, product_id,shop_id)
+	SELECT %d, %d, %d
+	WHERE
+		NOT EXISTS (
+			SELECT customer_id, product_id, shop_id FROM orders WHERE customer_id=%d and product_id=%d and shop_id=%d
+		);`, data.CustomerId, orders.Product_id, orders.Shop_id,
+			data.CustomerId, orders.Product_id, orders.Shop_id)
+	}
+
+	if int(data.Price) >= deal.Price {
+		return fmt.Errorf("db: the price is less than the current bid")
+	}
 
 	json, err := json.Marshal(models.Value{
 		Price:      deal.Price,
 		CustomerId: deal.CustomerId,
-		StartTime:  time.Now(),
+		StartTime:  data.StartTime,
 	})
 	if err != nil {
 		return err
 	}
 
-	if err := c.rdb.Set(ctx, deal.ProductId.Id, json, t).Err(); err != nil {
+	if err := c.rdb.Set(ctx, deal.ProductId.Id, json, 0).Err(); err != nil {
 		return err
 	}
 
@@ -170,6 +207,30 @@ func (c *CustomerRepo) Getter(id *models.ProductId) (*models.Value, error) {
 	if err := json.Unmarshal([]byte(v), data); err != nil {
 		return &models.Value{}, err
 	}
+
+	if time.Now().After(data.StartTime) {
+		sqlStatement := `UPDATE product SET selled_at=$2, price=$3 WHERE product_id=$1`
+		_, err := c.db.Exec(sqlStatement, id.Id, data.StartTime, data.Price)
+		if err != nil {
+			return &models.Value{}, err
+		}
+		var orders models.Order
+		sqlStatement = `select product_id, shop_id from product where product_id=$1;`
+		row := c.db.QueryRow(sqlStatement, id.Id)
+		if err := row.Scan(&orders.Product_id, &orders.Shop_id); err != nil {
+			return &models.Value{}, err
+		}
+
+		sqlStatement = fmt.Sprintf(`INSERT INTO orders
+		(customer_id, product_id,shop_id)
+	SELECT %d, %d, %d
+	WHERE
+		NOT EXISTS (
+			SELECT customer_id, product_id, shop_id FROM orders WHERE customer_id=%d and product_id=%d and shop_id=%d
+		);`, data.CustomerId, orders.Product_id, orders.Shop_id,
+			data.CustomerId, orders.Product_id, orders.Shop_id)
+	}
+
 	return data, nil
 }
 

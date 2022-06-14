@@ -59,10 +59,6 @@ func (o *OwnerRepo) Create(product *models.CreateProduct) (*models.ImagePath, er
 	}
 
 	if product.Auction {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-
-		exp := time.Hour * 3
 		json, err := json.Marshal(models.Value{
 			Price:      int(product.Price),
 			CustomerId: -1,
@@ -71,8 +67,7 @@ func (o *OwnerRepo) Create(product *models.CreateProduct) (*models.ImagePath, er
 		if err != nil {
 			return &models.ImagePath{}, err
 		}
-
-		if err := o.rdb.Set(ctx, string(id.Id+1), json, exp).Err(); err != nil {
+		if err := o.rdb.Set(context.Background(), string(id.Id+1), json, 0).Err(); err != nil {
 			return &models.ImagePath{}, err
 		}
 	}

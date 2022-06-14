@@ -3,7 +3,6 @@ package db
 import (
 	"database/sql"
 	"secondChance/internal/models"
-	"time"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -26,7 +25,7 @@ type Customer interface {
 	GetOrder(id *models.IdReg) (*[]models.Product, error)
 	SaveImage(id *models.IdReg, file string) (string, error)
 	DeleteImage(id *models.IdReg) error
-	Setter(deal *models.Deal, t time.Duration) error
+	Setter(deal *models.Deal) error
 	Getter(id *models.ProductId) (*models.Value, error)
 	GetFilter(f *models.Filter) ([]models.Product, error)
 	GetDiscountProducts() ([]models.Product, error)

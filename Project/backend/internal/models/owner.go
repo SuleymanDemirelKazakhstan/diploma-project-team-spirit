@@ -16,11 +16,11 @@ type Owner struct {
 
 type OwnerFillter struct {
 	Id        int       `json:"id,omitempty" validate:"required"`
-	StartDate time.Time `json:"start_date,omitempty"`
-	EndDate   time.Time `json:"end_date,omitempty"`
+	StartDate time.Time `json:"startdate,omitempty"`
+	EndDate   time.Time `json:"enddate,omitempty"`
 	Status    int       `json:"status,omitempty"`
-	MinPrice  int       `json:"min_price,omitempty"`
-	MaxPrice  int       `json:"max_price,omitempty"`
+	MinPrice  int       `json:"minprice,omitempty"`
+	MaxPrice  int       `json:"maxprice,omitempty"`
 	Search    string    `json:"search,omitempty"`
 }
 
