@@ -54,7 +54,7 @@ type CreateProduct struct {
 	Colour      string  `json:"colour,omitempty" validate:"required"`
 	Condition   string  `json:"condition,omitempty" validate:"required"`
 	FileName    []string
-	Selled      time.Time `json:"time"`
+	Selled      string `json:"selled,omitempty"`
 }
 
 type ImagePath struct {

@@ -33,10 +33,7 @@ func Run() {
 	_app := fiber.New(fiber.Config{
 		IdleTimeout: idleTimeout,
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
-			//Status code default 500
-			code := fiber.StatusInternalServerError
-
-			return c.Status(code).JSON(models.Resp{
+			return c.Status(500).JSON(models.Resp{
 				Status:  false,
 				Message: err.Error(),
 			})

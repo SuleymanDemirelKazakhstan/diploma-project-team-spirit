@@ -172,13 +172,18 @@ func (c *CustomerRepo) Setter(deal *models.Deal) error {
 			SELECT customer_id, product_id, shop_id FROM orders WHERE customer_id=%d and product_id=%d and shop_id=%d
 		);`, data.CustomerId, orders.Product_id, orders.Shop_id,
 			data.CustomerId, orders.Product_id, orders.Shop_id)
+		_, err = c.db.Exec(sqlStatement)
+		if err != nil {
+			return err
+		}
+		return fmt.Errorf("time is up")
 	}
 
 	if int(data.Price) >= deal.Price {
 		return fmt.Errorf("db: the price is less than the current bid")
 	}
 
-	json, err := json.Marshal(models.Value{
+	val, err := json.Marshal(models.Value{
 		Price:      deal.Price,
 		CustomerId: deal.CustomerId,
 		StartTime:  data.StartTime,
@@ -187,7 +192,7 @@ func (c *CustomerRepo) Setter(deal *models.Deal) error {
 		return err
 	}
 
-	if err := c.rdb.Set(ctx, deal.ProductId.Id, json, 0).Err(); err != nil {
+	if err := c.rdb.Set(ctx, deal.ProductId.Id, val, 0).Err(); err != nil {
 		return err
 	}
 

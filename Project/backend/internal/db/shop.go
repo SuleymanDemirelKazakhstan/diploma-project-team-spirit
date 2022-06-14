@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"secondChance/internal/models"
+	"strconv"
 	"strings"
 	"time"
 
@@ -59,15 +60,27 @@ func (o *OwnerRepo) Create(product *models.CreateProduct) (*models.ImagePath, er
 	}
 
 	if product.Auction {
-		json, err := json.Marshal(models.Value{
+		loc, err := time.LoadLocation("Asia/Almaty")
+		if err != nil {
+			return &models.ImagePath{}, err
+		}
+
+		RFC3339local := "2006-01-02T15:04:05Z"
+		t1, err := time.ParseInLocation(RFC3339local, product.Selled, loc)
+		if err != nil {
+			return &models.ImagePath{}, err
+		}
+
+		val, err := json.Marshal(models.Value{
 			Price:      int(product.Price),
 			CustomerId: -1,
-			StartTime:  time.Now(),
+			StartTime:  t1,
 		})
 		if err != nil {
 			return &models.ImagePath{}, err
 		}
-		if err := o.rdb.Set(context.Background(), string(id.Id+1), json, 0).Err(); err != nil {
+		s2 := strconv.Itoa(id.Id + 1)
+		if err := o.rdb.Set(context.Background(), s2, val, 0).Err(); err != nil {
 			return &models.ImagePath{}, err
 		}
 	}
