@@ -332,14 +332,14 @@ func (o *OwnerRepo) GetCatalog(param *models.CatalogFilter) ([]models.Product, e
 			sqlStatement += fmt.Sprintf(" and price <= %d", param.MaxPrice)
 		}
 	}
-	if param.Category != nil {
+	if param.Category != nil && param.Category[0] != "" {
 		for i := range param.Category {
 			param.Category[i] = fmt.Sprintf("'%s'", param.Category[i])
 		}
 		sqlStatement += fmt.Sprintf(" and product_category in (%s)", strings.Join(param.Category, ","))
 		fmt.Println(sqlStatement)
 	}
-	if param.Subcategory != nil {
+	if param.Subcategory != nil && param.Subcategory[0] != "" {
 		for i := range param.Subcategory {
 			param.Subcategory[i] = fmt.Sprintf("'%s'", param.Subcategory[i])
 		}
@@ -458,7 +458,7 @@ func (o *OwnerRepo) UpdateProfile(param *models.DTOowner) error {
 func (o *OwnerRepo) MainPage(id *models.IdReg) (*models.MainPage, []models.OwnerProduct, error) {
 	var products []models.OwnerProduct
 	sqlStatement := `SELECT t1.product_id, t1.price, t1.name, t1.selled_at, t1.is_auction, t3.name, t2.status, t2.order_id
-	from product t1, orders t2, customer t3 where t1.selled_at is not null and t1.shop_id=$1 and t1.product_id = t2.product_id and t2.customer_id = t3.customer_id`
+	from product t1, orders t2, customer t3 where t1.selled_at is not null and t1.shop_id=$1 and t1.product_id = t2.product_id and t2.customer_id = t3.customer_id limit 4`
 	rows, err := o.db.Query(sqlStatement, id.Id)
 	if err != nil {
 		return &models.MainPage{}, []models.OwnerProduct{}, err

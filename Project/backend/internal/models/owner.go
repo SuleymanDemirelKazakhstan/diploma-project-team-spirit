@@ -40,7 +40,7 @@ type CatalogFilter struct {
 	MinPrice    int      `json:"min_price,omitempty"`
 	MaxPrice    int      `json:"max_price,omitempty"`
 	Category    []string `json:"category,omitempty"`
-	Subcategory []string `json:"subcategory,omitempty"`
+	Subcategory []string `json:"subcategory"`
 	Auction     bool     `json:"is_auction,omitempty"`
 	Search      string   `json:"search,omitempty"`
 }
