@@ -37,11 +37,11 @@ type OwnerProduct struct {
 
 type CatalogFilter struct {
 	Id          int      `json:"id,omitempty" validate:"required"`
-	MinPrice    int      `json:"min_price,omitempty"`
-	MaxPrice    int      `json:"max_price,omitempty"`
+	MinPrice    int      `json:"minprice,omitempty"`
+	MaxPrice    int      `json:"maxprice,omitempty"`
 	Category    []string `json:"category,omitempty"`
 	Subcategory []string `json:"subcategory"`
-	Auction     bool     `json:"is_auction,omitempty"`
+	Auction     bool     `json:"auction,omitempty"`
 	Search      string   `json:"search,omitempty"`
 }
 

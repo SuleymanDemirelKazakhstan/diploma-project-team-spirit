@@ -350,7 +350,8 @@ func (o *OwnerRepo) GetCatalog(param *models.CatalogFilter) ([]models.Product, e
 	}
 	if param.Auction {
 		sqlStatement += " and is_auction=true"
-	} else {
+	}
+	if !param.Auction {
 		sqlStatement += " and is_auction=false"
 	}
 
