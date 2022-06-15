@@ -196,7 +196,6 @@ func (h *OwnerHandler) Update(c *fiber.Ctx) (err error) {
 
 	link := strings.Split(product.Link, ",")
 	for _, v := range link {
-		fmt.Println("product.Link->", v)
 		product.FileName = append(product.FileName, v)
 	}
 

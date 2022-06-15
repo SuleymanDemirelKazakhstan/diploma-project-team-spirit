@@ -224,7 +224,6 @@ func (o *OwnerRepo) Update(product *models.CreateProduct) (*models.ImagePath, er
 			m[value] = true
 		}
 		for _, value := range paths.Path {
-			fmt.Println(value)
 			if m[value] {
 				m[value] = false
 			}

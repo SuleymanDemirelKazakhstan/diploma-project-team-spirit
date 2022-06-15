@@ -307,7 +307,7 @@ func (c *CustomerRepo) GetFilter(f *models.Filter) ([]models.Product, error) {
 			return []models.Product{}, err
 		}
 		if endTime.Valid {
-			product.EndTime = endTime.Time
+			product.EndTime = endTime.Time.Format("2006-01-02 15:04:05")
 		}
 		for i := range product.Image {
 			product.Image[i] = _url + product.Image[i]

@@ -19,7 +19,7 @@ type Product struct {
 	Condition   string    `json:"condition,omitempty" validate:"required"`
 	Selled_at   time.Time `json:"time,omitempty"`
 	Image       []string  `json:"image"       form:"image"`
-	EndTime     time.Time `json:"end_time,omitempty"`
+	EndTime     string    `json:"end_time,omitempty"`
 }
 
 type Filter struct {
