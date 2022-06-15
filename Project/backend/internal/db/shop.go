@@ -185,15 +185,18 @@ func (o *OwnerRepo) Update(product *models.CreateProduct) (*models.ImagePath, er
 
 	sqlStatement := ""
 	if product.FileName != nil {
-		sqlStatement = fmt.Sprintf(`UPDATE product SET %v, %v WHERE product_id=$1`, strings.Join(str, ","), pq.Array(paths.Path))
+		sqlStatement = fmt.Sprintf(`UPDATE product SET %v, image=$2 WHERE product_id=$1`, strings.Join(str, ","))
+		_, err := o.db.Exec(sqlStatement, product.Id, pq.Array(paths.Path))
+		if err != nil {
+			return &models.ImagePath{}, fmt.Errorf("image proglem %w", err)
+		}
 	}
 	if product.FileName == nil {
 		sqlStatement = fmt.Sprintf(`UPDATE product SET %v WHERE product_id=$1`, strings.Join(str, ","))
-	}
-
-	_, err := o.db.Exec(sqlStatement, product.Id)
-	if err != nil {
-		return &models.ImagePath{}, err
+		_, err := o.db.Exec(sqlStatement, product.Id)
+		if err != nil {
+			return &models.ImagePath{}, err
+		}
 	}
 
 	return paths, nil
@@ -404,9 +407,11 @@ func (o *OwnerRepo) GetProfile(param *models.IdReg) (*models.DTOowner, error) {
 
 	row := o.db.QueryRow(sqlStatement, param.Id)
 	// unmarshal the row object to user
-	if err := row.Scan(&user.Name, &user.Email, &user.Phone, &user.Address, &user.Image, &user.Social); err != nil {
+	var social sql.NullString
+	if err := row.Scan(&user.Name, &user.Email, &user.Phone, &user.Address, &user.Image, &social); err != nil {
 		return &models.DTOowner{}, err
 	}
+	user.Social = social.String
 	if err := godotenv.Load(); err != nil {
 		return &models.DTOowner{}, err
 	}
@@ -467,7 +472,7 @@ func (o *OwnerRepo) UpdateProfile(param *models.DTOowner) error {
 func (o *OwnerRepo) MainPage(id *models.IdReg) (*models.MainPage, []models.OwnerProduct, error) {
 	var products []models.OwnerProduct
 	sqlStatement := `SELECT t1.product_id, t1.price, t1.name, t1.selled_at, t1.is_auction, t3.name, t2.status, t2.order_id
-	from product t1, orders t2, customer t3 where t1.selled_at is not null and t1.shop_id=$1 and t1.product_id = t2.product_id and t2.customer_id = t3.customer_id limit 4`
+	from product t1, orders t2, customer t3 where t1.selled_at is not null and t1.shop_id=$1 and t1.product_id = t2.product_id and t2.customer_id = t3.customer_id ORDER BY t1.selled_at ASC limit 4`
 	rows, err := o.db.Query(sqlStatement, id.Id)
 	if err != nil {
 		return &models.MainPage{}, []models.OwnerProduct{}, err
