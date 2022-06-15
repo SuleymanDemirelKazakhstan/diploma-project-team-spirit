@@ -9,6 +9,7 @@ import (
 	"reflect"
 	"secondChance/internal/models"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -20,6 +21,7 @@ import (
 type CustomerRepo struct {
 	db  *sql.DB
 	rdb *redis.Client
+	sync.RWMutex
 }
 
 func NewCustomerRepo(db *sql.DB, rdb *redis.Client) *CustomerRepo {
@@ -192,9 +194,11 @@ func (c *CustomerRepo) Setter(deal *models.Deal) error {
 		return err
 	}
 
+	c.RLock()
 	if err := c.rdb.Set(ctx, deal.ProductId.Id, val, 0).Err(); err != nil {
 		return err
 	}
+	c.RUnlock()
 
 	return nil
 }
