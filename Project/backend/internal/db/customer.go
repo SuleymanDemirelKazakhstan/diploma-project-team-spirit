@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"reflect"
 	"secondChance/internal/models"
 	"strings"
 	"sync"
@@ -200,6 +199,12 @@ func (c *CustomerRepo) Setter(deal *models.Deal) error {
 	}
 	c.RUnlock()
 
+	sqlStatement := `UPDATE product SET price=$2 WHERE product_id=$1`
+	_, err = c.db.Exec(sqlStatement, deal.ProductId.Id, deal.Price)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -238,6 +243,11 @@ func (c *CustomerRepo) Getter(id *models.ProductId) (*models.Value, error) {
 			SELECT customer_id, product_id, shop_id FROM orders WHERE customer_id=%d and product_id=%d and shop_id=%d
 		);`, data.CustomerId, orders.Product_id, orders.Shop_id,
 			data.CustomerId, orders.Product_id, orders.Shop_id)
+		_, err = c.db.Exec(sqlStatement)
+		if err != nil {
+			return &models.Value{}, err
+		}
+		return &models.Value{}, fmt.Errorf("time is up")
 	}
 
 	return data, nil
@@ -245,7 +255,8 @@ func (c *CustomerRepo) Getter(id *models.ProductId) (*models.Value, error) {
 
 func (c *CustomerRepo) GetFilter(f *models.Filter) ([]models.Product, error) {
 	var products []models.Product
-	sqlStatement := `SELECT product_id, shop_id, price, name, image, discount, product_size, is_auction from product where selled_at is null`
+	var endTime sql.NullTime
+	sqlStatement := `SELECT product_id, shop_id, price, name, image, discount, product_size, is_auction, end_date from product where selled_at is null`
 	if f.Category != "" {
 		sqlStatement += fmt.Sprintf(" and product_category = '%s'", f.Category)
 	}
@@ -270,7 +281,7 @@ func (c *CustomerRepo) GetFilter(f *models.Filter) ([]models.Product, error) {
 			sqlStatement += fmt.Sprintf(" and price <= %d", f.MaxPrice)
 		}
 	}
-	fmt.Println(f.Type, reflect.TypeOf(f.Type))
+
 	if f.Type > 0 {
 		if f.Type == 1 {
 			sqlStatement += " and is_auction=true"
@@ -278,7 +289,7 @@ func (c *CustomerRepo) GetFilter(f *models.Filter) ([]models.Product, error) {
 			sqlStatement += " and is_auction=false"
 		}
 	}
-	fmt.Println(sqlStatement)
+
 	rows, err := c.db.Query(sqlStatement)
 	if err != nil {
 		return []models.Product{}, err
@@ -292,8 +303,11 @@ func (c *CustomerRepo) GetFilter(f *models.Filter) ([]models.Product, error) {
 
 	for rows.Next() {
 		var product models.Product
-		if err := rows.Scan(&product.Id, &product.OwnerId, &product.Price, &product.Name, pq.Array(&product.Image), &product.Discount, &product.Size, &product.Auction); err != nil {
+		if err := rows.Scan(&product.Id, &product.OwnerId, &product.Price, &product.Name, pq.Array(&product.Image), &product.Discount, &product.Size, &product.Auction, &endTime); err != nil {
 			return []models.Product{}, err
+		}
+		if endTime.Valid {
+			product.EndTime = endTime.Time
 		}
 		for i := range product.Image {
 			product.Image[i] = _url + product.Image[i]

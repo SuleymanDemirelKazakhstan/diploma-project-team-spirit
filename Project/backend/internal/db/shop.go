@@ -45,17 +45,25 @@ func (o *OwnerRepo) Create(product *models.CreateProduct) (*models.ImagePath, er
 		paths.Path = append(paths.Path, path)
 	}
 
+	tx, err := o.db.Begin()
+	if err != nil {
+		return &models.ImagePath{}, err
+	}
+
 	sqlStatement = `INSERT INTO product (shop_id, price, name, 
 		description, is_auction, product_category, product_subcategory, 
 		product_size, product_colour, discount, product_condition, image) 
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`
 
-	if _, err := o.db.Exec(sqlStatement, product.Id,
+	if _, err := tx.Exec(sqlStatement, product.Id,
 		product.Price, product.Name,
 		product.Description, product.Auction,
 		product.Category, product.Subcategory,
 		product.Size, product.Colour, product.Discount,
 		product.Condition, pq.Array(paths.Path)); err != nil {
+		if txErr := tx.Rollback(); txErr != nil {
+			return &models.ImagePath{}, txErr
+		}
 		return &models.ImagePath{}, err
 	}
 
@@ -80,9 +88,22 @@ func (o *OwnerRepo) Create(product *models.CreateProduct) (*models.ImagePath, er
 			return &models.ImagePath{}, err
 		}
 		s2 := strconv.Itoa(id.Id + 1)
+
+		sqlStatement = `UPDATE product SET end_date=$2 WHERE product_id=$1`
+		if _, err := tx.Exec(sqlStatement, id.Id+1, t1); err != nil {
+			if txErr := tx.Rollback(); txErr != nil {
+				return &models.ImagePath{}, txErr
+			}
+			return &models.ImagePath{}, err
+		}
+
 		if err := o.rdb.Set(context.Background(), s2, val, 0).Err(); err != nil {
 			return &models.ImagePath{}, err
 		}
+	}
+
+	if txErr := tx.Commit(); txErr != nil {
+		return &models.ImagePath{}, err
 	}
 
 	return paths, nil
@@ -178,24 +199,47 @@ func (o *OwnerRepo) Update(product *models.CreateProduct) (*models.ImagePath, er
 	}
 	str = append(str, fmt.Sprintf("is_auction=%v", product.Auction))
 
-	for _, v := range product.FileName {
-		path := fmt.Sprintf("/images/product/%d/%s", product.Id, v)
-		paths.Path = append(paths.Path, path)
-	}
-
 	sqlStatement := ""
-	if product.FileName != nil {
-		sqlStatement = fmt.Sprintf(`UPDATE product SET %v, image=$2 WHERE product_id=$1`, strings.Join(str, ","))
-		_, err := o.db.Exec(sqlStatement, product.Id, pq.Array(paths.Path))
-		if err != nil {
-			return &models.ImagePath{}, fmt.Errorf("image proglem %w", err)
-		}
-	}
 	if product.FileName == nil {
 		sqlStatement = fmt.Sprintf(`UPDATE product SET %v WHERE product_id=$1`, strings.Join(str, ","))
 		_, err := o.db.Exec(sqlStatement, product.Id)
 		if err != nil {
 			return &models.ImagePath{}, err
+		}
+	}
+
+	if product.FileName != nil {
+		for _, v := range product.FileName {
+			path := fmt.Sprintf("/images/product/%d/%s", product.Id, v)
+			paths.Path = append(paths.Path, path)
+		}
+		sqlStatement = `select image from product where product_id=$1`
+		row := o.db.QueryRow(sqlStatement, product.Id)
+		if err := row.Scan(pq.Array(&paths.OldPath)); err != nil {
+			return &models.ImagePath{}, err
+		}
+
+		m := make(map[string]bool)
+		for _, value := range paths.OldPath {
+			m[value] = true
+		}
+		for _, value := range paths.Path {
+			if m[value] {
+				m[value] = false
+			}
+		}
+		paths.OldPath = paths.OldPath[:0]
+
+		for key, value := range m {
+			if value {
+				paths.OldPath = append(paths.OldPath, key)
+			}
+		}
+
+		sqlStatement = fmt.Sprintf(`UPDATE product SET %v, image=$2 WHERE product_id=$1`, strings.Join(str, ","))
+		_, err := o.db.Exec(sqlStatement, product.Id, pq.Array(paths.Path))
+		if err != nil {
+			return &models.ImagePath{}, fmt.Errorf("image proglem %w", err)
 		}
 	}
 
@@ -332,7 +376,7 @@ func (o *OwnerRepo) GetOrders(param *models.OwnerFillter) ([]models.OwnerProduct
 
 func (o *OwnerRepo) GetCatalog(param *models.CatalogFilter) ([]models.Product, error) {
 	var products []models.Product
-	sqlStatement := `SELECT product_id, price, name, image, product_category, product_subcategory, product_size, product_colour from product where selled_at is null and shop_id=$1`
+	sqlStatement := `SELECT product_id, price, name, image, product_category, product_subcategory, product_size, product_colour, is_auction from product where selled_at is null and shop_id=$1`
 
 	if param.MinPrice != 0 || param.MaxPrice != 0 {
 		if param.MinPrice != 0 && param.MaxPrice != 0 {
@@ -348,7 +392,6 @@ func (o *OwnerRepo) GetCatalog(param *models.CatalogFilter) ([]models.Product, e
 			param.Category[i] = fmt.Sprintf("'%s'", param.Category[i])
 		}
 		sqlStatement += fmt.Sprintf(" and product_category in (%s)", strings.Join(param.Category, ","))
-		fmt.Println(sqlStatement)
 	}
 	if param.Subcategory != nil && param.Subcategory[0] != "" {
 		for i := range param.Subcategory {
@@ -380,7 +423,7 @@ func (o *OwnerRepo) GetCatalog(param *models.CatalogFilter) ([]models.Product, e
 	for rows.Next() {
 		var product models.Product
 		if err := rows.Scan(&product.Id, &product.Price, &product.Name, pq.Array(&product.Image),
-			&product.Category, &product.Subcategory, &product.Size, &product.Colour); err != nil {
+			&product.Category, &product.Subcategory, &product.Size, &product.Colour, &product.Auction); err != nil {
 			return []models.Product{}, err
 		}
 		for i := range product.Image {
@@ -460,7 +503,6 @@ func (o *OwnerRepo) UpdateProfile(param *models.DTOowner) error {
 		return fmt.Errorf("params empty")
 	}
 	sqlStatement := fmt.Sprintf(`UPDATE shop SET %v WHERE shop_id=$1`, strings.Join(str, ","))
-	fmt.Println(sqlStatement)
 	_, err := o.db.Exec(sqlStatement, param.Id)
 	if err != nil {
 		return err

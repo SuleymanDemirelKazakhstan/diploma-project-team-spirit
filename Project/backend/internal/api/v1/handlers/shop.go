@@ -201,6 +201,16 @@ func (h *OwnerHandler) Update(c *fiber.Ctx) (err error) {
 		})
 	}
 
+	for _, v := range path.OldPath {
+		err := os.Remove("." + v)
+		if err != nil {
+			return c.JSON(fiber.Map{
+				"status":  500,
+				"message": err.Error(),
+			})
+		}
+	}
+
 	for index, file := range form.File["image"] {
 		if err := c.SaveFile(file, "."+path.Path[index]); err != nil {
 			return c.Status(500).JSON(models.Resp{

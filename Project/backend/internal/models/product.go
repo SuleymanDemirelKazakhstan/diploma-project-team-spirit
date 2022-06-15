@@ -11,7 +11,7 @@ type Product struct {
 	Name        string    `json:"name,omitempty" validate:"required"`
 	Description string    `json:"description,omitempty" validate:"required"`
 	Discount    int       `json:"discount,omitempty"`
-	Auction     bool      `json:"is_auction,omitempty"`
+	Auction     bool      `json:"is_auction"`
 	Category    string    `json:"category,omitempty" validate:"required"`
 	Subcategory string    `json:"subcategory,omitempty" validate:"required"`
 	Size        string    `json:"size,omitempty" validate:"required"`
@@ -19,6 +19,7 @@ type Product struct {
 	Condition   string    `json:"condition,omitempty" validate:"required"`
 	Selled_at   time.Time `json:"time,omitempty"`
 	Image       []string  `json:"image"       form:"image"`
+	EndTime     time.Time `json:"end_time,omitempty"`
 }
 
 type Filter struct {
@@ -58,5 +59,6 @@ type CreateProduct struct {
 }
 
 type ImagePath struct {
-	Path []string
+	Path    []string
+	OldPath []string
 }
