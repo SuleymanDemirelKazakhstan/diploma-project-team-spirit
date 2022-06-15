@@ -5,6 +5,7 @@ import (
 	"os"
 	"secondChance/internal/models"
 	"secondChance/internal/services"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -193,6 +194,12 @@ func (h *OwnerHandler) Update(c *fiber.Ctx) (err error) {
 		}
 	}
 
+	link := strings.Split(product.Link, ",")
+	for _, v := range link {
+		fmt.Println("product.Link->", v)
+		product.FileName = append(product.FileName, v)
+	}
+
 	path, err := h.handler.Update(product)
 	if err != nil {
 		return c.Status(fiber.StatusForbidden).JSON(models.Resp{
@@ -202,12 +209,14 @@ func (h *OwnerHandler) Update(c *fiber.Ctx) (err error) {
 	}
 
 	for _, v := range path.OldPath {
-		err := os.Remove("." + v)
-		if err != nil {
-			return c.JSON(fiber.Map{
-				"status":  500,
-				"message": err.Error(),
-			})
+		if v != "" {
+			err := os.Remove("." + v)
+			if err != nil {
+				return c.JSON(fiber.Map{
+					"status":  500,
+					"message": err.Error(),
+				})
+			}
 		}
 	}
 

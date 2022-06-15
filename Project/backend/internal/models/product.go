@@ -56,6 +56,7 @@ type CreateProduct struct {
 	Condition   string  `json:"condition,omitempty" validate:"required"`
 	FileName    []string
 	Selled      string `json:"selled,omitempty"`
+	Link        string `json:"link,omitempty"`
 }
 
 type ImagePath struct {
