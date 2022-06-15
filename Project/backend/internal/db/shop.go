@@ -112,7 +112,8 @@ func (o *OwnerRepo) Create(product *models.CreateProduct) (*models.ImagePath, er
 func (o *OwnerRepo) Get(id *models.IdReg) (*models.Product, *models.Owner, error) {
 	var product models.Product
 	var user models.Owner
-	sqlStatement := `SELECT shop_id,price, name,description, discount, image, is_auction, product_category, product_subcategory, product_size, product_colour, product_condition FROM product WHERE product_id=$1`
+	var endTime sql.NullTime
+	sqlStatement := `SELECT shop_id,price, name,description, discount, image, is_auction, product_category, product_subcategory, product_size, product_colour, product_condition, end_date FROM product WHERE product_id=$1`
 
 	row := o.db.QueryRow(sqlStatement, id.Id)
 	// unmarshal the row object to user
@@ -121,8 +122,11 @@ func (o *OwnerRepo) Get(id *models.IdReg) (*models.Product, *models.Owner, error
 		pq.Array(&product.Image), &product.Auction,
 		&product.Category, &product.Subcategory,
 		&product.Size, &product.Colour,
-		&product.Condition); err != nil {
+		&product.Condition, &endTime); err != nil {
 		return &models.Product{}, &models.Owner{}, err
+	}
+	if endTime.Valid {
+		product.EndTime = endTime.Time.Format("2006-01-02 15:04:05")
 	}
 	if err := godotenv.Load(); err != nil {
 		return &models.Product{}, &models.Owner{}, err
