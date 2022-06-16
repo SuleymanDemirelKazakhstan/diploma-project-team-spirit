@@ -7,7 +7,7 @@ import (
 type Product struct {
 	Id          int       `json:"id,omitempty"`
 	OwnerId     int       `json:"shop_id,omitempty" validate:"required"`
-	Price       float64   `json:"price,omitempty" validate:"required"`
+	Price       int   `json:"price,omitempty" validate:"required"`
 	Name        string    `json:"name,omitempty" validate:"required"`
 	Description string    `json:"description,omitempty" validate:"required"`
 	Discount    int       `json:"discount,omitempty"`
@@ -45,7 +45,7 @@ type Issued struct {
 
 type CreateProduct struct {
 	Id          int     `json:"id,omitempty" validate:"required"`
-	Price       float64 `json:"price,omitempty" validate:"required"`
+	Price       int `json:"price,omitempty" validate:"required"`
 	Name        string  `json:"name,omitempty" validate:"required"`
 	Description string  `json:"description,omitempty" validate:"required"`
 	Discount    int     `json:"discount,omitempty"`
