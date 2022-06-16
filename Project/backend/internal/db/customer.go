@@ -401,7 +401,7 @@ func (c *CustomerRepo) GetAllMyProduct(id *models.IdReg) ([]models.CustomerOrder
 			product.Image[i] = _url + product.Image[i]
 		}
 		if endTime.Valid {
-			product.SelledAt = endTime.Time.Format("2006-01-02 15:04:05")
+			product.SelledAt = endTime.Time
 		}
 		products = append(products, product)
 	}
