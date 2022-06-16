@@ -24,7 +24,7 @@ type OwnerOrder struct {
 type CustomerOrder struct {
 	ProductId int
 	ShopId    int
-	SelledAt  time.Time
+	SelledAt  time.Time `json:"selled_time,omitempty"`
 	Address   string
 	Status    bool
 	Image     []string
