@@ -579,22 +579,41 @@ func (o *OwnerRepo) MainPage(id *models.IdReg) (*models.MainPage, []models.Owner
 	}
 
 	var param models.MainPage
+	var cnull sql.NullInt64
 	sqlStatement = `SELECT DISTINCT count(product_id) FROM orders where shop_id=$1;`
 	row := o.db.QueryRow(sqlStatement, id.Id)
-	if err := row.Scan(&param.Customers); err != nil {
+	if err := row.Scan(&cnull); err != nil {
 		return &models.MainPage{}, []models.OwnerProduct{}, err
+	}
+	if cnull.Valid{
+		param.Customers = cnull
+	}
+	if !cnull.Valid{
+		param.Customers = 0
 	}
 
 	sqlStatement = `SELECT count(order_id) FROM orders where shop_id=$1;`
 	row = o.db.QueryRow(sqlStatement, id.Id)
-	if err := row.Scan(&param.Orders); err != nil {
+	if err := row.Scan(&cnull); err != nil {
 		return &models.MainPage{}, []models.OwnerProduct{}, err
+	}
+	if cnull.Valid{
+		param.Orders = cnull
+	}
+	if !cnull.Valid{
+		param.Orders = 0
 	}
 
 	sqlStatement = `SELECT sum(price-discount) FROM product where shop_id=$1;`
 	row = o.db.QueryRow(sqlStatement, id.Id)
-	if err := row.Scan(&param.Earnings); err != nil {
+	if err := row.Scan(&cnull); err != nil {
 		return &models.MainPage{}, []models.OwnerProduct{}, fmt.Errorf("database Earnings %w", err)
+	}
+	if cnull.Valid{
+		param.Earnings = cnull
+	}
+	if !cnull.Valid{
+		param.Earnings = 0
 	}
 
 	sqlStatement = `SELECT name FROM shop where shop_id=$1;`
@@ -605,8 +624,14 @@ func (o *OwnerRepo) MainPage(id *models.IdReg) (*models.MainPage, []models.Owner
 
 	sqlStatement = `SELECT count(*) FROM product where shop_id=$1 and selled_at is null;`
 	row = o.db.QueryRow(sqlStatement, id.Id)
-	if err := row.Scan(&param.Products); err != nil {
+	if err := row.Scan(&cnull); err != nil {
 		return &models.MainPage{}, []models.OwnerProduct{}, err
+	}
+	if cnull.Valid{
+		param.Products = cnull
+	}
+	if !cnull.Valid{
+		param.Products = 0
 	}
 
 	return &param, products, nil
