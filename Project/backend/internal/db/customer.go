@@ -389,10 +389,10 @@ func (c *CustomerRepo) GetAllMyProduct(id *models.IdReg) ([]models.CustomerOrder
 		return []models.CustomerOrder{}, err
 	}
 	_url := os.Getenv("baseUrl")
-
+	var endTime sql.NullTime
 	for rows.Next() {
 		var product models.CustomerOrder
-		if err := rows.Scan(&product.ProductId, &product.ShopId, &product.SelledAt,
+		if err := rows.Scan(&product.ProductId, &product.ShopId, &endTime,
 			&product.Address, pq.Array(&product.Image),
 			&product.Status); err != nil {
 			return []models.CustomerOrder{}, err
@@ -400,6 +400,10 @@ func (c *CustomerRepo) GetAllMyProduct(id *models.IdReg) ([]models.CustomerOrder
 		for i := range product.Image {
 			product.Image[i] = _url + product.Image[i]
 		}
+		if endTime.Valid {
+			product.SelledAt = endTime.Time.Format("2006-01-02 15:04:05")
+		}
+		if end &product.SelledAt
 		products = append(products, product)
 	}
 	return products, nil
