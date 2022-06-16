@@ -610,10 +610,11 @@ func (o *OwnerRepo) MainPage(id *models.IdReg) (*models.MainPage, []models.Owner
 		return &models.MainPage{}, []models.OwnerProduct{}, fmt.Errorf("database Earnings %w", err)
 	}
 	if cnull.Valid{
-		param.Earnings = int(cnull.Int64)
+		str12:= strconv.Itoa(int(cnull.Int64))
+		param.Earnings = str12
 	}
 	if !cnull.Valid{
-		param.Earnings = 0
+		param.Earnings = "0"
 	}
 
 	sqlStatement = `SELECT name FROM shop where shop_id=$1;`
