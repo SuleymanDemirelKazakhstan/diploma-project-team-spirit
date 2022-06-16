@@ -403,7 +403,6 @@ func (c *CustomerRepo) GetAllMyProduct(id *models.IdReg) ([]models.CustomerOrder
 		if endTime.Valid {
 			product.SelledAt = endTime.Time.Format("2006-01-02 15:04:05")
 		}
-		if end &product.SelledAt
 		products = append(products, product)
 	}
 	return products, nil
