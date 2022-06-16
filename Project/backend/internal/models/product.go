@@ -20,6 +20,7 @@ type Product struct {
 	Selled_at   time.Time `json:"time,omitempty"`
 	Image       []string  `json:"image"       form:"image"`
 	EndTime     string    `json:"end_time,omitempty"`
+	Selled      string    `json:"selled,omitempty"`
 }
 
 type Filter struct {

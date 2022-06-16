@@ -54,7 +54,6 @@ func (o *OwnerRepo) Create(product *models.CreateProduct) (*models.ImagePath, er
 		description, is_auction, product_category, product_subcategory, 
 		product_size, product_colour, discount, product_condition, image) 
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`
-
 	if _, err := tx.Exec(sqlStatement, product.Id,
 		product.Price, product.Name,
 		product.Description, product.Auction,
@@ -203,6 +202,49 @@ func (o *OwnerRepo) Update(product *models.CreateProduct) (*models.ImagePath, er
 	}
 	str = append(str, fmt.Sprintf("is_auction=%v", product.Auction))
 
+	if product.Auction && product.Selled != "" {
+		loc, err := time.LoadLocation("Asia/Almaty")
+		if err != nil {
+			return &models.ImagePath{}, err
+		}
+
+		RFC3339local := "2006-01-02T15:04:05Z"
+		t1, err := time.ParseInLocation(RFC3339local, product.Selled, loc)
+		if err != nil {
+			return &models.ImagePath{}, err
+		}
+		s2 := strconv.Itoa(product.Id)
+
+		v, err := o.rdb.Get(context.Background(), s2).Result()
+		if err != nil {
+			return &models.ImagePath{}, err
+		}
+
+		data := new(models.Value)
+		if err := json.Unmarshal([]byte(v), data); err != nil {
+			return &models.ImagePath{}, err
+		}
+
+		val, err := json.Marshal(models.Value{
+			Price:      data.Price,
+			CustomerId: data.CustomerId,
+			StartTime:  t1,
+		})
+		if err != nil {
+			return &models.ImagePath{}, err
+		}
+
+		sqlStatement := `UPDATE product SET end_date=$2 WHERE product_id=$1`
+		_, err = o.db.Exec(sqlStatement, product.Id, t1)
+		if err != nil {
+			return &models.ImagePath{}, err
+		}
+
+		if err := o.rdb.Set(context.Background(), s2, val, 0).Err(); err != nil {
+			return &models.ImagePath{}, err
+		}
+	}
+
 	sqlStatement := ""
 	if product.FileName == nil {
 		sqlStatement = fmt.Sprintf(`UPDATE product SET %v WHERE product_id=$1`, strings.Join(str, ","))
@@ -214,8 +256,10 @@ func (o *OwnerRepo) Update(product *models.CreateProduct) (*models.ImagePath, er
 
 	if product.FileName != nil {
 		for _, v := range product.FileName {
-			path := fmt.Sprintf("/images/product/%d/%s", product.Id, v)
-			paths.Path = append(paths.Path, path)
+			if v != "" {
+				path := fmt.Sprintf("/images/product/%d/%s", product.Id, v)
+				paths.Path = append(paths.Path, path)
+			}
 		}
 		sqlStatement = `select image from product where product_id=$1`
 		row := o.db.QueryRow(sqlStatement, product.Id)
