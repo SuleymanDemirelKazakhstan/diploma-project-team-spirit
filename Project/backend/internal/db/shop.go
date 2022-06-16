@@ -586,7 +586,7 @@ func (o *OwnerRepo) MainPage(id *models.IdReg) (*models.MainPage, []models.Owner
 		return &models.MainPage{}, []models.OwnerProduct{}, err
 	}
 	if cnull.Valid{
-		param.Customers = cnull
+		param.Customers = int(cnull.Int64)
 	}
 	if !cnull.Valid{
 		param.Customers = 0
@@ -598,7 +598,7 @@ func (o *OwnerRepo) MainPage(id *models.IdReg) (*models.MainPage, []models.Owner
 		return &models.MainPage{}, []models.OwnerProduct{}, err
 	}
 	if cnull.Valid{
-		param.Orders = cnull
+		param.Orders = int(cnull.Int64)
 	}
 	if !cnull.Valid{
 		param.Orders = 0
@@ -610,7 +610,7 @@ func (o *OwnerRepo) MainPage(id *models.IdReg) (*models.MainPage, []models.Owner
 		return &models.MainPage{}, []models.OwnerProduct{}, fmt.Errorf("database Earnings %w", err)
 	}
 	if cnull.Valid{
-		param.Earnings = cnull
+		param.Earnings = int(cnull.Int64)
 	}
 	if !cnull.Valid{
 		param.Earnings = 0
@@ -628,7 +628,7 @@ func (o *OwnerRepo) MainPage(id *models.IdReg) (*models.MainPage, []models.Owner
 		return &models.MainPage{}, []models.OwnerProduct{}, err
 	}
 	if cnull.Valid{
-		param.Products = cnull
+		param.Products = int(cnull.Int64)
 	}
 	if !cnull.Valid{
 		param.Products = 0
